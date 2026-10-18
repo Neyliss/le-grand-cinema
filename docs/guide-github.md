@@ -1,156 +1,154 @@
-# Guide Git et GitHub du projet
+# Git et GitHub : le guide simple
 
-Ce guide explique comment le code du Grand Cinéma est rangé dans Git, comment s'y retrouver
-sur la page GitHub du dépôt et comment travailler au quotidien depuis VS Code.
-
-Dépôt public : **https://github.com/Neyliss/le-grand-cinema**
+Le code du projet est en ligne ici : **https://github.com/Neyliss/le-grand-cinema**
+(dépôt public : tout le monde peut le lire, seul son propriétaire peut le modifier).
 
 ---
 
-## 1. Les deux outils en une phrase
+## 1. Les mots à connaître
 
-- **Git** enregistre l'historique du projet sur l'ordinateur : chaque *commit* est une photo
-  des fichiers, avec un message qui dit ce qui a changé.
-- **GitHub** héberge une copie de cet historique en ligne : on y lit le code, on y propose des
-  modifications (*pull requests*) et les tests s'y lancent automatiquement (*Actions*).
+| Mot | En clair |
+|---|---|
+| **Git** | Un logiciel qui garde toutes les versions du code, comme un historique de sauvegardes. On peut toujours revenir en arrière. |
+| **GitHub** | Le site internet où le code et son historique sont rangés en ligne. |
+| **Dépôt** (*repository*) | Le dossier du projet, avec tout son historique. |
+| **Commit** | Une sauvegarde, avec une phrase qui explique ce qui a changé. |
+| **Branche** | Une copie de travail. On y fait une modification sans risquer de casser la version qui marche. |
+| **Fusion** (*merge*) | On ramène le travail d'une branche dans une autre. |
+| **Pull request** | Une demande de fusion sur GitHub. GitHub lance les tests avant qu'on accepte. |
+| **Push / Pull** | *Push* : envoyer son travail sur GitHub. *Pull* : récupérer la dernière version depuis GitHub. |
+| **Tag** | Une étiquette posée sur une version, par exemple `v1.0.0`. |
 
 ## 2. Les branches du projet
 
-Une **branche** est une ligne de travail parallèle. Le projet suit une organisation simple,
-inspirée de « Git Flow » :
-
-| Branche | Rôle | Règle |
-|---|---|---|
-| `main` | Version stable, celle qui est (ou sera) en ligne | On n'y travaille jamais directement ; elle ne reçoit que des versions testées, marquées d'un *tag* (`v1.0.0`, `v1.1.0`…) |
-| `develop` | Branche d'intégration : le travail terminé s'y assemble | Reçoit les branches de travail une fois leurs tests au vert |
-| `feature/…` | Une nouvelle fonctionnalité (ex. `feature/docker`) | Part de `develop`, y revient par une fusion |
-| `fix/…` | Une correction de bug | Idem |
-| `test/…`, `docs/…`, `ci/…` | Tests, documentation, intégration continue | Idem |
-
-Historique actuel du dépôt :
-
-```
-main     ●─────────────────────────────────────────────────────────●  v1.1.0
-         v1.0.0 (MVP)                                               ↑
-develop  └──●────────────●────────────●────────────●────────────────┘
-            ↑            ↑            ↑            ↑
-            │            │            │            └── docs/guides
-            │            │            └── ci/github-actions
-            │            └── feature/docker
-            └── test/organisation-des-tests
-```
-
-Chaque `●` de `develop` est une **fusion** (*merge*) d'une branche de travail. Les branches
-fusionnées sont gardées pour que l'historique reste lisible.
-
-## 3. Se repérer sur la page du dépôt
-
-| Onglet ou zone | Ce qu'on y trouve |
+| Branche | À quoi elle sert |
 |---|---|
-| **Code** | Les dossiers et fichiers. Le `README.md` s'affiche en dessous : c'est la page d'accueil du projet. |
-| Sélecteur de branche (bouton `main ▾` en haut à gauche) | Afficher le code d'une autre branche, par exemple `develop`. |
-| **Commits** (lien avec une horloge, à droite au-dessus des fichiers) | L'historique : qui a changé quoi, quand, et pourquoi (le message). Cliquer sur un commit montre les lignes ajoutées (en vert) et retirées (en rouge). |
-| **Tags** / **Releases** (colonne de droite) | Les versions publiées : `v1.0.0` (MVP), `v1.1.0`. |
-| **Pull requests** | Les propositions de fusion d'une branche dans une autre, avec la discussion et le résultat des tests. |
-| **Actions** | L'intégration continue : à chaque envoi, GitHub lance les tests et vérifie Docker. Une coche verte = tout passe ; une croix rouge = un problème, cliquer pour lire le détail. |
-| **Insights › Network** | Le dessin des branches et des fusions. |
-| **Settings** | Réglages du dépôt (nom, visibilité publique, protection des branches). |
+| `main` | La version qui marche, prête à être mise en ligne. On n'y touche jamais directement. |
+| `develop` | La branche où l'on rassemble le travail terminé et testé. |
+| `feature/…` | Une nouvelle fonction. Exemple : `feature/docker`. |
+| `fix/…` | Une correction. Exemple : `fix/contraste-boutons`. |
+| `test/…`, `docs/…`, `ci/…` | Des tests, de la documentation, les tests automatiques de GitHub. |
 
-Astuces :
-- Dans un fichier, le bouton **History** montre son historique, et **Blame** indique pour chaque
-  ligne le commit qui l'a écrite.
-- La touche **`.`** (point) sur la page du dépôt ouvre un éditeur VS Code dans le navigateur,
-  pratique pour lire le code sans rien installer.
-- La touche **`t`** permet de chercher un fichier par son nom.
+Le chemin d'une modification est toujours le même :
 
-## 4. Récupérer le projet sur un ordinateur
+```
+branche de travail  ──►  develop  ──►  main  (nouvelle version, avec un tag)
+```
 
-Une seule fois, dans un terminal :
+## 3. Se repérer sur GitHub
+
+Sur la page du dépôt :
+
+- **Code** : les dossiers et les fichiers. Le `README.md` s'affiche en dessous, c'est la page
+  d'accueil du projet.
+- **Le bouton `main ▾`** (en haut à gauche) : choisir la branche à afficher.
+- **Commits** (petite horloge au-dessus des fichiers) : la liste des sauvegardes. Un clic sur
+  l'une d'elles montre ce qui a changé : en vert ce qui a été ajouté, en rouge ce qui a été retiré.
+- **Pull requests** : les demandes de fusion.
+- **Actions** : les tests automatiques. Une **coche verte** veut dire que tout va bien. Une
+  **croix rouge** veut dire qu'un test a échoué : cliquer dessus pour voir lequel.
+- **Tags** (colonne de droite) : les versions `v1.0.0`, `v1.1.0`…
+- **Insights › Network** : le dessin des branches.
+
+Deux raccourcis pratiques : la touche **`t`** cherche un fichier par son nom, la touche **`.`**
+ouvre le code dans un éditeur directement dans le navigateur.
+
+## 4. Récupérer le projet sur son ordinateur
+
+Dans VS Code : menu **Affichage › Palette de commandes**, taper **Git: Clone**, coller
+l'adresse `https://github.com/Neyliss/le-grand-cinema`, puis choisir le dossier `Documents`.
+
+Ou dans un terminal :
 
 ```bash
 cd ~/Documents
 git clone https://github.com/Neyliss/le-grand-cinema.git
 cd le-grand-cinema
-git switch develop        # on travaille toujours à partir de develop
+git switch develop
 ```
 
-Puis suivre le README (environnement Python ou Docker).
+## 5. Faire une modification, pas à pas
 
-## 5. Le cycle de travail, étape par étape
+Exemple : corriger une faute dans une page.
 
-Exemple : corriger le contraste des boutons.
+**1. Partir de la dernière version de `develop`**
 
 ```bash
 git switch develop
-git pull                                   # 1. partir de la dernière version
-git switch -c fix/contraste-boutons        # 2. créer sa branche
-# … modifier les fichiers …
-python manage.py test                      # 3. vérifier que tout passe
-git add static/scss/_base.scss static/css/site.css
-git commit -m "fix(style): contraste des boutons conforme WCAG AA"   # 4. enregistrer
-git push -u origin fix/contraste-boutons   # 5. envoyer la branche sur GitHub
+git pull
 ```
 
-6. Sur GitHub, un bandeau jaune propose **Compare & pull request** : choisir `develop` comme
-   branche de destination (*base*), décrire la modification, cliquer **Create pull request**.
-7. Attendre la coche verte des tests (onglet **Checks** de la pull request), puis
-   **Merge pull request**.
-8. Revenir sur `develop` en local : `git switch develop && git pull`.
-
-**Publier une version** : quand `develop` est stable, ouvrir une pull request de `develop` vers
-`main`, la fusionner, puis créer le tag :
+**2. Créer sa branche**
 
 ```bash
-git switch main && git pull
-git tag -a v1.2.0 -m "Version 1.2.0"
-git push origin v1.2.0
+git switch -c fix/faute-page-infos
 ```
 
-### Dans VS Code, sans taper de commande
+**3. Modifier les fichiers, puis vérifier que les tests passent**
 
-- **En bas à gauche** : le nom de la branche courante. Un clic permet d'en changer ou d'en créer une.
-- **Icône « Contrôle de code source »** (trois ronds reliés, à gauche) : liste des fichiers
-  modifiés. Le `+` prépare un fichier (*add*), la zone de texte reçoit le message, le bouton
-  **Valider** fait le *commit*.
-- **Bouton « Synchroniser les modifications »** : envoie (*push*) et récupère (*pull*).
-- Au premier envoi, VS Code demande de se connecter à GitHub : accepter dans le navigateur.
+```bash
+python manage.py test
+```
+
+**4. Sauvegarder (commit)**
+
+```bash
+git add .
+git commit -m "fix(infos): faute d'orthographe dans les tarifs"
+```
+
+**5. Envoyer la branche sur GitHub (push)**
+
+```bash
+git push -u origin fix/faute-page-infos
+```
+
+**6. Sur GitHub**, un bandeau jaune propose **Compare & pull request**. Choisir `develop` comme
+destination, cliquer sur **Create pull request**, attendre la coche verte, puis cliquer sur
+**Merge pull request**.
+
+**7. Revenir sur `develop`** sur son ordinateur : `git switch develop` puis `git pull`.
+
+### La même chose avec la souris dans VS Code
+
+- **En bas à gauche**, le nom de la branche : cliquer dessus pour changer de branche ou en créer une.
+- **L'icône « Contrôle de code source »** (trois ronds reliés, dans la barre de gauche) : la
+  liste des fichiers modifiés. Écrire le message en haut, puis cliquer sur **Valider** (*commit*).
+- **Le bouton « Synchroniser »** envoie et récupère les modifications.
+- La première fois, VS Code demande de se connecter à GitHub : accepter.
 
 ## 6. Écrire un bon message de commit
 
-Format utilisé (convention *Conventional Commits*) : `type(portée): description courte`
+Forme : `type(partie): ce que fait la modification`
 
-| Type | Quand | Exemple |
-|---|---|---|
-| `feat` | Nouvelle fonctionnalité | `feat(guichet): impression du ticket de caisse` |
-| `fix` | Correction de bug | `fix(plan): siège PMR mal affiché sur mobile` |
-| `test` | Ajout ou rangement de tests | `test(paiement): cas du remboursement partiel` |
-| `docs` | Documentation | `docs: guide Docker` |
-| `ci` | Intégration continue | `ci: tests sur Python 3.13` |
-| `refactor` | Code réorganisé sans changer le comportement | `refactor(reservation): extraire le calcul du total` |
-| `chore` | Entretien (bibliothèques, configuration) | `chore: mise à jour de Django 5.2.x` |
-
-La description dit **ce que fait** le commit, au présent, en moins de 70 caractères.
-Un commit = un changement cohérent : mieux vaut trois petits commits clairs qu'un gros fourre-tout.
-
-## 7. Bonnes pratiques à garder
-
-- **Jamais de secret dans Git** : le fichier `.env` (clés Stripe, mots de passe) est exclu par
-  `.gitignore`. Le dépôt est public : tout ce qui y entre est visible par tous, pour toujours.
-- **Lancer les tests avant chaque envoi** ; GitHub les relance de toute façon.
-- **Ne jamais travailler directement sur `main`.**
-- **Protéger `main`** (recommandé) : *Settings › Branches › Add branch ruleset*, cocher
-  « Require a pull request before merging » et « Require status checks to pass » en choisissant
-  les vérifications *Tests (PostgreSQL)* et *Image Docker*. Plus personne ne peut alors casser
-  `main` par erreur.
-- **Garder des branches courtes** : quelques jours de travail au plus, puis fusion.
-
-## 8. Commandes de secours
-
-| Situation | Commande |
+| Type | Quand l'utiliser |
 |---|---|
-| Où en suis-je ? | `git status` |
-| Voir l'historique en arbre | `git log --oneline --graph --all` |
-| Annuler les modifications d'un fichier non enregistré | `git restore chemin/du/fichier` |
-| Retirer un fichier préparé par erreur (`add`) | `git restore --staged chemin/du/fichier` |
-| Corriger le message du dernier commit (pas encore envoyé) | `git commit --amend` |
-| Mettre de côté un travail en cours pour changer de branche | `git stash`, puis `git stash pop` |
+| `feat` | Une nouvelle fonction |
+| `fix` | Une correction |
+| `test` | Des tests |
+| `docs` | De la documentation |
+| `ci` | Les tests automatiques de GitHub |
+| `refactor` | Du code réorganisé, sans changer ce qu'il fait |
+| `chore` | De l'entretien (mise à jour d'une bibliothèque…) |
+
+Exemple : `feat(guichet): impression du ticket de caisse`. La phrase est courte, au présent, et
+dit **ce que fait** la modification.
+
+## 7. Les règles d'or
+
+1. **Jamais de mot de passe ni de clé secrète dans Git.** Le fichier `.env` est exclu
+   automatiquement. Le dépôt est public : ce qui y entre est visible par tous.
+2. **On ne travaille jamais directement sur `main`.**
+3. **On lance les tests avant d'envoyer.** GitHub les relance de toute façon.
+4. **Petites modifications, petits commits** : c'est plus facile à relire et à annuler.
+5. **Protéger `main`** (conseillé) : dans **Settings › Branches**, ajouter une règle qui oblige
+   à passer par une pull request avec les tests au vert.
+
+## 8. En cas de doute
+
+| Je veux… | Commande |
+|---|---|
+| Savoir où j'en suis | `git status` |
+| Voir l'historique | `git log --oneline --graph --all` |
+| Annuler mes changements sur un fichier | `git restore chemin/du/fichier` |
+| Mettre mon travail de côté pour changer de branche | `git stash` (et `git stash pop` pour le reprendre) |

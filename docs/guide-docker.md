@@ -1,100 +1,87 @@
-# Guide Docker du projet
+# Docker : le guide simple
 
-Docker lance le site **et** sa base PostgreSQL avec une seule commande, sans rien installer
-d'autre que Docker. Tout le monde travaille ainsi dans le même environnement, proche de la
-production.
+**Docker** permet de lancer le site et sa base de données avec **une seule commande**, sans
+installer Python ni PostgreSQL sur son ordinateur. Tout le monde a ainsi exactement le même
+environnement, proche de celui de la mise en ligne.
 
 ---
 
-## 1. Docker en trois mots
+## 1. Les mots à connaître
 
-| Mot | Définition | Dans le projet |
-|---|---|---|
-| **Image** | Un modèle figé : système, Python, bibliothèques et code | Construite à partir du `Dockerfile` |
-| **Conteneur** | Une image en marche, isolée du reste de l'ordinateur | `web` (le site Django) et `db` (PostgreSQL) |
-| **Docker Compose** | Lance plusieurs conteneurs qui travaillent ensemble | Décrit dans `docker-compose.yml` |
+| Mot | En clair |
+|---|---|
+| **Image** | Une boîte toute prête qui contient le système, Python, les bibliothèques et le code du site. |
+| **Conteneur** | Une image qui tourne. Il est isolé du reste de l'ordinateur. |
+| **Docker Compose** | Lance plusieurs conteneurs qui travaillent ensemble. Ici : le site et la base de données. |
+
+Le projet utilise deux conteneurs :
+
+- **`web`** : le site Django ;
+- **`db`** : la base de données PostgreSQL.
 
 ## 2. Installer Docker (une seule fois)
 
-1. Télécharger **Docker Desktop** sur https://www.docker.com/products/docker-desktop/
-   (choisir « Mac with Apple chip » ou « Mac with Intel chip » selon le Mac).
-2. L'installer, puis l'ouvrir : la baleine apparaît dans la barre des menus.
-3. Vérifier dans un terminal : `docker --version` puis `docker compose version`.
+1. Télécharger **Docker Desktop** : https://www.docker.com/products/docker-desktop/
+   (choisir la version pour Mac avec puce Apple ou puce Intel).
+2. L'installer et l'ouvrir. Une petite baleine apparaît en haut de l'écran.
+3. Vérifier dans le terminal : `docker --version`
 
-Docker Desktop doit être ouvert chaque fois qu'on utilise les commandes ci-dessous.
+Docker Desktop doit être **ouvert** pour que les commandes fonctionnent.
 
-## 3. Lancer le projet
+## 3. Lancer le site
 
-À la racine du projet :
+Dans le terminal, dans le dossier du projet :
 
 ```bash
 docker compose up --build
 ```
 
-La première fois, Docker télécharge Python et PostgreSQL et installe les bibliothèques
-(quelques minutes). Ensuite, le démarrage prend quelques secondes. Au démarrage, le conteneur
-crée les tables et charge les données de démonstration.
+La première fois, Docker télécharge ce qu'il faut : cela prend quelques minutes. Les fois
+suivantes, quelques secondes suffisent.
 
-Le site répond sur **http://localhost:8000**, avec les comptes du README
-(`admin` / `admin-gc-2026`, `agent` / `agent-gc-2026`).
+Ouvrir ensuite **http://localhost:8000**. Les données de démonstration sont déjà là, avec les
+comptes `admin` / `admin-gc-2026` et `agent` / `agent-gc-2026`.
 
-| Pour… | Commande |
+## 4. Les commandes du quotidien
+
+| Je veux… | Commande |
 |---|---|
-| Arrêter | `Ctrl + C` dans le terminal, puis `docker compose down` |
-| Lancer en arrière-plan (le terminal reste libre) | `docker compose up -d` |
+| Lancer le site | `docker compose up` |
+| Le lancer en gardant le terminal libre | `docker compose up -d` |
+| Arrêter le site | `Ctrl + C`, puis `docker compose down` |
 | Voir les messages du site | `docker compose logs -f web` |
-| Repartir d'une base vide | `docker compose down -v` (efface les données PostgreSQL), puis `docker compose up` |
-| Reconstruire après une modification de `requirements.txt` | `docker compose up --build` |
-
-Le code du dossier est **partagé** avec le conteneur : une modification d'un fichier Python ou
-d'un gabarit est prise en compte tout de suite, sans reconstruire.
-
-## 4. Commandes utiles pendant le développement
-
-Le site doit tourner (`docker compose up -d`). `exec web` exécute une commande dans le
-conteneur du site :
-
-| Pour… | Commande |
-|---|---|
-| Lancer les tests (sur PostgreSQL : les 35 tournent) | `docker compose exec web python manage.py test` |
+| Lancer les tests | `docker compose exec web python manage.py test` |
 | Créer un compte administrateur | `docker compose exec web python manage.py createsuperuser` |
-| Appliquer de nouvelles migrations | `docker compose exec web python manage.py migrate` |
-| Ouvrir la console Django | `docker compose exec web python manage.py shell` |
-| Ouvrir la base en SQL | `docker compose exec db psql -U cinema grandcinema` |
-| Recharger les données de démonstration | `docker compose exec web python manage.py charger_demo --reinitialiser` |
-| Voir les conteneurs en marche | `docker compose ps` |
+| Repartir avec une base vide | `docker compose down -v`, puis `docker compose up` |
+| Reconstruire après un ajout dans `requirements.txt` | `docker compose up --build` |
 
-## 5. Ce que contient chaque fichier
+Bon à savoir : le code de l'ordinateur est **partagé** avec le conteneur. Quand on modifie un
+fichier, le site le prend en compte tout de suite, sans rien relancer.
 
-| Fichier | Rôle |
+## 5. Les fichiers Docker du projet
+
+| Fichier | Ce qu'il fait |
 |---|---|
-| `Dockerfile` | Recette de l'image : Python 3.12, bibliothèques de `requirements.txt`, code, fichiers statiques rassemblés, utilisateur sans droits d'administrateur, démarrage avec Gunicorn. |
-| `docker-compose.yml` | Les deux services : `db` (PostgreSQL 16, données gardées dans un volume) et `web` (le site, en mode développement sur le port 8000). `web` attend que la base soit prête. |
-| `docker/entrypoint.sh` | Script lancé au démarrage du conteneur : migrations, puis données de démonstration si `CHARGER_DEMO=1`. |
-| `.dockerignore` | Ce qui n'entre jamais dans l'image : `.env` (secrets), `.git`, base SQLite locale, fichiers temporaires. |
+| `Dockerfile` | La recette de l'image : Python, les bibliothèques, puis le code du site. |
+| `docker-compose.yml` | Décrit les deux conteneurs (`web` et `db`) et comment ils se parlent. |
+| `docker/entrypoint.sh` | Ce qui se passe au démarrage : création des tables, puis données de démonstration. |
+| `.dockerignore` | Ce qui ne doit jamais entrer dans l'image, comme le fichier `.env` qui contient les secrets. |
 
-L'ordre des étapes du `Dockerfile` n'est pas un hasard : les bibliothèques sont installées
-**avant** de copier le code. Tant que `requirements.txt` ne change pas, Docker réutilise cette
-étape déjà prête et la reconstruction ne prend que quelques secondes.
+## 6. Docker et la mise en ligne
 
-## 6. Docker et la production
+- Avec `docker compose up`, le site tourne en **mode développement** (messages d'erreur détaillés).
+- L'image peut aussi tourner en **mode production**, avec le serveur Gunicorn. GitHub vérifie
+  automatiquement que ce mode fonctionne à chaque envoi.
+- Les mots de passe et les clés ne sont **jamais** dans l'image : on les donne au moment du
+  lancement.
+- Aujourd'hui, la mise en ligne sur AWS se fait sans Docker (voir le README). Mais la même image
+  pourrait être utilisée plus tard sur AWS, sans changer le code.
 
-- En développement, `docker-compose.yml` lance `runserver` avec `DEBUG=True`.
-- Sans commande particulière, l'image lance **Gunicorn**, le serveur de production, avec
-  `DEBUG=False`. L'intégration continue vérifie à chaque envoi sur GitHub que cette image démarre
-  et sert les pages.
-- Les secrets (`SECRET_KEY`, clés Stripe, mot de passe de la base) ne sont **jamais** dans
-  l'image : on les donne au démarrage, par des variables d'environnement.
-- Aujourd'hui, la production tourne sur la plateforme Python d'Elastic Beanstalk (voir le
-  README). La même image pourrait être déployée sur la plateforme Docker d'Elastic Beanstalk ou
-  sur Amazon ECS, sans changer le code.
+## 7. Si quelque chose ne marche pas
 
-## 7. Problèmes fréquents
-
-| Message ou symptôme | Cause et solution |
+| Problème | Solution |
 |---|---|
-| `Cannot connect to the Docker daemon` | Docker Desktop n'est pas ouvert : l'ouvrir et attendre la baleine fixe. |
-| `port is already allocated` (8000) | Un autre serveur utilise le port, souvent `python manage.py runserver` lancé à côté : l'arrêter, ou remplacer `"8000:8000"` par `"8001:8000"` dans `docker-compose.yml`. |
-| Une bibliothèque ajoutée est introuvable | Reconstruire : `docker compose up --build`. |
-| Les données sont dans un état bizarre | Repartir de zéro : `docker compose down -v` puis `docker compose up`. |
-| Le site affiche une erreur de base de données au tout premier lancement | PostgreSQL démarrait encore : relancer `docker compose up`. |
+| `Cannot connect to the Docker daemon` | Docker Desktop n'est pas ouvert : l'ouvrir et attendre que la baleine ne bouge plus. |
+| `port is already allocated` | Le port 8000 est déjà pris, souvent par un `python manage.py runserver` lancé à côté. L'arrêter, puis relancer. |
+| Une bibliothèque est introuvable | Reconstruire : `docker compose up --build`. |
+| Les données sont bizarres | Repartir de zéro : `docker compose down -v`, puis `docker compose up`. |
