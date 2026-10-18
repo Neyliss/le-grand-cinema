@@ -1,8 +1,12 @@
 # Le Grand Cinéma — réservation en ligne (MVP)
 
+[![Tests et Docker](https://github.com/Neyliss/le-grand-cinema-/actions/workflows/ci.yml/badge.svg)](https://github.com/Neyliss/le-grand-cinema-/actions/workflows/ci.yml)
+
 Application web Django qui réalise le MVP décrit dans le dossier de conception (Bloc 1) :
 programmation en ligne, plan de salle en temps réel, réservation sans compte, paiement Stripe,
 billet QR par e-mail, vente au guichet sur le même stock de places, contrôle à l'entrée et pilotage.
+
+**Guides** : [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md)
 
 | EPIC | Ce que fait l'application | Où regarder |
 |---|---|---|
@@ -17,6 +21,24 @@ billet QR par e-mail, vente au guichet sur le même stock de places, contrôle �
 ---
 
 ## 1. Installer et lancer le projet sur son ordinateur
+
+```bash
+git clone https://github.com/Neyliss/le-grand-cinema-.git le-grand-cinema
+cd le-grand-cinema
+```
+
+### Option A : avec Docker (le plus simple)
+
+Avec [Docker Desktop](https://www.docker.com/products/docker-desktop/) ouvert :
+
+```bash
+docker compose up --build
+```
+
+Le site et sa base PostgreSQL démarrent ensemble, avec les données de démonstration, sur
+**http://localhost:8000**. Détails et commandes utiles : [guide Docker](docs/guide-docker.md).
+
+### Option B : avec Python
 
 Prérequis : **Python 3.10 ou plus** (`python3 --version`) et VS Code avec l'extension Python.
 Si la version est trop ancienne, installer Python depuis https://www.python.org/downloads/.
@@ -83,12 +105,15 @@ l'ORM de Django écrit le SQL adapté à chaque base.
 ## 2. Lancer les tests
 
 ```bash
-python manage.py test
+python manage.py test                          # avec Python
+docker compose exec web python manage.py test  # avec Docker (PostgreSQL)
 ```
 
-34 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
-qu'une fois » (`reservation/tests.py`), le blocage de 10 minutes, le parcours complet en ligne,
-le webhook Stripe signé, le contrôle d'un billet déjà scanné et l'export CSV.
+35 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
+qu'une fois » (`reservation/tests/test_double_vente.py`), le blocage de 10 minutes, le parcours
+complet en ligne, le webhook Stripe signé, le contrôle d'un billet déjà scanné et l'export CSV.
+Chaque module range ses tests dans un dossier `tests/`, un fichier par sujet ; GitHub les relance
+à chaque envoi (onglet *Actions*). Voir le [guide des tests](docs/guide-tests.md).
 
 Le test `ConcurrenceReelleTests` lance 5 spectateurs **en même temps** sur le même siège, avec
 de vraies connexions parallèles : un seul l'obtient. Il ne tourne qu'avec PostgreSQL, car SQLite
@@ -103,7 +128,11 @@ Le projet suit le modèle **MVT** de Django (dossier 3, figure 7) :
 - `services.py` : les règles métier, communes au site et au guichet ;
 - `views.py` : reçoivent la requête, appliquent les règles, choisissent le gabarit ;
 - `templates/` : les pages HTML (reprises des wireframes et mockups Figma) ;
-- `static/` : feuille de style SCSS compilée en CSS, et JavaScript (plan de salle).
+- `static/` : feuille de style SCSS compilée en CSS, et JavaScript (plan de salle) ;
+- `tests/` (dans chaque module) : les tests ; `outils_de_test/` : les données de test partagées.
+
+Branches Git : `main` (versions stables, avec tags), `develop` (intégration) et une branche par
+travail (`feature/…`, `fix/…`). Voir le [guide Git et GitHub](docs/guide-github.md).
 
 La règle critique (dossier 3, § 3.3) se trouve dans `reservation/services.py`, fonction
 `bloquer_sieges` : verrou `select_for_update` dans une transaction, plus la contrainte d'unicité
