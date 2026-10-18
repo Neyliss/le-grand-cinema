@@ -5,13 +5,13 @@
   --trait: #DCE3E6;
   --fond: #F5F7F8;
   --blanc: #FFFFFF;
-  --accent: #1F8A9A;
+  --accent: #1C7F8D;
   --accent-fonce: #17707D;
   --accent-clair: #E3F3F6;
   --or: #F2C14E;
   --alerte: #8A5A00;
   --alerte-fond: #FFF4DA;
-  --succes: #2E7D4F;
+  --succes: #2C7A4C;
   --succes-fond: #E7F5EC;
   --erreur: #C0392B;
   --erreur-fond: #FBE9E7;
@@ -246,7 +246,7 @@ main.conteneur {
 
 .bouton:hover {
   background: var(--accent-fonce);
-  box-shadow: 0 6px 18px rgba(31, 138, 154, 0.28);
+  box-shadow: 0 6px 18px rgba(28, 127, 141, 0.28);
   transform: translateY(-1px);
 }
 

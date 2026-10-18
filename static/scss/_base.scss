@@ -68,7 +68,7 @@ main.conteneur { flex: 1; padding-block: 28px 56px; display: flex; flex-directio
   background: var(--accent); color: var(--blanc); font: inherit; font-weight: 600; font-size: 15px;
   text-decoration: none; cursor: pointer; transition: transform .15s, box-shadow .2s, background .2s;
 }
-.bouton:hover { background: var(--accent-fonce); box-shadow: 0 6px 18px rgba(31, 138, 154, .28); transform: translateY(-1px); }
+.bouton:hover { background: var(--accent-fonce); box-shadow: 0 6px 18px rgba(28, 127, 141, .28); transform: translateY(-1px); }
 .bouton:active { transform: translateY(0); }
 .bouton[disabled] { background: var(--inactif); border-color: var(--inactif); box-shadow: none; transform: none; cursor: not-allowed; }
 .bouton--clair { background: var(--blanc); color: var(--accent); }
