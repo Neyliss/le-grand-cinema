@@ -1,0 +1,17 @@
+# Réglages de la mesure de couverture des tests (outil « coverage »).
+[run]
+source = .
+branch = True
+omit =
+    .venv/*
+    */migrations/*
+    */tests/*
+    outils_de_test/*
+    manage.py
+    grandcinema/asgi.py
+    grandcinema/wsgi.py
+
+[report]
+show_missing = True
+skip_covered = False
+precision = 0
