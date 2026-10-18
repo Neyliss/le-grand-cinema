@@ -1,0 +1,19 @@
+# Fichiers qui ne doivent pas entrer dans l'image Docker
+.git
+.gitignore
+.github
+.venv
+venv
+__pycache__
+*.pyc
+.env
+db.sqlite3
+media
+staticfiles
+.coverage
+htmlcov
+.vscode
+.idea
+.DS_Store
+.elasticbeanstalk
+docs
