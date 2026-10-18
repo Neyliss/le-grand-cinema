@@ -8,7 +8,7 @@
     <p>{% translate "Bonjour" %} {{ reservation.nom }}, {% translate "votre réservation est confirmée." %}</p>
     <ul>{% for billet in billets %}<li>{% translate "Siège" %} <b>{{ billet.place.siege }}</b> · {{ billet.tarif.libelle }} · {{ billet.prix }} €</li>{% endfor %}</ul>
     <p>{% translate "Référence" %} : <b>{{ reservation.reference }}</b></p>
-    <p><a href="{{ lien }}" style="display:inline-block;background:#1F8A9A;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">{% translate "Afficher mes billets" %}</a></p>
+    <p><a href="{{ lien }}" style="display:inline-block;background:#1C7F8D;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">{% translate "Afficher mes billets" %}</a></p>
     <p style="color:#5B6B72;font-size:13px">{% translate "Vos billets sont aussi joints en PDF. Chaque QR code ne peut être utilisé qu'une seule fois." %}</p>
   </div>
 </div>
