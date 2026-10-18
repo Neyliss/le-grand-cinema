@@ -1,6 +1,6 @@
 # Le Grand Cinéma — réservation en ligne (MVP)
 
-[![Tests et Docker](https://github.com/Neyliss/le-grand-cinema-/actions/workflows/ci.yml/badge.svg)](https://github.com/Neyliss/le-grand-cinema-/actions/workflows/ci.yml)
+[![Tests et Docker](https://github.com/Neyliss/le-grand-cinema/actions/workflows/ci.yml/badge.svg)](https://github.com/Neyliss/le-grand-cinema/actions/workflows/ci.yml)
 
 Application web Django qui réalise le MVP décrit dans le dossier de conception (Bloc 1) :
 programmation en ligne, plan de salle en temps réel, réservation sans compte, paiement Stripe,
@@ -23,7 +23,7 @@ billet QR par e-mail, vente au guichet sur le même stock de places, contrôle �
 ## 1. Installer et lancer le projet sur son ordinateur
 
 ```bash
-git clone https://github.com/Neyliss/le-grand-cinema-.git le-grand-cinema
+git clone https://github.com/Neyliss/le-grand-cinema.git
 cd le-grand-cinema
 ```
 

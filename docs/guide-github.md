@@ -3,7 +3,7 @@
 Ce guide explique comment le code du Grand Cinéma est rangé dans Git, comment s'y retrouver
 sur la page GitHub du dépôt et comment travailler au quotidien depuis VS Code.
 
-Dépôt public : **https://github.com/Neyliss/le-grand-cinema-**
+Dépôt public : **https://github.com/Neyliss/le-grand-cinema**
 
 ---
 
@@ -69,7 +69,7 @@ Une seule fois, dans un terminal :
 
 ```bash
 cd ~/Documents
-git clone https://github.com/Neyliss/le-grand-cinema-.git le-grand-cinema
+git clone https://github.com/Neyliss/le-grand-cinema.git
 cd le-grand-cinema
 git switch develop        # on travaille toujours à partir de develop
 ```
