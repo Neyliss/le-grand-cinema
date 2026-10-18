@@ -1,6 +1,8 @@
 """RG-02 : les sièges choisis sont bloqués 10 minutes, puis libérés s'ils ne sont pas payés."""
 from datetime import timedelta
+from io import StringIO
 
+from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
 
@@ -41,3 +43,13 @@ class BlocageDixMinutesTests(TestCase):
         seconde = creer_reservation(self.seance, [self.siege.id])
 
         self.assertEqual(seconde.places.get().siege, self.siege)
+
+    def test_la_tache_planifiee_libere_les_sieges_expires(self):
+        reservation = creer_reservation(self.seance, [self.siege.id])
+        reservation.places.update(fin_blocage=timezone.now() - timedelta(seconds=1))
+        sortie = StringIO()
+
+        call_command("liberer_places", stdout=sortie)
+
+        self.assertIn("1 place(s) libérée(s)", sortie.getvalue())
+        self.assertEqual(self.seance.places.get(siege=self.siege).statut, PlaceSeance.Statut.LIBRE)

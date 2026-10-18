@@ -1,7 +1,7 @@
 # Les tests : le guide simple
 
 Un **test** est un petit programme qui vérifie tout seul qu'une règle du projet est respectée.
-Par exemple : « un siège ne peut pas être vendu deux fois ». Le projet en compte **35**. On les
+Par exemple : « un siège ne peut pas être vendu deux fois ». Le projet en compte **41**. On les
 lance en une commande, et ils répondent en quelques secondes.
 
 À quoi ça sert ? À **modifier le code sans peur** : si une modification casse une règle, un
@@ -43,7 +43,7 @@ commence par `test_` :
 reservation/tests/   règle « un siège, une vente », blocage de 10 minutes, plan de salle, parcours complet
 paiement/tests/      paiement Stripe, confirmation signée, paiement en retard
 billetterie/tests/   contrôle des billets à l'entrée, billet PDF
-catalogue/tests/     programmation, site en anglais
+catalogue/tests/     programmation, site en anglais, données de démonstration
 guichet/tests/       vente au guichet
 pilotage/tests/      tableau de remplissage, export CSV
 grandcinema/tests/   qui a le droit d'ouvrir quelle page
@@ -103,7 +103,7 @@ coverage run manage.py test
 coverage report
 ```
 
-Aujourd'hui : **76 %**. GitHub refuse une modification qui ferait descendre ce chiffre sous 75 %.
+Aujourd'hui : **85 %**. GitHub refuse une modification qui ferait descendre ce chiffre sous 75 %.
 Attention : un chiffre élevé ne suffit pas. Ce qui compte, c'est de tester les règles
 importantes et les cas de refus.
 
