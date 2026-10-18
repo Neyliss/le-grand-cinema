@@ -2,6 +2,8 @@
 # Lancer : docker compose up      Arrêter : Ctrl + C, puis docker compose down
 # Guide : docs/guide-docker.md
 
+name: le-grand-cinema
+
 services:
   db:
     image: postgres:16-alpine
@@ -29,7 +31,7 @@ services:
       DEBUG: "True"
       DATABASE_URL: postgres://cinema:cinema@db:5432/grandcinema
       ALLOWED_HOSTS: localhost,127.0.0.1
-      CHARGER_DEMO: "1"
+      CHARGER_DEMO: "${CHARGER_DEMO:-1}"  # 1 = charger les données de démonstration
     volumes:
       - .:/app                           # le code de l'ordinateur est utilisé directement :
                                          # une modification est prise en compte sans reconstruire
