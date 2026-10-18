@@ -1,0 +1,14 @@
+{% load i18n %}<div style="font-family:Arial,sans-serif;color:#16242A;max-width:560px">
+  <div style="background:#0E2250;color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">
+    <div style="font-size:12px;letter-spacing:.08em">LE GRAND CINÉMA</div>
+    <div style="font-size:22px;font-weight:bold">{{ reservation.seance.film.titre }}</div>
+    <div>{{ reservation.seance.debut|date:"l j F Y"|capfirst }} · {{ reservation.seance.debut|time:"H:i" }} · {{ reservation.seance.salle }}</div>
+  </div>
+  <div style="border:1px solid #DCE3E6;border-top:0;padding:20px 24px;border-radius:0 0 12px 12px">
+    <p>{% translate "Bonjour" %} {{ reservation.nom }}, {% translate "votre réservation est confirmée." %}</p>
+    <ul>{% for billet in billets %}<li>{% translate "Siège" %} <b>{{ billet.place.siege }}</b> · {{ billet.tarif.libelle }} · {{ billet.prix }} €</li>{% endfor %}</ul>
+    <p>{% translate "Référence" %} : <b>{{ reservation.reference }}</b></p>
+    <p><a href="{{ lien }}" style="display:inline-block;background:#1F8A9A;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">{% translate "Afficher mes billets" %}</a></p>
+    <p style="color:#5B6B72;font-size:13px">{% translate "Vos billets sont aussi joints en PDF. Chaque QR code ne peut être utilisé qu'une seule fois." %}</p>
+  </div>
+</div>

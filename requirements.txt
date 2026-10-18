@@ -1,0 +1,11 @@
+# Dépendances de l'application (installées avec : pip install -r requirements.txt)
+Django>=5.2,<5.3          # framework (S3 du dossier 2)
+stripe>=12.0              # paiement en ligne (S12, composant C8)
+qrcode[pil]>=8.0          # QR code des billets (E4)
+reportlab>=4.2            # billet PDF (E4)
+dj-database-url>=2.2      # lecture de DATABASE_URL (PostgreSQL en production)
+psycopg[binary]>=3.2      # pilote PostgreSQL (Amazon RDS, composant C4)
+python-dotenv>=1.0        # lecture du fichier .env en local
+whitenoise>=6.7           # fichiers statiques servis par Django, mis en cache par CloudFront
+gunicorn>=23.0            # serveur web en production (Elastic Beanstalk)
+django-storages[s3]>=1.14 # affiches et billets PDF dans Amazon S3 (composant C5)

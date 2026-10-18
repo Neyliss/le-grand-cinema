@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Paiement en cours de confirmation" %}{% endblock %}
+{% block contenu %}
+<meta http-equiv="refresh" content="3">
+<section class="carte demo">
+  <span class="point-vert" aria-hidden="true" style="align-self:center"></span>
+  <h1>{% translate "Paiement en cours de confirmation" %}</h1>
+  <p class="muet">{% translate "Stripe nous confirme votre paiement. Cette page se met à jour toute seule." %}</p>
+</section>
+{% endblock %}

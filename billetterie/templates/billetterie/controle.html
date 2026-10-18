@@ -1,0 +1,28 @@
+{% extends "base_pro.html" %}
+{% load static %}
+{% block espace %}Contrôle{% endblock %}
+{% block titre %}Contrôle · {{ seance.salle }} · {{ seance.debut|time:"H:i" }}{% endblock %}
+{% block contenu %}
+<div class="controle">
+  <h1 style="font-size:22px">Contrôle · {{ seance.salle }} · {{ seance.debut|time:"H:i" }}</h1>
+  <p class="muet">{{ seance.film.titre }}</p>
+  <div class="camera" id="camera">
+    <button class="bouton bouton--clair" type="button" id="activer-camera">Activer la caméra</button>
+  </div>
+  <form class="saisie" id="form-controle" method="post" action="{% url 'controle:verifier' seance.id %}">
+    {% csrf_token %}
+    <label class="visuellement-cache" for="code">Code du billet</label>
+    <input type="text" id="code" name="code" placeholder="Code du billet (ou douchette)" autocomplete="off" autofocus>
+    <button class="bouton" type="submit">Vérifier</button>
+  </form>
+  <div id="resultat" aria-live="assertive"></div>
+  <div>
+    <div class="recap__ligne"><span class="muet">Entrées contrôlées</span><strong id="compteur">{{ compteur.entrees }} / {{ compteur.vendus }}</strong></div>
+    <div class="jauge" style="grid-column:auto"><span class="jauge__barre"><i id="jauge" style="width: {% widthratio compteur.entrees compteur.vendus|default:1 100 %}%"></i></span></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+<script src="{% static 'js/controle.js' %}" defer></script>
+{% endblock %}

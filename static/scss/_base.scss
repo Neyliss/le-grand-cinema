@@ -1,0 +1,122 @@
+@use "variables" as *;
+
+// --- Base -----------------------------------------------------------------------
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--police);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--encre);
+  background: var(--blanc);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--accent-fonce); }
+h1, h2, h3 { line-height: 1.2; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(24px, 4vw, 32px); font-weight: 700; }
+h2 { font-size: 19px; font-weight: 700; }
+p { margin: 0; }
+.muet { color: var(--gris); }
+.petit { font-size: 13px; }
+.visuellement-cache {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+:focus-visible { outline: 3px solid var(--or); outline-offset: 2px; }
+
+.conteneur {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+main.conteneur { flex: 1; padding-block: 28px 56px; display: flex; flex-direction: column; gap: 24px; }
+
+// --- En-tête et navigation -------------------------------------------------------------
+.entete { background: var(--blanc); border-bottom: 1px solid var(--trait); position: sticky; top: 0; z-index: 20; }
+.entete__in { display: flex; align-items: center; gap: 24px; min-height: 68px; }
+.logo { display: flex; align-items: center; gap: 12px; color: var(--encre); text-decoration: none; font-weight: 700; font-size: 18px; }
+.logo img { width: 32px; height: 32px; }
+.nav { display: flex; gap: 32px; margin-left: auto; margin-right: auto; }
+.nav a { color: var(--gris); text-decoration: none; font-weight: 500; padding: 22px 0 20px; border-bottom: 3px solid transparent; transition: color .2s, border-color .2s; }
+.nav a:hover { color: var(--encre); }
+.nav a[aria-current="page"] { color: var(--encre); font-weight: 600; border-color: var(--accent); }
+@include mobile { .nav { display: none; } }
+
+.langues { display: flex; padding: 2px; border-radius: 99px; background: var(--fond); border: 1px solid var(--trait); margin-left: auto; }
+.langues a {
+  font-size: 12px; font-weight: 700; color: var(--gris); text-decoration: none;
+  padding: 4px 11px; border-radius: 99px; transition: background .2s, color .2s;
+}
+.langues a:hover { color: var(--accent); }
+.langues a[aria-current="true"] { background: var(--accent); color: var(--blanc); }
+@include bureau { .langues { margin-left: 0; } }
+
+// --- Pied de page --------------------------------------------------------------------
+.pied { background: var(--fond); border-top: 1px solid var(--trait); color: var(--gris); font-size: 13px; }
+.pied__in { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 16px; }
+.pied a { color: var(--gris); }
+
+// --- Boutons ---------------------------------------------------------------------------
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 22px; border-radius: 10px; border: 1.5px solid var(--accent);
+  background: var(--accent); color: var(--blanc); font: inherit; font-weight: 600; font-size: 15px;
+  text-decoration: none; cursor: pointer; transition: transform .15s, box-shadow .2s, background .2s;
+}
+.bouton:hover { background: var(--accent-fonce); box-shadow: 0 6px 18px rgba(31, 138, 154, .28); transform: translateY(-1px); }
+.bouton:active { transform: translateY(0); }
+.bouton[disabled] { background: var(--inactif); border-color: var(--inactif); box-shadow: none; transform: none; cursor: not-allowed; }
+.bouton--clair { background: var(--blanc); color: var(--accent); }
+.bouton--clair:hover { background: var(--accent-clair); }
+.bouton--large { width: 100%; }
+
+// --- Puces (jours, horaires) ------------------------------------------------------------
+.puces { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.puce {
+  flex: none; display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 99px;
+  border: 1px solid var(--trait); color: var(--encre); background: var(--blanc); text-decoration: none; font-weight: 600; font-size: 14px;
+  transition: border-color .2s, background .2s;
+}
+.puce:hover { border-color: var(--accent); }
+.puce[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: var(--blanc); }
+
+// --- Messages ------------------------------------------------------------------------
+.messages { display: flex; flex-direction: column; gap: 8px; }
+.message { padding: 12px 16px; border-radius: 10px; background: var(--accent-clair); color: var(--accent-fonce); font-weight: 500; animation: glisse .4s ease-out; }
+.message--error { background: var(--erreur-fond); color: var(--erreur); }
+.message--success { background: var(--succes-fond); color: var(--succes); }
+
+// --- Cartes et encarts -------------------------------------------------------------------
+.carte { background: var(--blanc); border: 1px solid var(--trait); border-radius: var(--rayon-carte); }
+.encart { background: var(--fond); border-radius: var(--rayon); padding: 16px 20px; }
+
+// --- Étapes du parcours ----------------------------------------------------------------
+.etapes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; list-style: none; margin: 0; padding: 0; font-size: 14px; color: var(--gris); }
+.etapes li { display: flex; align-items: center; gap: 8px; }
+.etapes li + li::before { content: ""; width: 24px; height: 1.5px; background: var(--trait); }
+.etapes .num {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--inactif); background: var(--blanc);
+}
+.etapes .fait .num, .etapes .actif .num { background: var(--accent); border-color: var(--accent); color: var(--blanc); }
+.etapes .actif { color: var(--encre); font-weight: 600; }
+
+// --- Animations (désactivées si l'utilisateur préfère moins de mouvement) -----------------
+@keyframes apparait { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes glisse { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+.apparition { animation: apparait .5s ease-out both; }
+.apparition:nth-child(2) { animation-delay: .07s; }
+.apparition:nth-child(3) { animation-delay: .14s; }
+.apparition:nth-child(4) { animation-delay: .21s; }
+.apparition:nth-child(n+5) { animation-delay: .28s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

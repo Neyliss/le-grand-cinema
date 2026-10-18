@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Festival de Jazz" %}{% endblock %}
+{% block contenu %}
+<section class="festival">
+  <div>
+    <strong>{% translate "Festival de Jazz" %}</strong>
+    <span>{% translate "Toutes les séances du festival, réservables en ligne jusqu'au début de la projection." %}</span>
+  </div>
+  <span class="festival__notes" aria-hidden="true">♪ ♫ ♪</span>
+</section>
+{% for jour, seances in jours %}
+<section class="jour-festival apparition">
+  <h2>{{ jour|date:"l j F"|capfirst }}</h2>
+  <div class="liste-seances">
+    {% for seance in seances %}
+    {% if seance.nb_libres == 0 %}
+    <div class="carte ligne-seance muet">
+      <span><strong>{{ seance.debut|time:"H:i" }}</strong> · {{ seance.film.titre }}<br><span class="petit">{{ seance.salle }} · {{ seance.film.version }}</span></span>
+      <span class="petit">{% translate "Complet" %}</span>
+    </div>
+    {% else %}
+    <a class="carte ligne-seance" href="{% url 'reservation:plan' seance.id %}">
+      <span><strong>{{ seance.debut|time:"H:i" }}</strong> · {{ seance.film.titre }}<br><span class="muet petit">{{ seance.salle }} · {{ seance.film.version }}</span></span>
+      <span class="muet petit">{% blocktranslate count n=seance.nb_libres %}{{ n }} libre{% plural %}{{ n }} libres{% endblocktranslate %}</span>
+    </a>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% empty %}
+<div class="encart vide"><h2>{% translate "Aucune séance du festival n'est programmée pour le moment." %}</h2></div>
+{% endfor %}
+{% endblock %}

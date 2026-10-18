@@ -1,0 +1,6 @@
+{% load i18n %}
+<ol class="etapes" aria-label="{% translate 'Étapes de la réservation' %}">
+  <li class="{% if etape > 1 %}fait{% elif etape == 1 %}actif{% endif %}"><span class="num">{% if etape > 1 %}✓{% else %}1{% endif %}</span>{% translate "Places" %}</li>
+  <li class="{% if etape > 2 %}fait{% elif etape == 2 %}actif{% endif %}"><span class="num">{% if etape > 2 %}✓{% else %}2{% endif %}</span>{% translate "Tarifs et coordonnées" %}</li>
+  <li class="{% if etape > 3 %}fait{% elif etape == 3 %}actif{% endif %}"><span class="num">{% if etape > 3 %}✓{% else %}3{% endif %}</span>{% translate "Paiement sécurisé" %}</li>
+</ol>

@@ -1,0 +1,6 @@
+{% load i18n %}{% get_current_language as LANGUE %}
+<nav class="langues" aria-label="Langue / Language">
+  {% for code, lien in liens_langues %}{% get_language_info for code as langue %}
+  <a href="{{ lien }}" hreflang="{{ code }}" lang="{{ code }}" title="{{ langue.name_local|capfirst }}"{% if code == LANGUE %} aria-current="true"{% endif %}>{{ code|upper }}</a>
+  {% endfor %}
+</nav>

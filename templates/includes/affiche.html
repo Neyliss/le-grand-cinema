@@ -1,0 +1,1 @@
+{% if film.affiche %}<img class="film__affiche" src="{{ film.affiche.url }}" alt="{{ film.titre }}" loading="lazy">{% else %}<div class="film__affiche film__affiche--vide" aria-hidden="true">{{ film.titre }}</div>{% endif %}

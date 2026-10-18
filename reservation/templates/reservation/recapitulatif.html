@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block titre %}{% translate "Tarifs et coordonnées" %}{% endblock %}
+{% block contenu %}
+{% include "includes/etapes.html" with etape=2 %}
+<div class="mise-en-page-recap">
+  <form method="post" class="formulaire" id="form-recap" novalidate>
+    {% csrf_token %}
+    <h1>{% translate "Tarifs et coordonnées" %}</h1>
+    {% if form.non_field_errors %}<p class="message message--error">{{ form.non_field_errors|join:" " }}</p>{% endif %}
+    <fieldset>
+      <legend>{% translate "Tarif par place" %}</legend>
+      {% for place, champ in form.champs_tarifs %}
+      <div class="carte ligne-tarif">
+        <label for="{{ champ.id_for_label }}"><strong>{{ place.siege }}</strong></label>
+        {{ champ }}
+        <span class="prix" id="prix-{{ place.siege }}"></span>
+      </div>
+      {% endfor %}
+    </fieldset>
+    <fieldset>
+      <legend>{% translate "Vos coordonnées" %}</legend>
+      <p class="muet petit">{% translate "Pour recevoir votre billet. Aucun compte à créer." %}</p>
+      <div class="champs">
+        {% for champ in form %}{% if champ.name == "nom" or champ.name == "email" %}
+        <div class="champ">
+          <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+          {{ champ }}
+          {% for erreur in champ.errors %}<span class="erreur-champ">{{ erreur }}</span>{% endfor %}
+        </div>
+        {% endif %}{% endfor %}
+      </div>
+    </fieldset>
+  </form>
+
+  <div class="minuteur" id="minuteur" data-fin="{{ fin_blocage|date:'c' }}" data-texte-fini="{% translate 'Délai dépassé : vos places ont été libérées.' %}">
+    <div><span>{% translate "Vos places sont bloquées pendant" %}</span><strong>--:--</strong></div>
+    <small>{% translate "puis libérées" %}</small>
+  </div>
+
+  <section class="carte recap" aria-label="{% translate 'Récapitulatif' %}">
+    <div>
+      <h2>{{ seance.film.titre }}</h2>
+      <p class="muet petit">{{ seance.debut|date:"l j F"|capfirst }} · {{ seance.debut|time:"H:i" }} · {{ seance.salle }} · {{ seance.film.version }}</p>
+    </div>
+    <div class="recap__lignes" id="lignes-recap"></div>
+    <div class="recap__total"><span>{% translate "Total" %}</span><span id="total"></span></div>
+    <button class="bouton bouton--large" type="submit" form="form-recap" id="bouton-payer">
+      {% if stripe %}{% translate "Payer avec Stripe" %}{% else %}{% translate "Payer (démonstration)" %}{% endif %}
+    </button>
+    <p class="securite">{% translate "Paiement sécurisé sur la page de Stripe. Le cinéma ne reçoit aucune donnée de carte." %}</p>
+  </section>
+</div>
+{{ prix_tarifs|json_script:"prix-tarifs" }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/recapitulatif.js' %}"></script>{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block titre %}{% translate "Choisir ses places" %} — {{ seance.film.titre }}{% endblock %}
+{% block contenu %}
+{% include "includes/etapes.html" with etape=1 %}
+<header>
+  <h1>{{ seance.film.titre }}</h1>
+  <p class="muet">{{ seance.debut|date:"l j F"|capfirst }} · {{ seance.debut|time:"H:i" }} · {{ seance.salle }} · {{ seance.film.version }} · {{ seance.film.duree_affichee }}</p>
+</header>
+
+<div class="mise-en-page-plan">
+  <section class="carte salle" aria-label="{% translate 'Plan de la salle' %}">
+    <div class="ecran">{% translate "ÉCRAN" %}</div>
+    <div class="plan" id="plan" data-url="{% url 'reservation:api_plan' seance.id %}" data-max="{{ max_places }}" data-intervalle="{{ rafraichissement }}"
+         data-libelle-siege="{% translate 'Siège' %}" data-libelle-pris="{% translate 'Le siège %s vient d’être pris par un autre spectateur.' %}"
+         data-texte-une="{% translate '1 place choisie' %}" data-texte-plusieurs="{% translate '%s places choisies' %}"
+         data-texte-aucune="{% translate '0 place choisie' %}" data-texte-rang="{% translate 'Rang %r · siège %n' %}">
+      <noscript>{% translate "Le plan de salle nécessite JavaScript." %}</noscript>
+    </div>
+    <ul class="legende">
+      <li><span class="siege"></span>{% translate "Libre" %}</li>
+      <li><span class="siege" aria-pressed="true"></span>{% translate "Choisie" %}</li>
+      <li><span class="siege siege--vendue"></span>{% translate "Vendue" %}</li>
+      <li><span class="siege siege--bloquee"></span>{% translate "Bloquée" %}</li>
+      <li><span class="siege siege--pmr"></span>{% translate "Place PMR" %}</li>
+    </ul>
+    <p class="temps-reel petit"><span class="point-vert" aria-hidden="true"></span>{% blocktranslate %}Plan mis à jour automatiquement toutes les {{ rafraichissement }} secondes{% endblocktranslate %}</p>
+  </section>
+
+  <form class="carte selection" method="post" action="{% url 'reservation:bloquer' seance.id %}" id="form-selection">
+    {% csrf_token %}
+    <h2>{% translate "Votre sélection" %}</h2>
+    <ul class="selection__liste" id="liste-selection" aria-live="polite"></ul>
+    <p class="selection__vide" id="selection-vide">{% blocktranslate %}Touchez les sièges libres sur le plan (jusqu'à {{ max_places }} places).{% endblocktranslate %}</p>
+    <div class="selection__resume">
+      <strong id="compte-selection">{% translate "0 place choisie" %}</strong>
+      <span class="muet petit">{% translate "Étape 1 sur 3" %}</span>
+    </div>
+    <div id="champs-sieges"></div>
+    <button class="bouton bouton--large" type="submit" id="bouton-continuer" disabled>{% translate "Continuer" %}</button>
+    <p class="muet petit selection__note">{% blocktranslate with minutes=duree_blocage %}Vos places seront bloquées {{ minutes }} minutes pendant le paiement.{% endblocktranslate %}</p>
+  </form>
+</div>
+{{ plan|json_script:"plan-initial" }}
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/plan.js' %}"></script>
+<script src="{% static 'js/reservation.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Programmation" %}{% endblock %}
+{% block contenu %}
+<section class="titre-page">
+  <h1>{% translate "Programmation" %}</h1>
+  <nav class="puces" aria-label="{% translate 'Choisir le jour' %}">
+    {% for j in jours %}
+      <a class="puce" href="?jour={{ j|date:'Y-m-d' }}"{% if j == jour %} aria-current="true"{% endif %}>
+        {% if j == aujourdhui %}{% translate "Aujourd'hui" %}{% else %}{{ j|date:"D j"|capfirst }}{% endif %}
+      </a>
+    {% endfor %}
+  </nav>
+</section>
+
+<a class="festival apparition" href="{% url 'catalogue:festival' %}">
+  <div>
+    <strong>{% translate "Festival de Jazz" %}</strong>
+    <span>{% translate "Les séances du festival sont ouvertes à la réservation : réservez vos places en ligne, sans compte." %}</span>
+  </div>
+  <span class="festival__notes" aria-hidden="true">♪ ♫ ♪</span>
+  <span class="festival__lien">{% translate "Voir les séances du festival" %} ›</span>
+</a>
+
+{% if films %}
+<section class="films" aria-label="{% translate 'Films du jour' %}">
+  {% for film, seances in films %}
+  <article class="carte film apparition">
+    {% include "includes/affiche.html" %}
+    <div class="film__texte">
+      <h2 class="film__titre">{{ film.titre }}</h2>
+      <p class="film__meta">{{ film.duree_affichee }} · {{ film.version }} · {{ film.classification }}</p>
+      {% if film.synopsis %}<p class="film__resume">{{ film.synopsis }}</p>{% endif %}
+    </div>
+    <div class="horaires">
+      {% for seance in seances %}
+        {% if seance.nb_libres == 0 %}
+          <span class="horaire horaire--complet"><strong>{{ seance.debut|time:"H:i" }}</strong><span>{% translate "Complet" %}</span></span>
+        {% else %}
+          <a class="horaire{% if seance.nb_libres <= 10 %} horaire--peu{% endif %}" href="{% url 'reservation:plan' seance.id %}"
+             aria-label="{{ seance.debut|time:'H:i' }}, {{ seance.salle }}, {% blocktranslate count n=seance.nb_libres %}{{ n }} place libre{% plural %}{{ n }} places libres{% endblocktranslate %}">
+            <strong>{{ seance.debut|time:"H:i" }}</strong>
+            <span>{% blocktranslate count n=seance.nb_libres %}{{ n }} libre{% plural %}{{ n }} libres{% endblocktranslate %}</span>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </article>
+  {% endfor %}
+</section>
+<p class="temps-reel"><span class="point-vert" aria-hidden="true"></span>{% translate "Le nombre de places libres est mis à jour en temps réel, y compris les ventes faites au guichet." %}</p>
+{% else %}
+<div class="encart vide">
+  <h2>{% translate "Aucune séance à venir ce jour-là" %}</h2>
+  <p class="muet">{% translate "Choisissez un autre jour ci-dessus." %}</p>
+</div>
+{% endif %}
+
+<section class="atouts" aria-label="{% translate 'Nos engagements' %}">
+  <div class="atout"><div><strong>{% translate "Réservation sans compte" %}</strong><span>{% translate "Un nom et une adresse e-mail suffisent." %}</span></div></div>
+  <div class="atout"><div><strong>{% translate "Billet par e-mail" %}</strong><span>{% translate "QR code à présenter sur votre téléphone." %}</span></div></div>
+  <div class="atout"><div><strong>{% translate "Paiement sécurisé" %}</strong><span>{% translate "Carte bancaire sur la page de Stripe." %}</span></div></div>
+</section>
+{% endblock %}

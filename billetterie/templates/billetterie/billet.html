@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Réservation confirmée" %}{% endblock %}
+{% block contenu %}
+{% include "includes/etapes.html" with etape=4 %}
+<section class="confirmation">
+  <div class="coche" aria-hidden="true">✓</div>
+  <h1>{% translate "Réservation confirmée" %}</h1>
+  {% if reservation.email %}<p class="muet">{% blocktranslate with email=reservation.email %}Votre billet a été envoyé à {{ email }}{% endblocktranslate %}</p>{% endif %}
+</section>
+
+<section class="billets">
+  {% for billet, qr in billets %}
+  <article class="carte billet apparition{% if billet.utilise_le %} billet--utilise{% endif %}">
+    <div class="billet__bandeau">
+      <strong>{{ reservation.seance.film.titre }}</strong>
+      <span>{{ reservation.seance.debut|date:"l j F"|capfirst }}</span>
+      <span>{{ reservation.seance.debut|time:"H:i" }} · {{ reservation.seance.film.version }}</span>
+      <small>Le Grand Cinéma</small>
+    </div>
+    <div class="billet__infos">
+      <div><span>{% translate "Salle" %}</span><b>{{ reservation.seance.salle }}</b></div>
+      <div><span>{% translate "Siège" %}</span><b>{{ billet.place.siege }}</b></div>
+      <div><span>{% translate "Tarif" %}</span><b>{{ billet.tarif.libelle }}</b></div>
+      <div><span>{% translate "Prix" %}</span><b>{{ billet.prix }} €</b></div>
+      <div><span>{% translate "Référence" %}</span><b>{{ reservation.reference }}</b></div>
+    </div>
+    <div class="billet__qr">
+      <img src="{{ qr }}" alt="{% translate 'QR code du billet' %} {{ billet.place.siege }}">
+      <small>{% if billet.utilise_le %}{% translate "Billet déjà utilisé" %}{% else %}{% translate "À présenter à l'entrée" %}{% endif %}</small>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<div class="actions">
+  <a class="bouton" href="{% url 'billetterie:billet_pdf' reservation.reference reservation.jeton %}">{% translate "Télécharger le billet (PDF)" %}</a>
+  <a class="bouton bouton--clair" href="{% url 'catalogue:programmation' %}">{% translate "Retour à la programmation" %}</a>
+</div>
+<p class="muet petit" style="text-align:center">{% translate "Chaque QR code ne peut être utilisé qu'une seule fois. Il est aussi présent dans l'e-mail." %}</p>
+{% endblock %}

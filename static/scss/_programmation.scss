@@ -1,0 +1,67 @@
+@use "variables" as *;
+
+// --- Page Programmation (wireframe et mockup n° 1 et 7) ----------------------------------
+.titre-page { display: flex; flex-direction: column; gap: 14px; }
+
+.festival {
+  position: relative; overflow: hidden; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px;
+  padding: 16px 24px; border-radius: var(--rayon); background: var(--festival); color: var(--blanc); text-decoration: none;
+}
+.festival strong { display: block; color: var(--or); font-size: 18px; font-weight: 800; }
+.festival span { font-size: 14px; }
+.festival__lien { color: var(--or); font-weight: 700; font-size: 14px; white-space: nowrap; transition: transform .2s; }
+.festival:hover .festival__lien { transform: translateX(4px); }
+.festival__notes { position: absolute; right: 230px; top: 10px; color: var(--or); opacity: .8; font-size: 22px; letter-spacing: 6px; pointer-events: none; }
+@include mobile { .festival__notes { right: 16px; } .festival__lien { display: none; } }
+
+.films { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 24px; }
+@include mobile { .films { grid-template-columns: 1fr; gap: 16px; } }
+
+.film {
+  display: grid; grid-template-columns: 132px 1fr; gap: 16px; padding: 16px;
+  transition: transform .25s, box-shadow .25s;
+}
+.film:hover { transform: translateY(-3px); box-shadow: var(--ombre); }
+@include mobile { .film { grid-template-columns: 84px 1fr; gap: 14px; padding: 12px; } }
+.film__affiche { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 10px; background: var(--fond); grid-row: span 2; }
+.film__affiche--vide { display: grid; place-items: center; color: var(--gris); font-size: 12px; border: 1px solid var(--trait); }
+.film__texte { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.film__titre { font-size: 19px; font-weight: 700; }
+.film__meta { font-size: 13px; color: var(--gris); }
+.film__resume { font-size: 13px; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+@include mobile { .film__resume { display: none; } }
+.horaires { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; grid-column: 2; }
+@include bureau { .horaires { grid-column: 1 / -1; } }
+
+.horaire {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 96px; height: 54px; padding: 0 8px;
+  border: 1.5px solid var(--accent); border-radius: 10px; text-decoration: none; color: var(--encre); background: var(--blanc);
+  transition: background .2s, transform .15s;
+}
+.horaire:hover { background: var(--accent-clair); transform: translateY(-2px); }
+.horaire strong { font-size: 17px; line-height: 1.1; }
+.horaire span { font-size: 12px; color: var(--gris); }
+.horaire--peu { border-color: var(--alerte); }
+.horaire--peu span { color: var(--alerte); font-weight: 600; }
+.horaire--complet { border-color: var(--inactif); background: var(--fond); color: var(--gris); pointer-events: none; }
+@include mobile { .horaire { min-width: 72px; height: 46px; } .horaire strong { font-size: 15px; } .horaire span { font-size: 10.5px; } }
+
+.vide { text-align: center; padding: 48px 16px; }
+
+.temps-reel { display: flex; align-items: center; gap: 10px; color: var(--gris); font-size: 14px; }
+.point-vert { width: 10px; height: 10px; border-radius: 50%; background: var(--succes); flex: none; animation: pulse 2s infinite; }
+
+.atouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+@include mobile { .atouts { grid-template-columns: 1fr; gap: 12px; } }
+.atout { display: flex; gap: 16px; background: var(--fond); border-radius: var(--rayon); padding: 18px 20px; }
+.atout::before { content: ""; width: 6px; border-radius: 3px; background: var(--accent); flex: none; }
+.atout strong { display: block; font-size: 16px; }
+.atout span { color: var(--gris); font-size: 14px; }
+
+// Pages festival et infos
+.jour-festival { display: flex; flex-direction: column; gap: 12px; }
+.liste-seances { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.ligne-seance { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; }
+.ligne-seance:hover { border-color: var(--accent); }
+.tarifs { display: grid; gap: 8px; max-width: 520px; }
+.tarifs div { display: flex; justify-content: space-between; padding: 12px 16px; }

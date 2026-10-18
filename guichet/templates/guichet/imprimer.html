@@ -1,0 +1,21 @@
+{% extends "base_pro.html" %}
+{% block titre %}Billets {{ reservation.reference }}{% endblock %}
+{% block contenu %}
+<div class="actions" style="justify-content:flex-start">
+  <button class="bouton" type="button" onclick="window.print()">Imprimer les billets</button>
+  <a class="bouton bouton--clair" href="{% url 'guichet:tableau' %}?seance={{ reservation.seance_id }}">Nouvelle vente</a>
+</div>
+<h1 style="font-size:22px">Vente {{ reservation.reference }} · {{ reservation.montant }} € · {{ reservation.paiement.get_mode_display }}</h1>
+<div class="impression">
+  {% for billet, qr in billets %}
+  <div class="carte ticket">
+    <strong>LE GRAND CINÉMA</strong>
+    <span style="font-size:18px;font-weight:700">{{ reservation.seance.film.titre }}</span>
+    <span>{{ reservation.seance.debut|date:"d/m/Y" }} · {{ reservation.seance.debut|time:"H:i" }} · {{ reservation.seance.salle }}</span>
+    <span>Siège <b>{{ billet.place.siege }}</b> · {{ billet.tarif.libelle }} · {{ billet.prix }} €</span>
+    <img src="{{ qr }}" alt="QR code du billet {{ billet.place.siege }}">
+    <small class="muet">{{ reservation.reference }} · {{ billet.code_qr }}</small>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

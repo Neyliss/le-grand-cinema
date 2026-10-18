@@ -1,0 +1,63 @@
+{% extends "base_pro.html" %}
+{% load static %}
+{% block titre %}Guichet{% endblock %}
+{% block contenu %}
+<div class="guichet">
+  <section class="colonne" aria-label="Séances du jour">
+    <h2>Séances du jour</h2>
+    {% for s in seances %}
+    <a class="carte seance-guichet{% if not s.est_reservable %} seance-guichet--passee{% endif %}" href="?seance={{ s.id }}"{% if seance and s.id == seance.id %} aria-current="true"{% endif %}>
+      <strong>{{ s.debut|time:"H:i" }}</strong>
+      <span><b>{{ s.film.titre }}</b><br><span class="muet petit">{{ s.salle }}</span></span>
+      <span class="jauge{% if s.taux >= 100 %} jauge--pleine{% elif s.taux >= 85 %} jauge--haute{% endif %}">
+        <span class="jauge__barre"><i style="width: {{ s.taux }}%"></i></span>{% if s.taux >= 100 %}Complet{% else %}{{ s.taux }} %{% endif %}
+      </span>
+    </a>
+    {% empty %}
+    <p class="encart muet">Aucune séance aujourd'hui.</p>
+    {% endfor %}
+  </section>
+
+  {% if seance %}
+  <section class="carte salle" aria-label="Plan de la salle">
+    <div style="align-self: stretch">
+      <h1 style="font-size: 22px">{{ seance.film.titre }} · {{ seance.debut|time:"H:i" }} · {{ seance.salle }}</h1>
+      <p class="muet petit"><span id="nb-libres">{{ plan.libres }}</span> places libres · plan partagé avec le site en temps réel</p>
+    </div>
+    <div class="ecran">ÉCRAN</div>
+    <div class="plan" id="plan" data-url="{% url 'reservation:api_plan' seance.id %}" data-max="20" data-intervalle="5" data-libelle-siege="Siège"></div>
+    <ul class="legende">
+      <li><span class="siege"></span>Libre</li>
+      <li><span class="siege" aria-pressed="true"></span>Choisie</li>
+      <li><span class="siege siege--vendue"></span>Vendue</li>
+      <li><span class="siege siege--bloquee"></span>Bloquée (paiement en ligne en cours)</li>
+      <li><span class="siege siege--pmr"></span>PMR</li>
+    </ul>
+    <p class="info-stock">Un seul stock de places : une place vendue ici disparaît aussitôt du site, et une place choisie en ligne apparaît « bloquée » ici.</p>
+  </section>
+
+  <form class="carte panier" method="post" action="{% url 'guichet:vendre' seance.id %}" id="form-vente">
+    {% csrf_token %}
+    <h2>Vente en cours</h2>
+    <div id="lignes-panier" class="colonne"></div>
+    <p class="muet petit" id="panier-vide">Cliquez sur les sièges libres du plan.</p>
+    <div class="recap__total"><span>Total</span><span id="total-panier">0,00 €</span></div>
+    <button class="bouton bouton--large" type="submit" name="mode" value="carte" disabled data-action>Encaisser par carte (terminal)</button>
+    <button class="bouton bouton--clair bouton--large" type="submit" name="mode" value="especes" disabled data-action>Encaisser en espèces</button>
+    <p class="muet petit">Après l'encaissement, les billets s'impriment avec le même QR code que les billets envoyés par e-mail.</p>
+  </form>
+  {% else %}
+  <p class="encart">Aucune séance à venir aujourd'hui.</p>
+  {% endif %}
+</div>
+{% if seance %}
+{{ plan|json_script:"plan-initial" }}
+<script id="tarifs" type="application/json">[{% for t in tarifs %}{"id": {{ t.id }}, "libelle": "{{ t.libelle|escapejs }}", "prix": "{{ t.prix|stringformat:'s' }}"}{% if not forloop.last %},{% endif %}{% endfor %}]</script>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if seance %}
+<script src="{% static 'js/plan.js' %}"></script>
+<script src="{% static 'js/guichet.js' %}"></script>
+{% endif %}
+{% endblock %}

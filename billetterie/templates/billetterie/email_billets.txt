@@ -1,0 +1,15 @@
+{% load i18n %}{% translate "Bonjour" %} {{ reservation.nom }},
+
+{% translate "Votre réservation est confirmée." %}
+
+{{ reservation.seance.film.titre }} — {{ reservation.seance.debut|date:"l j F Y" }} {{ reservation.seance.debut|time:"H:i" }} — {{ reservation.seance.salle }}
+{% for billet in billets %}- {% translate "Siège" %} {{ billet.place.siege }} · {{ billet.tarif.libelle }} · {{ billet.prix }} €
+{% endfor %}
+{% translate "Référence" %} : {{ reservation.reference }}
+
+{% translate "Vos billets sont joints en PDF. Vous pouvez aussi les afficher sur votre téléphone :" %}
+{{ lien }}
+
+{% translate "Chaque QR code ne peut être utilisé qu'une seule fois." %}
+
+Le Grand Cinéma

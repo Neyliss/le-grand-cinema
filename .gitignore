@@ -1,0 +1,19 @@
+# Environnement Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Données locales
+.env
+db.sqlite3
+media/
+staticfiles/
+
+# Éditeurs et système
+.idea/
+.DS_Store
+
+# Elastic Beanstalk
+.elasticbeanstalk/*
+!.elasticbeanstalk/config.yml

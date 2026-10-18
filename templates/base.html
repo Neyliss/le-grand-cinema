@@ -1,0 +1,54 @@
+{% load static i18n %}<!doctype html>
+{% get_current_language as LANGUE %}
+<html lang="{{ LANGUE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block titre %}{% translate "Programmation" %}{% endblock %} · Le Grand Cinéma</title>
+  <meta name="description" content="{% translate 'Programmation, plan de salle en temps réel et réservation en ligne du Grand Cinéma.' %}">
+  <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body class="{% block classe_page %}{% endblock %}">
+  {% block entete %}
+  <header class="entete">
+    <div class="conteneur entete__in">
+      <a class="logo" href="{% url 'catalogue:programmation' %}"><img src="{% static 'img/logo.svg' %}" alt="">Le Grand Cinéma</a>
+      {% with nom=request.resolver_match.url_name %}
+      <nav class="nav" aria-label="{% translate 'Navigation principale' %}">
+        <a href="{% url 'catalogue:programmation' %}"{% if nom == 'programmation' or nom == 'plan' or nom == 'recapitulatif' %} aria-current="page"{% endif %}>{% translate "Programmation" %}</a>
+        <a href="{% url 'catalogue:festival' %}"{% if nom == 'festival' %} aria-current="page"{% endif %}>{% translate "Festival de Jazz" %}</a>
+        <a href="{% url 'catalogue:infos' %}"{% if nom == 'infos' %} aria-current="page"{% endif %}>{% translate "Infos pratiques" %}</a>
+      </nav>
+      {% endwith %}
+      {% include "includes/langues.html" %}
+    </div>
+  </header>
+  {% endblock %}
+
+  <main class="conteneur">
+    {% if messages %}
+    <div class="messages" role="status">
+      {% for message in messages %}<p class="message message--{{ message.tags }}">{{ message }}</p>{% endfor %}
+    </div>
+    {% endif %}
+    {% block contenu %}{% endblock %}
+  </main>
+
+  {% block pied %}
+  <footer class="pied">
+    <div class="conteneur pied__in">
+      <span>Le Grand Cinéma · {% translate "10 salles · 1 700 places" %}</span>
+      <span>
+        <a href="{% url 'catalogue:festival' %}">{% translate "Festival de Jazz" %}</a> ·
+        <a href="{% url 'catalogue:infos' %}">{% translate "Infos pratiques" %}</a> ·
+        {% translate "Mentions légales" %} · {% translate "Accessibilité" %}
+      </span>
+    </div>
+  </footer>
+  {% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

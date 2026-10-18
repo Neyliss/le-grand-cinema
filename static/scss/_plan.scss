@@ -1,0 +1,53 @@
+@use "variables" as *;
+
+// --- Plan de salle (wireframe et mockup n° 2 et 8) -----------------------------------
+.mise-en-page-plan { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: start; }
+@include mobile { .mise-en-page-plan { grid-template-columns: 1fr; gap: 16px; padding-bottom: 150px; } }
+
+.salle { padding: 28px 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; min-width: 0; }
+@include mobile { .salle { padding: 16px 0; border: 0; } }
+
+.ecran { width: min(80%, 520px); text-align: center; color: var(--gris); font-size: 12px; font-weight: 700; letter-spacing: .12em; }
+.ecran::before {
+  content: ""; display: block; height: 22px; margin-bottom: 6px;
+  border-top: 5px solid var(--accent); border-radius: 50% 50% 0 0 / 22px 22px 0 0;
+}
+
+.plan { --siege: 24px; --ecart: 6px; width: 100%; overflow-x: auto; padding: 6px 4px 10px; }
+
+.plan__grille { display: flex; flex-direction: column; gap: var(--ecart); width: max-content; margin: 0 auto; }
+.rangee { display: flex; align-items: center; gap: var(--ecart); }
+.rangee__nom { width: 18px; text-align: center; font-size: 11px; font-weight: 600; color: var(--gris); }
+
+.siege {
+  width: var(--siege); height: var(--siege); padding: 0; border-radius: 5px; cursor: pointer;
+  border: 1.5px solid var(--accent); background: var(--blanc);
+  transition: background .2s, border-color .2s, transform .15s;
+}
+.siege:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--accent-clair); transform: translateY(-2px); }
+.siege--allee { margin-right: calc(var(--siege) * .6); }
+.siege--pmr { border-color: var(--pmr); background: radial-gradient(circle, var(--pmr) 0 28%, var(--blanc) 30%); }
+.siege[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); animation: pop .3s ease-out; }
+.siege--vendue, .siege--vendue:disabled { background: var(--inactif); border-color: var(--inactif); cursor: not-allowed; }
+.siege--bloquee, .siege--bloquee:disabled { border: 1.5px dashed var(--inactif); background: var(--blanc); cursor: not-allowed; }
+.siege--change { animation: pop .4s ease-out; }
+
+.legende { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; font-size: 13px; color: var(--gris); list-style: none; padding: 0; margin: 0; }
+.legende li { display: flex; align-items: center; gap: 8px; }
+.legende .siege { --siege: 14px; width: 14px; height: 14px; border-radius: 3px; cursor: default; pointer-events: none; }
+
+// Panneau « Votre sélection » : colonne à droite sur ordinateur, panneau fixe en bas sur mobile
+.selection { padding: 24px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 92px; }
+.selection__liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.selection__liste li { display: flex; gap: 14px; align-items: center; background: var(--fond); border-radius: 10px; padding: 12px 16px; animation: glisse .25s ease-out; }
+.selection__liste strong { min-width: 32px; }
+.selection__vide { color: var(--gris); font-size: 14px; }
+.selection__resume { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+@include mobile {
+  .selection {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 30; border-radius: 16px 16px 0 0; border-width: 1px 0 0;
+    padding: 16px max(20px, env(safe-area-inset-left, 0px)) calc(16px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 24px rgba(22, 36, 42, .08);
+  }
+  .selection__liste, .selection h2, .selection__note { display: none; }
+}

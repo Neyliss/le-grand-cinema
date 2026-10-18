@@ -1,0 +1,59 @@
+{% extends "base_pro.html" %}
+{% block espace %}Pilotage{% endblock %}
+{% block titre %}Pilotage{% endblock %}
+{% block contenu %}
+<div class="tool-head" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px">
+  <div>
+    <h1>Pilotage</h1>
+    <p class="muet">Remplissage et ventes du {{ debut|date:"j F" }} au {{ fin|date:"j F Y" }}</p>
+  </div>
+  <form class="filtres" method="get">
+    <div class="champ"><label for="du">Du</label><input type="date" id="du" name="du" value="{{ debut|date:'Y-m-d' }}"></div>
+    <div class="champ"><label for="au">Au</label><input type="date" id="au" name="au" value="{{ fin|date:'Y-m-d' }}"></div>
+    <button class="bouton" type="submit">Afficher</button>
+    <a class="bouton bouton--clair" href="{% url 'pilotage:export_csv' %}?du={{ debut|date:'Y-m-d' }}&amp;au={{ fin|date:'Y-m-d' }}">Exporter (CSV)</a>
+  </form>
+</div>
+
+<section class="indicateurs" aria-label="Indicateurs">
+  <div class="carte indicateur"><span>Places vendues</span><strong>{{ indicateurs.vendues }}</strong></div>
+  <div class="carte indicateur"><span>Taux de remplissage (O4)</span><strong>{{ indicateurs.taux }} %</strong></div>
+  <div class="carte indicateur"><span>Part vendue en ligne (O1)</span><strong>{{ indicateurs.part_site }} %</strong></div>
+  <div class="carte indicateur"><span>Recette billetterie</span><strong>{{ indicateurs.recette|floatformat:0 }} €</strong></div>
+  <div class="carte indicateur"><span>Séances</span><strong>{{ indicateurs.seances }}</strong></div>
+</section>
+
+<section>
+  <h2>Remplissage par créneau (O6)</h2>
+  <div class="tableau-defile carte">
+    <table class="donnees">
+      <thead><tr><th>Créneau</th><th class="nombre">Capacité</th><th class="nombre">Vendues</th><th>Remplissage</th></tr></thead>
+      <tbody>
+        {% for c in creneaux %}
+        <tr><td>{{ c.heure }}</td><td class="nombre">{{ c.capacite }}</td><td class="nombre">{{ c.vendues }}</td>
+          <td><span class="jauge{% if c.taux >= 85 %} jauge--haute{% endif %}"><span class="jauge__barre"><i style="width: {{ c.taux }}%"></i></span>{{ c.taux }} %</span></td></tr>
+        {% empty %}<tr><td colspan="4" class="muet">Aucune séance sur cette période.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Remplissage par séance</h2>
+  <div class="tableau-defile carte">
+    <table class="donnees">
+      <thead><tr><th>Date</th><th>Heure</th><th>Film</th><th>Salle</th><th class="nombre">Vendues</th><th class="nombre">Site</th><th class="nombre">Guichet</th><th class="nombre">Bloquées</th><th>Remplissage</th><th class="nombre">Recette</th></tr></thead>
+      <tbody>
+        {% for l in lignes %}
+        <tr>
+          <td>{{ l.debut|date:"D d/m" }}</td><td>{{ l.debut|time:"H:i" }}</td><td>{{ l.seance.film.titre }}{% if l.seance.statut == "annulee" %} <span class="muet">(annulée)</span>{% endif %}</td><td>{{ l.seance.salle }}</td>
+          <td class="nombre">{{ l.vendues }} / {{ l.capacite }}</td><td class="nombre">{{ l.vendues_site }}</td><td class="nombre">{{ l.vendues_guichet }}</td><td class="nombre">{{ l.bloquees }}</td>
+          <td><span class="jauge{% if l.taux >= 100 %} jauge--pleine{% elif l.taux >= 85 %} jauge--haute{% endif %}"><span class="jauge__barre"><i style="width: {{ l.taux }}%"></i></span>{{ l.taux }} %</span></td>
+          <td class="nombre">{{ l.recette }} €</td>
+        </tr>
+        {% empty %}<tr><td colspan="10" class="muet">Aucune séance sur cette période.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

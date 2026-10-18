@@ -1,0 +1,7 @@
+Bonjour {{ reservation.nom }},
+
+Nous sommes désolés : la séance « {{ reservation.seance.film.titre }} » du {{ reservation.seance.debut|date:"l j F Y" }} à {{ reservation.seance.debut|time:"H:i" }} est annulée.
+
+Votre réservation {{ reservation.reference }} est remboursée sur le moyen de paiement utilisé.
+
+Le Grand Cinéma

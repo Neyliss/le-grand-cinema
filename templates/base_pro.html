@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block classe_page %}pro{% endblock %}
+{% block entete %}
+<header class="pro-entete">
+  <div class="conteneur pro-entete__in">
+    <a class="logo" href="{% url 'guichet:tableau' %}"><img src="{% static 'img/logo.svg' %}" alt="">Le Grand Cinéma · {% block espace %}Guichet{% endblock %}</a>
+    {% with app=request.resolver_match.app_name %}
+    <nav class="pro-nav" aria-label="Espace du personnel">
+      <a href="{% url 'guichet:tableau' %}"{% if app == 'guichet' %} aria-current="page"{% endif %}>Guichet</a>
+      <a href="{% url 'controle:seances' %}"{% if app == 'controle' %} aria-current="page"{% endif %}>Contrôle</a>
+      <a href="{% url 'pilotage:tableau' %}"{% if app == 'pilotage' %} aria-current="page"{% endif %}>Pilotage</a>
+      <a href="{% url 'admin:index' %}">Administration</a>
+    </nav>
+    {% endwith %}
+    <span class="pro-entete__agent">{{ request.user.get_full_name|default:request.user.username }} · {% now "l j F · H:i" %}</span>
+  </div>
+</header>
+{% endblock %}
+{% block pied %}{% endblock %}

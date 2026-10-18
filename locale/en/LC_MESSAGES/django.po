@@ -1,0 +1,399 @@
+# English translations for Le Grand Cinéma.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the Le Grand Cinéma project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Le Grand Cinéma VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-17 19:34+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Réservation confirmée"
+msgstr "Booking confirmed"
+
+msgid "Salle"
+msgstr "Screen"
+
+msgid "Siège"
+msgstr "Seat"
+
+msgid "Tarif"
+msgstr "Ticket type"
+
+msgid "Prix"
+msgstr "Price"
+
+msgid "Référence"
+msgstr "Reference"
+
+msgid "QR code du billet"
+msgstr "Ticket QR code"
+
+msgid "Billet déjà utilisé"
+msgstr "Ticket already used"
+
+msgid "À présenter à l'entrée"
+msgstr "Show at the entrance"
+
+msgid "Télécharger le billet (PDF)"
+msgstr "Download ticket (PDF)"
+
+msgid "Retour à la programmation"
+msgstr "Back to showtimes"
+
+msgid "Chaque QR code ne peut être utilisé qu'une seule fois. Il est aussi présent dans l'e-mail."
+msgstr "Each QR code can only be used once. It is also in the email."
+
+#, python-format
+msgid "Votre billet a été envoyé à %(email)s"
+msgstr "Your ticket has been sent to %(email)s"
+
+msgid "Bonjour"
+msgstr "Hello"
+
+msgid "votre réservation est confirmée."
+msgstr "your booking is confirmed."
+
+msgid "Afficher mes billets"
+msgstr "View my tickets"
+
+msgid "Vos billets sont aussi joints en PDF. Chaque QR code ne peut être utilisé qu'une seule fois."
+msgstr "Your tickets are also attached as a PDF. Each QR code can only be used once."
+
+msgid "Paiement (démonstration)"
+msgstr "Payment (demo)"
+
+msgid "Mode démonstration : aucun paiement réel"
+msgstr "Demo mode: no real payment"
+
+msgid "Page de paiement"
+msgstr "Payment page"
+
+msgid ""
+"Avec une clé Stripe, le spectateur serait ici sur la page sécurisée de Stripe pour saisir sa carte. Sans clé, on "
+"simule la réponse de Stripe."
+msgstr ""
+"With a Stripe key, you would now be on Stripe’s secure page to enter your card. Without a key, Stripe’s answer is "
+"simulated."
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Simuler un paiement réussi"
+msgstr "Simulate a successful payment"
+
+msgid "Revenir au récapitulatif"
+msgstr "Back to summary"
+
+msgid "Paiement en cours de confirmation"
+msgstr "Confirming your payment"
+
+msgid "Stripe nous confirme votre paiement. Cette page se met à jour toute seule."
+msgstr "Stripe is confirming your payment. This page updates by itself."
+
+msgid "Programmation"
+msgstr "Showtimes"
+
+msgid "Programmation, plan de salle en temps réel et réservation en ligne du Grand Cinéma."
+msgstr "Showtimes, live seating plans and online booking at Le Grand Cinéma."
+
+msgid "Navigation principale"
+msgstr "Main navigation"
+
+msgid "Festival de Jazz"
+msgstr "Jazz Festival"
+
+msgid "Infos pratiques"
+msgstr "Practical information"
+
+msgid "10 salles · 1 700 places"
+msgstr "10 screens · 1,700 seats"
+
+msgid "Mentions légales"
+msgstr "Legal notice"
+
+msgid "Accessibilité"
+msgstr "Accessibility"
+
+msgid "Étapes de la réservation"
+msgstr "Booking steps"
+
+msgid "Places"
+msgstr "Seats"
+
+msgid "Tarifs et coordonnées"
+msgstr "Tickets and details"
+
+msgid "Paiement sécurisé"
+msgstr "Secure payment"
+
+msgid "Choisir ses places"
+msgstr "Choose your seats"
+
+msgid "Plan de la salle"
+msgstr "Seating plan"
+
+msgid "ÉCRAN"
+msgstr "SCREEN"
+
+#, python-format
+msgid "Le siège %s vient d’être pris par un autre spectateur."
+msgstr "Seat %s has just been taken by someone else."
+
+msgid "1 place choisie"
+msgstr "1 seat selected"
+
+#, python-format
+msgid "%s places choisies"
+msgstr "%s seats selected"
+
+msgid "0 place choisie"
+msgstr "No seat selected"
+
+#, python-format
+msgid "Rang %r · siège %n"
+msgstr "Row %r · seat %n"
+
+msgid "Le plan de salle nécessite JavaScript."
+msgstr "The seating plan requires JavaScript."
+
+msgid "Libre"
+msgstr "Available"
+
+msgid "Choisie"
+msgstr "Selected"
+
+msgid "Vendue"
+msgstr "Sold"
+
+msgid "Bloquée"
+msgstr "On hold"
+
+msgid "Place PMR"
+msgstr "Wheelchair space"
+
+msgid "Votre sélection"
+msgstr "Your selection"
+
+msgid "Étape 1 sur 3"
+msgstr "Step 1 of 3"
+
+msgid "Continuer"
+msgstr "Continue"
+
+#, python-format
+msgid "Plan mis à jour automatiquement toutes les %(rafraichissement)s secondes"
+msgstr "Plan updated automatically every %(rafraichissement)s seconds"
+
+#, python-format
+msgid "Touchez les sièges libres sur le plan (jusqu'à %(max_places)s places)."
+msgstr "Tap available seats on the plan (up to %(max_places)s seats)."
+
+#, python-format
+msgid "Vos places seront bloquées %(minutes)s minutes pendant le paiement."
+msgstr "Your seats will be held for %(minutes)s minutes while you pay."
+
+msgid "Délai dépassé"
+msgstr "Time is up"
+
+msgid "Vos places ont été libérées"
+msgstr "Your seats have been released"
+
+msgid ""
+"Le paiement est arrivé après la fin du délai de 10 minutes et les places ont été attribuées à un autre spectateur. "
+"Vous allez être remboursé automatiquement."
+msgstr "Your payment arrived after the 10-minute limit and the seats went to someone else. You will be refunded automatically."
+
+msgid ""
+"Le délai de 10 minutes pour payer est dépassé. Choisissez à nouveau vos places : beaucoup sont peut-être encore "
+"libres."
+msgstr "The 10 minutes to pay are over. Choose your seats again: many may still be available."
+
+msgid "Choisir à nouveau mes places"
+msgstr "Choose my seats again"
+
+msgid "Tarif par place"
+msgstr "Ticket type per seat"
+
+msgid "Vos coordonnées"
+msgstr "Your details"
+
+msgid "Pour recevoir votre billet. Aucun compte à créer."
+msgstr "To receive your ticket. No account needed."
+
+msgid "Délai dépassé : vos places ont été libérées."
+msgstr "Time is up: your seats have been released."
+
+msgid "Vos places sont bloquées pendant"
+msgstr "Your seats are held for"
+
+msgid "puis libérées"
+msgstr "then released"
+
+msgid "Récapitulatif"
+msgstr "Summary"
+
+msgid "Payer avec Stripe"
+msgstr "Pay with Stripe"
+
+msgid "Payer (démonstration)"
+msgstr "Pay (demo)"
+
+msgid "Paiement sécurisé sur la page de Stripe. Le cinéma ne reçoit aucune donnée de carte."
+msgstr "Secure payment on Stripe’s page. The cinema never receives your card details."
+
+msgid "Choisir le jour"
+msgstr "Choose the day"
+
+msgid "Aujourd'hui"
+msgstr "Today"
+
+msgid "Les séances du festival sont ouvertes à la réservation : réservez vos places en ligne, sans compte."
+msgstr "Festival screenings are open for booking: book your seats online, no account needed."
+
+msgid "Voir les séances du festival"
+msgstr "See festival screenings"
+
+msgid "Films du jour"
+msgstr "Films showing today"
+
+msgid "Complet"
+msgstr "Sold out"
+
+msgid "Le nombre de places libres est mis à jour en temps réel, y compris les ventes faites au guichet."
+msgstr "Available seats are updated in real time, including box office sales."
+
+msgid "Aucune séance à venir ce jour-là"
+msgstr "No upcoming screenings on this day"
+
+msgid "Choisissez un autre jour ci-dessus."
+msgstr "Choose another day above."
+
+msgid "Nos engagements"
+msgstr "Our commitments"
+
+msgid "Réservation sans compte"
+msgstr "Book without an account"
+
+msgid "Un nom et une adresse e-mail suffisent."
+msgstr "A name and an email address are all you need."
+
+msgid "Billet par e-mail"
+msgstr "Ticket by email"
+
+msgid "QR code à présenter sur votre téléphone."
+msgstr "A QR code to show on your phone."
+
+msgid "Carte bancaire sur la page de Stripe."
+msgstr "Card payment on Stripe’s page."
+
+#, python-format
+msgid "%(n)s place libre"
+msgid_plural "%(n)s places libres"
+msgstr[0] "%(n)s seat available"
+msgstr[1] "%(n)s seats available"
+
+#, python-format
+msgid "%(n)s libre"
+msgid_plural "%(n)s libres"
+msgstr[0] "%(n)s left"
+msgstr[1] "%(n)s left"
+
+msgid "10 salles, 1 700 places"
+msgstr "10 screens, 1,700 seats"
+
+msgid "Des places accessibles aux personnes à mobilité réduite dans chaque salle."
+msgstr "Wheelchair-accessible spaces in every screen."
+
+msgid "Réservation en ligne"
+msgstr "Online booking"
+
+msgid "Choisissez vos places sur le plan de salle, sans créer de compte."
+msgstr "Choose your seats on the seating plan, without creating an account."
+
+msgid "Billet sur téléphone"
+msgstr "Ticket on your phone"
+
+msgid "Présentez le QR code reçu par e-mail à l'entrée de la salle."
+msgstr "Show the QR code from your email at the entrance."
+
+msgid "Tarifs"
+msgstr "Prices"
+
+msgid "Toutes les séances du festival, réservables en ligne jusqu'au début de la projection."
+msgstr "All festival screenings, bookable online until the film starts."
+
+msgid "Aucune séance du festival n'est programmée pour le moment."
+msgstr "No festival screenings are scheduled yet."
+
+msgid "Votre réservation est confirmée."
+msgstr "Your booking is confirmed."
+
+msgid "Vos billets sont joints en PDF. Vous pouvez aussi les afficher sur votre téléphone :"
+msgstr "Your tickets are attached as a PDF. You can also display them on your phone:"
+
+msgid "Chaque QR code ne peut être utilisé qu'une seule fois."
+msgstr "Each QR code can only be used once."
+
+msgid "Français"
+msgstr "French"
+
+msgid "Anglais"
+msgstr "English"
+
+#, python-format
+msgid "Vos billets — %(film)s"
+msgstr "Your tickets — %(film)s"
+
+msgid "site"
+msgstr "website"
+
+msgid "guichet"
+msgstr "box office"
+
+msgid "en attente"
+msgstr "pending"
+
+msgid "payée"
+msgstr "paid"
+
+msgid "annulée"
+msgstr "cancelled"
+
+msgid "libre"
+msgstr "available"
+
+msgid "bloquée"
+msgstr "on hold"
+
+msgid "vendue"
+msgstr "sold"
+
+msgid "Cette séance a déjà commencé : choisissez une autre séance."
+msgstr "This screening has already started: please choose another one."
+
+msgid "Un des sièges choisis vient d'être pris. Choisissez d'autres places."
+msgstr "One of your seats has just been taken. Please choose other seats."
+
+msgid "Cette séance n'est plus en vente."
+msgstr "This screening is no longer on sale."
+
+msgid "Nom"
+msgstr "Name"
+
+msgid "Adresse e-mail"
+msgstr "Email address"
+
+msgid "publiée"
+msgstr "published"
+

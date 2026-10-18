@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.testing.unittestEnabled": false,
+  "files.exclude": { "**/__pycache__": true },
+  "emmet.includeLanguages": { "django-html": "html" },
+  "files.associations": { "**/templates/**/*.html": "django-html" }
+}

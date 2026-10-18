@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Paiement (démonstration)" %}{% endblock %}
+{% block contenu %}
+{% include "includes/etapes.html" with etape=3 %}
+<section class="carte demo">
+  <span class="badge">{% translate "Mode démonstration : aucun paiement réel" %}</span>
+  <h1>{% translate "Page de paiement" %}</h1>
+  <p class="muet">{% translate "Avec une clé Stripe, le spectateur serait ici sur la page sécurisée de Stripe pour saisir sa carte. Sans clé, on simule la réponse de Stripe." %}</p>
+  <div class="recap__lignes">
+    {% for billet in billets %}
+    <div class="recap__ligne"><span>{{ billet.place.siege }} · {{ billet.tarif.libelle }}</span><span>{{ billet.prix }} €</span></div>
+    {% endfor %}
+  </div>
+  <div class="recap__total"><span>{% translate "Total" %}</span><span>{{ reservation.montant }} €</span></div>
+  <form method="post">
+    {% csrf_token %}
+    <button class="bouton bouton--large" type="submit">{% translate "Simuler un paiement réussi" %}</button>
+  </form>
+  <a href="{% url 'reservation:recapitulatif' reservation.reference %}">{% translate "Revenir au récapitulatif" %}</a>
+</section>
+{% endblock %}

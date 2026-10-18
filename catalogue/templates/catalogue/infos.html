@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Infos pratiques" %}{% endblock %}
+{% block contenu %}
+<h1>{% translate "Infos pratiques" %}</h1>
+<section class="atouts">
+  <div class="atout"><div><strong>{% translate "10 salles, 1 700 places" %}</strong><span>{% translate "Des places accessibles aux personnes à mobilité réduite dans chaque salle." %}</span></div></div>
+  <div class="atout"><div><strong>{% translate "Réservation en ligne" %}</strong><span>{% translate "Choisissez vos places sur le plan de salle, sans créer de compte." %}</span></div></div>
+  <div class="atout"><div><strong>{% translate "Billet sur téléphone" %}</strong><span>{% translate "Présentez le QR code reçu par e-mail à l'entrée de la salle." %}</span></div></div>
+</section>
+<section class="jour-festival">
+  <h2>{% translate "Tarifs" %}</h2>
+  <div class="tarifs">
+    {% for tarif in tarifs %}<div class="carte"><span>{{ tarif.libelle }}</span><strong>{{ tarif.prix }} €</strong></div>{% endfor %}
+  </div>
+</section>
+{% endblock %}

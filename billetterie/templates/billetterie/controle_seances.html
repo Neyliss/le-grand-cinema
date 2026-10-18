@@ -1,0 +1,17 @@
+{% extends "base_pro.html" %}
+{% block espace %}Contrôle{% endblock %}
+{% block titre %}Contrôle à l'entrée{% endblock %}
+{% block contenu %}
+<h1>Contrôle à l'entrée</h1>
+<p class="muet">Choisissez la séance dont vous contrôlez l'entrée.</p>
+<div class="liste-seances">
+  {% for s in seances %}
+  <a class="carte ligne-seance" href="{% url 'controle:scanner' s.id %}">
+    <span><strong>{{ s.debut|time:"H:i" }}</strong> · {{ s.film.titre }}<br><span class="muet petit">{{ s.salle }}{% if s.statut == "annulee" %} · annulée{% endif %}</span></span>
+    <span aria-hidden="true">›</span>
+  </a>
+  {% empty %}
+  <p class="encart muet">Aucune séance aujourd'hui.</p>
+  {% endfor %}
+</div>
+{% endblock %}

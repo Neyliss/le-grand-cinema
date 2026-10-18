@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Délai dépassé" %}{% endblock %}
+{% block contenu %}
+<section class="carte demo">
+  <span class="badge">{% translate "Délai dépassé" %}</span>
+  <h1>{% translate "Vos places ont été libérées" %}</h1>
+  {% if rembourse %}
+    <p>{% translate "Le paiement est arrivé après la fin du délai de 10 minutes et les places ont été attribuées à un autre spectateur. Vous allez être remboursé automatiquement." %}</p>
+  {% else %}
+    <p class="muet">{% translate "Le délai de 10 minutes pour payer est dépassé. Choisissez à nouveau vos places : beaucoup sont peut-être encore libres." %}</p>
+  {% endif %}
+  <a class="bouton" href="{% url 'reservation:plan' reservation.seance_id %}">{% translate "Choisir à nouveau mes places" %}</a>
+</section>
+{% endblock %}

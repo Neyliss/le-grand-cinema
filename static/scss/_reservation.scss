@@ -1,0 +1,77 @@
+@use "variables" as *;
+
+// --- Tarifs et coordonnées (wireframe et mockup n° 3 et 9) ---------------------------
+.mise-en-page-recap {
+  display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px 40px; align-items: start;
+  grid-template-areas: "formulaire minuteur" "formulaire recap";
+}
+.mise-en-page-recap .formulaire { grid-area: formulaire; }
+.mise-en-page-recap .minuteur { grid-area: minuteur; }
+.mise-en-page-recap .recap { grid-area: recap; }
+@include mobile {
+  .mise-en-page-recap { grid-template-columns: 1fr; grid-template-areas: "minuteur" "formulaire" "recap"; gap: 20px; }
+}
+
+.formulaire { display: flex; flex-direction: column; gap: 28px; }
+.formulaire fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.formulaire legend { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.ligne-tarif { display: grid; grid-template-columns: 48px minmax(0, 1fr) 90px; align-items: center; gap: 14px; padding: 10px 16px; }
+.ligne-tarif strong { font-size: 16px; }
+.ligne-tarif .prix { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+select, input[type="text"], input[type="email"], input[type="date"] {
+  font: inherit; width: 100%; min-height: 44px; padding: 8px 14px; border-radius: 9px;
+  border: 1px solid var(--trait); background: var(--blanc); color: var(--encre);
+}
+select:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-clair); }
+select { background: var(--fond); }
+.champs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@include mobile { .champs { grid-template-columns: 1fr; } }
+.champ { display: flex; flex-direction: column; gap: 6px; }
+.champ label { font-size: 13px; font-weight: 600; color: var(--gris); }
+.erreur-champ { color: var(--erreur); font-size: 13px; }
+
+.minuteur { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--alerte-fond); color: var(--alerte); border-radius: var(--rayon); padding: 14px 20px; }
+.minuteur strong { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+.minuteur small { white-space: nowrap; }
+@include mobile { .minuteur small { display: none; } }
+.minuteur--urgent strong { animation: pulse 1s infinite; }
+.minuteur--fini { background: var(--erreur-fond); color: var(--erreur); }
+
+.recap { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.recap__lignes { display: flex; flex-direction: column; gap: 8px; border-block: 1px solid var(--trait); padding-block: 14px; }
+.recap__ligne, .recap__total { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+.recap__total { font-size: 18px; font-weight: 700; align-items: baseline; }
+.recap__total span:last-child { font-size: 24px; }
+.securite { display: flex; gap: 10px; color: var(--gris); font-size: 13px; }
+.securite::before { content: "🔒"; filter: grayscale(1); }
+
+// --- Démonstration du paiement ------------------------------------------------------------
+.demo { max-width: 520px; margin: 0 auto; padding: 32px; display: flex; flex-direction: column; gap: 18px; text-align: center; }
+.badge { align-self: center; display: inline-block; padding: 4px 12px; border-radius: 99px; background: var(--alerte-fond); color: var(--alerte); font-size: 12px; font-weight: 700; }
+
+// --- Confirmation et billets (wireframe et mockup n° 4 et 10) ------------------------------
+.confirmation { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.coche {
+  width: 56px; height: 56px; border-radius: 50%; background: var(--succes-fond); color: var(--succes);
+  display: grid; place-items: center; font-size: 28px; font-weight: 700; animation: pop .5s ease-out;
+}
+.billets { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+.billet {
+  width: min(100%, 800px); display: grid; grid-template-columns: 240px 1fr 220px; overflow: hidden; border-radius: 16px;
+}
+.billet__bandeau { background: var(--nuit); color: var(--blanc); padding: 24px; display: flex; flex-direction: column; gap: 4px; }
+.billet__bandeau strong { font-size: 22px; }
+.billet__bandeau small { margin-top: auto; opacity: .85; }
+.billet__infos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 24px; align-content: center; }
+.billet__infos span { display: block; font-size: 12px; color: var(--gris); text-transform: uppercase; letter-spacing: .04em; }
+.billet__infos b { font-size: 18px; }
+.billet__qr { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px; border-left: 2px dashed var(--trait); }
+.billet__qr img { width: 170px; height: 170px; image-rendering: pixelated; }
+.billet__qr small { color: var(--gris); }
+.billet--utilise { opacity: .55; }
+@include mobile {
+  .billet { grid-template-columns: 1fr; }
+  .billet__qr { border-left: 0; border-top: 2px dashed var(--trait); }
+}
+.actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.actions .bouton { min-width: min(100%, 300px); }
