@@ -111,9 +111,10 @@ python manage.py test                          # avec Python
 docker compose exec web python manage.py test  # avec Docker (PostgreSQL)
 ```
 
-35 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
+41 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
 qu'une fois » (`reservation/tests/test_double_vente.py`), le blocage de 10 minutes, le parcours
-complet en ligne, le webhook Stripe signé, le contrôle d'un billet déjà scanné et l'export CSV.
+complet en ligne, le webhook Stripe signé, le contrôle d'un billet déjà scanné, l'export CSV
+et les données de démonstration.
 Chaque module range ses tests dans un dossier `tests/`, un fichier par sujet ; GitHub les relance
 à chaque envoi (onglet *Actions*). Voir le [guide des tests](docs/guide-tests.md).
 
