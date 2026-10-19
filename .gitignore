@@ -17,3 +17,7 @@ staticfiles/
 # Elastic Beanstalk
 .elasticbeanstalk/*
 !.elasticbeanstalk/config.yml
+
+# Couverture des tests
+.coverage
+htmlcov/

@@ -1,0 +1,99 @@
+# Intégration continue : à chaque envoi (push) sur main ou develop, et à chaque pull request,
+# GitHub lance les tests sur PostgreSQL et vérifie que l'image Docker fonctionne.
+# Résultats : onglet « Actions » du dépôt (voir docs/guide-github.md).
+name: Tests et Docker
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  tests:
+    name: Tests (PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: grandcinema
+          POSTGRES_USER: cinema
+          POSTGRES_PASSWORD: cinema
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cinema -d grandcinema"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DEBUG: "True"
+      DATABASE_URL: postgres://cinema:cinema@localhost:5432/grandcinema
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+
+      - name: Installer les bibliothèques
+        run: pip install -r requirements-dev.txt
+
+      - name: Vérifier la configuration et les migrations
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+
+      - name: Lancer les tests (ordre aléatoire) et mesurer la couverture
+        run: |
+          coverage run manage.py test --shuffle
+          coverage report --fail-under=75
+
+  docker:
+    name: Image Docker
+    runs-on: ubuntu-latest
+    env:
+      CHARGER_DEMO: "0"
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Construire l'image et démarrer le site et la base
+        run: docker compose up --build --detach
+
+      - name: Le site de développement répond
+        run: |
+          for i in $(seq 1 30); do
+            if curl --fail --silent --show-error http://localhost:8000/ > /dev/null; then echo "Site OK"; exit 0; fi
+            sleep 2
+          done
+          docker compose logs web
+          exit 1
+
+      - name: Les tests passent dans le conteneur
+        run: docker compose exec -T web python manage.py test
+
+      - name: L'image de production (Gunicorn, DEBUG=False) répond
+        run: |
+          docker run --detach --name prod --network le-grand-cinema_default \
+            -e SECRET_KEY=cle-de-test-ci -e ALLOWED_HOSTS=localhost \
+            -e DATABASE_URL=postgres://cinema:cinema@db:5432/grandcinema \
+            -p 8001:8000 le-grand-cinema-web
+          for i in $(seq 1 30); do
+            if curl --fail --silent --show-error http://localhost:8001/ > /dev/null \
+               && curl --fail --silent --show-error http://localhost:8001/static/css/site.css > /dev/null; then
+              echo "Production OK"; exit 0
+            fi
+            sleep 2
+          done
+          docker logs prod
+          exit 1
+
+      - name: Tout arrêter
+        if: always()
+        run: |
+          docker rm --force prod || true
+          docker compose down --volumes

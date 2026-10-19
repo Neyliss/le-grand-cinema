@@ -1,0 +1,43 @@
+# Environnement de développement complet : le site Django + une base PostgreSQL.
+# Lancer : docker compose up      Arrêter : Ctrl + C, puis docker compose down
+# Guide : docs/guide-docker.md
+
+name: le-grand-cinema
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: grandcinema
+      POSTGRES_USER: cinema
+      POSTGRES_PASSWORD: cinema          # mot de passe local uniquement, jamais en production
+    volumes:
+      - donnees-postgres:/var/lib/postgresql/data   # les données survivent à l'arrêt des conteneurs
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinema -d grandcinema"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"                      # le site répond sur http://localhost:8000
+    env_file:
+      - path: .env                       # clés Stripe éventuelles ; facultatif
+        required: false
+    environment:
+      DEBUG: "True"
+      DATABASE_URL: postgres://cinema:cinema@db:5432/grandcinema
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      CHARGER_DEMO: "${CHARGER_DEMO:-1}"  # 1 = charger les données de démonstration
+    volumes:
+      - .:/app                           # le code de l'ordinateur est utilisé directement :
+                                         # une modification est prise en compte sans reconstruire
+    depends_on:
+      db:
+        condition: service_healthy       # attend que PostgreSQL soit prêt
+
+volumes:
+  donnees-postgres:
