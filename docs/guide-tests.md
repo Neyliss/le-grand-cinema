@@ -1,7 +1,7 @@
 # Les tests : le guide simple
 
 Un **test** est un petit programme qui vérifie tout seul qu'une règle du projet est respectée.
-Par exemple : « un siège ne peut pas être vendu deux fois ». Le projet en compte **41**. On les
+Par exemple : « un siège ne peut pas être vendu deux fois ». Le projet en compte **42**. On les
 lance en une commande, et ils répondent en quelques secondes.
 
 À quoi ça sert ? À **modifier le code sans peur** : si une modification casse une règle, un
@@ -40,7 +40,7 @@ Chaque partie du site a un dossier `tests/`. Dedans, **un fichier par sujet**, d
 commence par `test_` :
 
 ```
-reservation/tests/   règle « un siège, une vente », blocage de 10 minutes, plan de salle, parcours complet
+reservation/tests/   règle « un siège, une vente », blocage de 10 minutes, plan de salle, parcours complet, référence unique
 paiement/tests/      paiement Stripe, confirmation signée, paiement en retard
 billetterie/tests/   contrôle des billets à l'entrée, billet PDF
 catalogue/tests/     programmation, site en anglais, données de démonstration

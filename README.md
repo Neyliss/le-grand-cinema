@@ -111,7 +111,7 @@ python manage.py test                          # avec Python
 docker compose exec web python manage.py test  # avec Docker (PostgreSQL)
 ```
 
-41 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
+42 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
 qu'une fois » (`reservation/tests/test_double_vente.py`), le blocage de 10 minutes, le parcours
 complet en ligne, le webhook Stripe signé, le contrôle d'un billet déjà scanné, l'export CSV
 et les données de démonstration.
