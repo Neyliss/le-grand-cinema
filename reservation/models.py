@@ -49,6 +49,13 @@ class Reservation(models.Model):
     def __str__(self):
         return self.reference
 
+    def save(self, *args, **kwargs):
+        # La référence est tirée au hasard : si elle est déjà prise, on en tire une autre.
+        if self._state.adding:
+            while Reservation.objects.filter(reference=self.reference).exists():
+                self.reference = generer_reference()
+        super().save(*args, **kwargs)
+
     @property
     def est_payee(self):
         return self.statut == self.Statut.PAYEE
