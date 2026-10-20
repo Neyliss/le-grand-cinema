@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Le Grand Cinéma – Planning du MVP" company="Le Grand Cinéma" webLink="https://github.com/Neyliss/le-grand-cinema" view-date="2027-01-04" view-index="0" gantt-divider-location="420" resource-divider-location="300" version="3.2.3247" locale="fr_FR">
+    <description><![CDATA[Planning du MVP du Grand Cinéma (figure 5 de la copie). Charge : 75 jours de travail, soit 15 semaines à temps plein, puis au moins 2 mois de rodage avant le festival de Jazz. Les dates sont indicatives : la semaine 1 commence le jour du lancement du projet.]]></description>
+    <view zooming-state="default:3" id="gantt-chart">
+        <field id="tpd3" name="Nom" width="240" order="0"/>
+        <field id="tpd4" name="Date de début" width="80" order="1"/>
+        <field id="tpd5" name="Date de fin" width="80" order="2"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Nom" width="210" order="0"/>
+        <field id="1" name="Rôle par défaut" width="86" order="1"/>
+    </view>
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" name="Cadrage : objectifs, périmètre, backlog" color="#8064A2" meeting="false" start="2027-01-04" duration="5" complete="0" expand="true">
+            <depend id="1" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="1" name="Conception : maquettes Figma, modèle de données" color="#8064A2" meeting="false" start="2027-01-11" duration="5" complete="0" expand="true">
+            <depend id="2" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="2" name="Périmètre du MVP validé" color="#C0392B" meeting="true" start="2027-01-18" duration="0" complete="0" expand="true">
+            <depend id="3" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="3" name="Sprint 1 : socle technique, programmation (E5)" color="#1F8A9A" meeting="false" start="2027-01-18" duration="10" complete="0" expand="true">
+            <depend id="4" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="4" name="Sprint 2 : pages publiques FR/EN (E1)" color="#1F8A9A" meeting="false" start="2027-02-01" duration="10" complete="0" expand="true">
+            <depend id="5" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="5" name="Sprint 3 : plan de salle, blocage (E2)" color="#1F8A9A" meeting="false" start="2027-02-15" duration="10" complete="0" expand="true">
+            <depend id="6" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="6" name="Sprint 4 : réservation, paiement, billet (E3, E4)" color="#1F8A9A" meeting="false" start="2027-03-01" duration="10" complete="0" expand="true">
+            <depend id="7" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="7" name="Sprint 5 : guichet, contrôle, suivi (E6, E7)" color="#1F8A9A" meeting="false" start="2027-03-15" duration="10" complete="0" expand="true">
+            <depend id="8" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="8" name="Recette : tests fonctionnels, charge, double vente" color="#E69138" meeting="false" start="2027-03-29" duration="10" complete="0" expand="true">
+            <depend id="9" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="9" name="Recette signée par la direction" color="#C0392B" meeting="true" start="2027-04-12" duration="0" complete="0" expand="true">
+            <depend id="10" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="10" name="Mise en service, formation des agents" color="#38A169" meeting="false" start="2027-04-12" duration="5" complete="0" expand="true">
+            <depend id="11" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="11" name="MVP en ligne" color="#C0392B" meeting="true" start="2027-04-19" duration="0" complete="0" expand="true">
+            <depend id="12" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="12" name="Rodage, corrections, suivi des indicateurs" color="#9AA5B1" meeting="false" start="2027-04-19" duration="45" complete="0" expand="true">
+            <depend id="13" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="13" name="Festival de Jazz (au plus tôt)" color="#C0392B" meeting="true" start="2027-06-21" duration="0" complete="0" expand="true">
+        </task>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
