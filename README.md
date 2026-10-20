@@ -10,6 +10,8 @@ billet QR par e-mail, vente au guichet sur le même stock de places, contrôle �
 
 **Schémas** (architecture AWS, cas d'utilisation, séquence et classes UML) : [docs/schemas/Le_Grand_Cinema_schemas.drawio](docs/schemas/Le_Grand_Cinema_schemas.drawio), [à ouvrir dans draw.io](https://viewer.diagrams.net/?nav=1&title=Le_Grand_Cinema_schemas.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2FNeyliss%2Fle-grand-cinema%2Fdevelop%2Fdocs%2Fschemas%2FLe_Grand_Cinema_schemas.drawio) sans compte.
 
+**Planning** (diagramme de Gantt du MVP) : [docs/planning/Le_Grand_Cinema_planning.gan](docs/planning/Le_Grand_Cinema_planning.gan), à ouvrir avec [GanttProject](https://www.ganttproject.biz), logiciel libre.
+
 | EPIC | Ce que fait l'application | Où regarder |
 |---|---|---|
 | E1 | Programmation par jour, places libres, festival, site en français et en anglais | `catalogue/` |
