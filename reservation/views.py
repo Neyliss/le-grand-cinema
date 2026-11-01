@@ -1,6 +1,8 @@
 """
 Parcours de réservation en ligne (EPICs E2 et E3), étapes 1 à 8 du diagramme de séquence.
 """
+from decimal import Decimal
+
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -92,6 +94,18 @@ class RecapitulatifForm(forms.Form):
     def champs_tarifs(self):
         return [(place, self[f"tarif_{place.id}"]) for place in self.places]
 
+    def lignes_recapitulatif(self):
+        """Récapitulatif calculé par le serveur : visible même si JavaScript est désactivé."""
+        tarifs = {t.id: t for t in self.fields[f"tarif_{self.places[0].id}"].queryset} if self.places else {}
+        lignes = []
+        for place in self.places:
+            valeur = self[f"tarif_{place.id}"].value()
+            valeur = getattr(valeur, "pk", valeur)  # valeur initiale : un tarif ; valeur envoyée : son numéro
+            tarif = tarifs.get(int(valeur)) if str(valeur).isdigit() else None
+            if tarif:
+                lignes.append({"siege": place.siege, "tarif": tarif.libelle, "prix": tarif.prix})
+        return lignes, sum((l["prix"] for l in lignes), Decimal("0.00"))
+
 
 def reservation_du_visiteur(request, reference):
     """Une réservation n'est visible que par le navigateur qui l'a créée (ou par le personnel)."""
@@ -119,10 +133,13 @@ def recapitulatif(request, reference):
         creer_billets(reservation, form.tarifs_par_place())
         return redirect(url_de_paiement(request, reservation))
 
+    lignes, total = form.lignes_recapitulatif()
     return render(request, "reservation/recapitulatif.html", {
         "reservation": reservation,
         "seance": reservation.seance,
         "form": form,
+        "lignes": lignes,
+        "total": total,
         "fin_blocage": reservation.fin_blocage(),
         "prix_tarifs": {str(t.id): str(t.prix) for t in Tarif.objects.filter(actif=True)},
         "stripe": stripe_actif(),

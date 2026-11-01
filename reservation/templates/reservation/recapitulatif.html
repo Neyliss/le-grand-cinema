@@ -43,8 +43,10 @@
       <h2>{{ seance.film.titre }}</h2>
       <p class="muet petit">{{ seance.debut|date:"l j F"|capfirst }} · {{ seance.debut|time:"H:i" }} · {{ seance.salle }} · {{ seance.film.version }}</p>
     </div>
-    <div class="recap__lignes" id="lignes-recap"></div>
-    <div class="recap__total"><span>{% translate "Total" %}</span><span id="total"></span></div>
+    <div class="recap__lignes" id="lignes-recap">
+      {% for ligne in lignes %}<div class="recap__ligne"><span>{{ ligne.siege }} · {{ ligne.tarif }}</span><span>{{ ligne.prix }} €</span></div>{% endfor %}
+    </div>
+    <div class="recap__total"><span>{% translate "Total" %}</span><span id="total">{{ total }} €</span></div>
     <button class="bouton bouton--large" type="submit" form="form-recap" id="bouton-payer">
       {% if stripe %}{% translate "Payer avec Stripe" %}{% else %}{% translate "Payer (démonstration)" %}{% endif %}
     </button>
