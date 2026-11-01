@@ -1671,3 +1671,26 @@ table.donnees {
   color: var(--alerte);
   font-weight: 600;
 }
+
+/* E8-US1 : petite courbe des ventes cumulées, une barre par jour */
+.courbe {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 36px;
+  min-width: 120px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--inactif);
+}
+
+.courbe i {
+  display: block;
+  width: 6px;
+  min-height: 1px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+.ligne-alerte td {
+  background: var(--erreur-fond);
+}

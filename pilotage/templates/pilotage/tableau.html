@@ -13,6 +13,7 @@
     <div class="champ"><label for="au">Au</label><input type="date" id="au" name="au" value="{{ fin|date:'Y-m-d' }}"></div>
     <button class="bouton" type="submit">Afficher</button>
     <a class="bouton bouton--clair" href="{% url 'pilotage:export_csv' %}?du={{ debut|date:'Y-m-d' }}&amp;au={{ fin|date:'Y-m-d' }}">Exporter (CSV)</a>
+    <a class="bouton bouton--clair" href="{% url 'pilotage:festival' %}">Festival : anticiper les pics</a>
   </form>
 </div>
 

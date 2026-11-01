@@ -1,0 +1,39 @@
+{% extends "base_pro.html" %}
+{% block espace %}Pilotage{% endblock %}
+{% block titre %}Festival : anticiper les pics{% endblock %}
+{% block contenu %}
+<div class="tool-head">
+  <h1>Festival de Jazz : anticiper les pics d'affluence</h1>
+  <p class="muet">Places vendues jour après jour pour chaque séance du festival, depuis la première vente.
+    <a href="{% url 'pilotage:tableau' %}">Retour au pilotage</a></p>
+</div>
+
+{% if alertes %}
+<section class="message message--error" role="alert">
+  <strong>{{ alertes|length }} séance{{ alertes|length|pluralize }} à surveiller</strong> : remplie{{ alertes|length|pluralize }} à {{ seuil }} % ou plus,
+  à {{ delai }} jours ou moins. Pensez à ouvrir une séance supplémentaire.
+  <ul>{% for l in alertes %}<li>{{ l.seance.film.titre }} · {{ l.debut|date:"D d/m" }} {{ l.debut|time:"H:i" }} · {{ l.seance.salle }} · {{ l.taux }} %</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section>
+  <div class="tableau-defile carte">
+    <table class="donnees">
+      <thead><tr><th>Séance</th><th>Salle</th><th class="nombre">Vendues</th><th>Remplissage</th><th>Ventes jour après jour{% if jours %} (du {{ jours.0|date:"d/m" }} à aujourd'hui){% endif %}</th></tr></thead>
+      <tbody>
+        {% for l in lignes %}
+        <tr{% if l.alerte %} class="ligne-alerte"{% endif %}>
+          <td>{{ l.seance.film.titre }}<br><span class="muet">{{ l.debut|date:"D d/m" }} · {{ l.debut|time:"H:i" }}</span></td>
+          <td>{{ l.seance.salle }}</td>
+          <td class="nombre">{{ l.vendues }} / {{ l.capacite }}</td>
+          <td><span class="jauge{% if l.taux >= seuil %} jauge--haute{% endif %}"><span class="jauge__barre"><i style="width: {{ l.taux }}%"></i></span>{{ l.taux }} %</span>{% if l.alerte %} <strong class="objectif-en-cours">À surveiller</strong>{% endif %}</td>
+          <td><span class="courbe" role="img" aria-label="Places vendues jour après jour : {{ l.vendues }} au total">
+            {% for point in l.courbe %}<i style="height: {{ point.hauteur }}%" title="{{ point.jour|date:'d/m' }} : {{ point.cumul }} places"></i>{% endfor %}
+          </span></td>
+        </tr>
+        {% empty %}<tr><td colspan="5" class="muet">Aucune séance du festival dans les 3 prochains mois.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
