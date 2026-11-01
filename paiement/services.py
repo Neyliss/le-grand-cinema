@@ -63,7 +63,7 @@ def url_de_paiement(request, reservation):
         success_url=retour + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=annulation,
         expires_at=int(time.time()) + 30 * 60,  # durée minimale imposée par Stripe
-        locale="auto",
+        locale=reservation.langue,  # page de Stripe dans la langue du spectateur (fr ou en)
         **options,
     )
     return session.url
