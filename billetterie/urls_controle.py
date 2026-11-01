@@ -7,4 +7,5 @@ urlpatterns = [
     path("", views.controle_seances, name="seances"),
     path("seance/<int:seance_id>/", views.controle, name="scanner"),
     path("seance/<int:seance_id>/verifier/", views.controle_verifier, name="verifier"),
+    path("seance/<int:seance_id>/annuler/", views.controle_annuler, name="annuler"),
 ]

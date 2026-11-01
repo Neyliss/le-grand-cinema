@@ -1532,6 +1532,15 @@ select {
   color: var(--succes);
 }
 
+.resultat--annule {
+  background: var(--fond);
+  border: 2px solid var(--gris);
+}
+
+.resultat .bouton {
+  margin-top: 10px;
+}
+
 .resultat--refuse, .resultat--deja_utilise {
   background: var(--erreur-fond);
   border-color: var(--erreur);

@@ -29,8 +29,9 @@ def creer_seance(rangees=3, par_rangee=5, dans=timedelta(days=1)):
 
 
 def reserver_avec_billets(seance, nb=1):
-    """Réservation en attente de paiement : sièges bloqués et billets préparés."""
-    reservation = creer_reservation(seance, [s.id for s in seance.salle.sieges.all()[:nb]])
+    """Réservation en attente de paiement : les `nb` premiers sièges libres sont bloqués et les billets préparés."""
+    libres = seance.places.filter(statut="libre").order_by("siege__rangee", "siege__numero")
+    reservation = creer_reservation(seance, list(libres.values_list("siege_id", flat=True)[:nb]))
     tarif = Tarif.objects.first()
     creer_billets(reservation, {place.id: tarif for place in reservation.places.all()})
     return reservation

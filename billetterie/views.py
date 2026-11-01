@@ -12,7 +12,7 @@ from grandcinema.acces import agent_requis
 from reservation.models import PlaceSeance, Reservation
 
 from .models import Billet
-from .services import controler_billet, envoyer_billets, pdf_billets, qr_data_uri
+from .services import annuler_entree, controler_billet, envoyer_billets, pdf_billets, qr_data_uri
 
 
 def reservation_payee(reference, jeton):
@@ -83,5 +83,14 @@ def controle(request, seance_id):
 def controle_verifier(request, seance_id):
     seance = get_object_or_404(Seance, pk=seance_id)
     resultat = controler_billet(request.POST.get("code", ""), seance)
+    resultat["compteur"] = compteur_entrees(seance)
+    return JsonResponse(resultat)
+
+
+@agent_requis
+@require_POST
+def controle_annuler(request, seance_id):
+    seance = get_object_or_404(Seance, pk=seance_id)
+    resultat = annuler_entree(request.POST.get("code", ""), seance)
     resultat["compteur"] = compteur_entrees(seance)
     return JsonResponse(resultat)
