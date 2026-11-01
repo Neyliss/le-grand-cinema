@@ -21,6 +21,7 @@ urlpatterns = [
     path("controle/", include("billetterie.urls_controle")),
     path("pilotage/", include("pilotage.urls")),
     # API REST (bloc 3) et sa documentation Swagger : /api/docs/
+    path("api/", include("catalogue.api_urls")),
     path("api/comptes/", include("comptes.api_urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),

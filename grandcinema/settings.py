@@ -205,10 +205,15 @@ REST_FRAMEWORK = {
 }
 SPECTACULAR_SETTINGS = {
     "TITLE": "API du Grand Cinéma",
-    "DESCRIPTION": "Compte spectateur du Grand Cinéma. Les routes « moi » demandent un jeton, "
-                   "obtenu avec /api/comptes/jeton/ puis envoyé dans l'en-tête « Authorization: Token <jeton> ».",
+    "DESCRIPTION": "Programmation, plan de salle et compte spectateur du Grand Cinéma. La programmation se lit "
+                   "sans compte. Les routes « moi » demandent un jeton, obtenu avec /api/comptes/jeton/ puis "
+                   "envoyé dans l'en-tête « Authorization: Token <jeton> ».",
     "VERSION": "2.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "TAGS": [
+        {"name": "Programmation", "description": "Films, séances et plan de salle : lecture libre, sans compte."},
+        {"name": "Compte spectateur", "description": "Compte facultatif (E9-US1) : créer, confirmer, se connecter, supprimer."},
+    ],
 }
 
 # --- Sécurité en production -----------------------------------------------------
