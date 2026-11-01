@@ -435,3 +435,13 @@ msgstr "Change seats"
 
 msgid "Vos places ont été libérées. Choisissez-en d'autres."
 msgstr "Your seats have been released. Choose other ones."
+
+msgid "Renvoyer le billet par e-mail"
+msgstr "Send the ticket again by e-mail"
+
+msgid "Le billet a été renvoyé à %(email)s."
+msgstr "The ticket has been sent again to %(email)s."
+
+msgid ""
+"Le billet ne peut plus être renvoyé : téléchargez-le en PDF ci-dessous."
+msgstr "The ticket can no longer be resent: download the PDF below."
