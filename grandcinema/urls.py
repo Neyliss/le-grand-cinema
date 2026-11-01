@@ -34,6 +34,7 @@ urlpatterns += i18n_patterns(
     path("reservation/", include("reservation.urls")),
     path("paiement/", include("paiement.urls")),
     path("billet/", include("billetterie.urls")),
+    path("compte/abonnement/", include("fidelite.urls")),
     path("compte/", include("comptes.urls")),
     prefix_default_language=False,
 )

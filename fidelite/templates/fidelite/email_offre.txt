@@ -1,0 +1,8 @@
+Bonjour,
+
+{{ offre.message }}
+
+À bientôt au Grand Cinéma.
+
+Vous recevez ce message parce que vous avez accepté les offres réservées aux habitués.
+Pour ne plus les recevoir, décochez la case dans votre compte : {{ lien_compte }}

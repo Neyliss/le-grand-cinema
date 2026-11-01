@@ -53,6 +53,7 @@ class ChargerDemoTests(TestCase):
         self.assertTrue(spectateur.profil.email_confirme)
         self.assertFalse(spectateur.is_staff)
         self.assertEqual(spectateur.reservations.filter(statut="payee").count(), 3)
+        self.assertEqual(spectateur.abonnements.get().places_restantes, 7)
 
     def test_un_second_lancement_ne_duplique_rien(self):
         sortie = StringIO()

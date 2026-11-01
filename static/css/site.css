@@ -1718,3 +1718,39 @@ table.donnees {
   gap: 10px;
   margin-bottom: 28px;
 }
+
+/* Fidélité (E10-US1) : carte d'abonnement et accord pour les offres */
+.compte-bloc {
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.compte-bloc h2 {
+  margin-top: 0;
+}
+
+.case {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.case input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.case-offres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--trait);
+}

@@ -56,4 +56,4 @@ def festival(request):
 
 
 def infos(request):
-    return render(request, "catalogue/infos.html", {"tarifs": Tarif.objects.filter(actif=True)})
+    return render(request, "catalogue/infos.html", {"tarifs": Tarif.objects.publics()})

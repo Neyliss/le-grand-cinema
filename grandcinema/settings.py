@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "guichet",
     "pilotage",
     "comptes",  # compte spectateur facultatif (E9-US1)
+    "fidelite",  # cartes d'abonnement et offres aux habitués (E10-US1)
     # API REST et sa documentation Swagger (bloc 3)
     "rest_framework",
     "rest_framework.authtoken",

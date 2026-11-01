@@ -106,6 +106,10 @@ class Command(BaseCommand):
         self.stdout.write(f"  spectateur : {SPECTATEUR_DEMO} / spectateur-gc-2026")
 
     def vider(self):
+        from fidelite.models import Abonnement, FormuleAbonnement
+
+        Abonnement.objects.all().delete()
+        FormuleAbonnement.objects.all().delete()
         Billet.objects.all().delete()
         Paiement.objects.all().delete()
         PlaceSeance.objects.all().delete()
@@ -174,6 +178,9 @@ class Command(BaseCommand):
             spectateur = User.objects.create_user(SPECTATEUR_DEMO, SPECTATEUR_DEMO, "spectateur-gc-2026", first_name="Camille")
             Profil.objects.create(utilisateur=spectateur, email_confirme=True)
             spectateur.groups.add(Group.objects.get_or_create(name=GROUPE_SPECTATEURS)[0])
+        spectateur.profil.accepte_offres = True
+        spectateur.profil.save(update_fields=["accepte_offres"])
+        self.creer_fidelite(spectateur)
         # Une réservation par film, à des jours différents
         ids, films = [], set()
         for jour in (0, 2, 4):
@@ -185,3 +192,13 @@ class Command(BaseCommand):
                 ids.append(reservation.id)
                 films.add(reservation.seance.film_id)
         Reservation.objects.filter(id__in=ids).update(compte=spectateur, nom="Camille", email=SPECTATEUR_DEMO)
+
+    def creer_fidelite(self, spectateur):
+        """E10-US1 : une formule de carte, le tarif « Abonné » et une carte entamée pour le spectateur."""
+        from fidelite.models import Abonnement, FormuleAbonnement
+
+        formule, _ = FormuleAbonnement.objects.get_or_create(libelle="Carte 10 places", defaults={"nb_places": 10, "prix": Decimal("75.00")})
+        Tarif.objects.get_or_create(libelle="Abonné", defaults={"prix": Decimal("0.00"), "reserve_abonnes": True, "ordre": 4})
+        if not Abonnement.objects.filter(compte=spectateur).exists():
+            Abonnement.objects.create(compte=spectateur, formule=formule, prix=formule.prix, places_restantes=7,
+                                      statut=Abonnement.Statut.ACTIVE, active_le=timezone.now() - timedelta(days=20))

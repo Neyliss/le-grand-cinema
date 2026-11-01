@@ -63,6 +63,18 @@ def creer_spectateur(email="ada@exemple.fr", mot_de_passe="Cinema-2026!", confir
     return spectateur
 
 
+def creer_abonne(email="ada@exemple.fr", places=10):
+    """Spectateur confirmé avec une carte d'abonnement active, et le tarif « Abonné » (0 €) créé."""
+    from fidelite.models import Abonnement, FormuleAbonnement
+
+    spectateur = creer_spectateur(email)
+    formule, _ = FormuleAbonnement.objects.get_or_create(libelle="Carte 10 places", nb_places=10, prix=Decimal("75.00"))
+    Abonnement.objects.create(compte=spectateur, formule=formule, prix=formule.prix, places_restantes=places,
+                              statut=Abonnement.Statut.ACTIVE, active_le=timezone.now())
+    Tarif.objects.get_or_create(libelle="Abonné", prix=Decimal("0.00"), reserve_abonnes=True)
+    return spectateur
+
+
 def creer_agent(identifiant="agent"):
     """Compte d'agent d'accueil : membre du personnel, groupe « Agents d'accueil »."""
     agent = User.objects.create_user(identifiant, password="mot-de-passe-de-test", is_staff=True)

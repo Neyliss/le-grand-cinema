@@ -10,6 +10,7 @@ class Paiement(models.Model):
         CARTE_EN_LIGNE = "carte_en_ligne", "Carte en ligne (Stripe)"
         GUICHET_CARTE = "guichet_carte", "Guichet — carte (terminal)"
         GUICHET_ESPECES = "guichet_especes", "Guichet — espèces"
+        ABONNEMENT = "abonnement", "Carte d'abonnement"
 
     class Statut(models.TextChoices):
         REUSSI = "reussi", "Réussi"

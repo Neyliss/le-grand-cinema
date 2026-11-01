@@ -100,6 +100,17 @@ class Siege(models.Model):
         return f"{self.rangee}{self.numero}"
 
 
+class TarifQuerySet(models.QuerySet):
+    def publics(self):
+        """Tarifs proposés à tous (site sans carte, guichet, infos pratiques)."""
+        return self.filter(actif=True, reserve_abonnes=False)
+
+    def proposes(self, carte=None):
+        """Tarifs proposés sur le site : le tarif « abonné » en plus si le spectateur a une carte (E10-US1)."""
+        tarifs = self.filter(actif=True)
+        return tarifs if carte is not None and carte.places_restantes > 0 else tarifs.filter(reserve_abonnes=False)
+
+
 class Tarif(models.Model):
     """Le tarif est une donnée, pas du code : l'administrateur peut en créer sans développement."""
 
@@ -107,6 +118,12 @@ class Tarif(models.Model):
     prix = models.DecimalField(max_digits=6, decimal_places=2)
     actif = models.BooleanField(default=True)
     ordre = models.PositiveSmallIntegerField(default=0)
+    # E10-US1 : chaque place prise à ce tarif est décomptée de la carte d'abonnement du spectateur.
+    reserve_abonnes = models.BooleanField(
+        "réservé aux abonnés", default=False,
+        help_text="Proposé seulement aux spectateurs qui ont une carte d'abonnement ; chaque place est décomptée de la carte.")
+
+    objects = TarifQuerySet.as_manager()
 
     class Meta:
         ordering = ["ordre", "prix"]

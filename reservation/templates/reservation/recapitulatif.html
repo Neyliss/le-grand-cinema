@@ -10,6 +10,7 @@
     {% if form.non_field_errors %}<p class="message message--error">{{ form.non_field_errors|join:" " }}</p>{% endif %}
     <fieldset>
       <legend>{% translate "Tarif par place" %}</legend>
+      {% if carte %}<p class="encart petit">{% blocktranslate count nb=carte.places_restantes %}Votre carte d'abonnement a encore {{ nb }} place : choisissez le tarif « Abonné » pour l'utiliser.{% plural %}Votre carte d'abonnement a encore {{ nb }} places : choisissez le tarif « Abonné » pour les utiliser.{% endblocktranslate %}</p>{% endif %}
       {% for place, champ in form.champs_tarifs %}
       <div class="carte ligne-tarif">
         <label for="{{ champ.id_for_label }}"><strong>{{ place.siege }}</strong></label>
