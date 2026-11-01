@@ -18,7 +18,8 @@ from grandcinema.acces import est_agent
 from paiement.services import stripe_actif, url_de_paiement
 
 from .models import Reservation
-from .services import SeanceNonReservable, SiegeIndisponible, creer_reservation, places_encore_bloquees, plan_de_salle
+from .services import (SeanceNonReservable, SiegeIndisponible, creer_reservation, liberer_reservation,
+                       places_encore_bloquees, plan_de_salle)
 
 CLE_SESSION = "reservations"
 
@@ -126,3 +127,12 @@ def recapitulatif(request, reference):
         "prix_tarifs": {str(t.id): str(t.prix) for t in Tarif.objects.filter(actif=True)},
         "stripe": stripe_actif(),
     })
+
+
+@require_POST
+def liberer(request, reference):
+    """« Changer de places » : les sièges sont rendus tout de suite, puis retour au plan de salle."""
+    reservation = reservation_du_visiteur(request, reference)
+    liberer_reservation(reservation)
+    messages.info(request, _("Vos places ont été libérées. Choisissez-en d'autres."))
+    return redirect("reservation:plan", seance_id=reservation.seance_id)

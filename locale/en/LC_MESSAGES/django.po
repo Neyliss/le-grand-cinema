@@ -429,3 +429,9 @@ msgstr "published"
 
 msgid "Connexion perdue : le plan sera mis à jour dès son retour."
 msgstr "Connection lost: the plan will update as soon as it is back."
+
+msgid "Changer de places"
+msgstr "Change seats"
+
+msgid "Vos places ont été libérées. Choisissez-en d'autres."
+msgstr "Your seats have been released. Choose other ones."
