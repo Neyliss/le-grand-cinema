@@ -157,7 +157,7 @@ class Command(BaseCommand):
         agents, _ = Group.objects.get_or_create(name=GROUPE_AGENTS)
         administrateurs, _ = Group.objects.get_or_create(name=GROUPE_ADMINISTRATEURS)
         administrateurs.permissions.set(Permission.objects.filter(
-            content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie"]))
+            content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie", "fidelite"]))
         agents.permissions.set(Permission.objects.filter(codename__startswith="view_",
                                                          content_type__app_label__in=["catalogue", "reservation"]))
         if not User.objects.filter(username="admin").exists():

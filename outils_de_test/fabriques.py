@@ -88,6 +88,6 @@ def creer_administrateur(identifiant="direction"):
     admin = User.objects.create_user(identifiant, password="mot-de-passe-de-test", is_staff=True)
     groupe = Group.objects.get_or_create(name=GROUPE_ADMINISTRATEURS)[0]
     groupe.permissions.set(Permission.objects.filter(
-        content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie"]))
+        content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie", "fidelite"]))
     admin.groups.add(groupe)
     return admin
