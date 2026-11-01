@@ -4,6 +4,7 @@ Module reservation : plan de salle, blocage et libération des sièges, réserva
 import secrets
 from decimal import Decimal
 
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -38,6 +39,8 @@ class Reservation(models.Model):
     nom = models.CharField(max_length=100, blank=True)
     email = models.EmailField("e-mail", blank=True)
     canal = models.CharField(max_length=10, choices=Canal.choices, default=Canal.SITE)
+    # Langue du spectateur au moment de la réservation : ses e-mails lui sont envoyés dans cette langue.
+    langue = models.CharField(max_length=5, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
     statut = models.CharField(max_length=10, choices=Statut.choices, default=Statut.ATTENTE)
     cree_le = models.DateTimeField("créée le", auto_now_add=True)
     billets_pdf = models.FileField(upload_to="billets/", blank=True)

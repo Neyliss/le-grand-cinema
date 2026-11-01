@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import translation
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 from django.views.decorators.cache import never_cache
@@ -61,6 +62,8 @@ def bloquer(request, seance_id):
     except SeanceNonReservable:
         messages.error(request, _("Cette séance n'est plus en vente."))
         return redirect("catalogue:programmation")
+    reservation.langue = translation.get_language() or settings.LANGUAGE_CODE
+    reservation.save(update_fields=["langue"])
     request.session[CLE_SESSION] = request.session.get(CLE_SESSION, [])[-9:] + [reservation.reference]
     return redirect("reservation:recapitulatif", reference=reservation.reference)
 
