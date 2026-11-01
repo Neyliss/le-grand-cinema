@@ -4,6 +4,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from paiement.views import webhook_stripe
 
@@ -19,6 +20,10 @@ urlpatterns = [
     path("guichet/", include("guichet.urls")),
     path("controle/", include("billetterie.urls_controle")),
     path("pilotage/", include("pilotage.urls")),
+    # API REST (bloc 3) et sa documentation Swagger : /api/docs/
+    path("api/comptes/", include("comptes.api_urls")),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
 ]
 
 # Pages publiques : / en français, /en/ en anglais. La langue se lit dans l'adresse ;
@@ -28,6 +33,7 @@ urlpatterns += i18n_patterns(
     path("reservation/", include("reservation.urls")),
     path("paiement/", include("paiement.urls")),
     path("billet/", include("billetterie.urls")),
+    path("compte/", include("comptes.urls")),
     prefix_default_language=False,
 )
 

@@ -16,6 +16,7 @@ from django.views.decorators.http import require_POST
 
 from billetterie.services import creer_billets
 from catalogue.models import Seance, Tarif
+from comptes.services import est_spectateur_confirme
 from grandcinema.acces import est_agent
 from paiement.services import stripe_actif, url_de_paiement
 
@@ -66,7 +67,11 @@ def bloquer(request, seance_id):
         messages.error(request, _("Cette séance n'est plus en vente."))
         return redirect("catalogue:programmation")
     reservation.langue = translation.get_language() or settings.LANGUAGE_CODE
-    reservation.save(update_fields=["langue"])
+    if est_spectateur_confirme(request.user):
+        # Spectateur connecté (E9-US1) : la réservation rejoint son compte, nom et e-mail sont déjà remplis.
+        reservation.compte = request.user
+        reservation.nom, reservation.email = request.user.first_name, request.user.email
+    reservation.save(update_fields=["langue", "compte", "nom", "email"])
     request.session[CLE_SESSION] = request.session.get(CLE_SESSION, [])[-9:] + [reservation.reference]
     return redirect("reservation:recapitulatif", reference=reservation.reference)
 

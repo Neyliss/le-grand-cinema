@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Confirmez votre adresse" %}{% endblock %}
+{% block contenu %}
+<section class="carte formulaire--etroit">
+  <h1>{% translate "Confirmez votre adresse" %}</h1>
+  <p>{% blocktranslate %}Un lien de confirmation a été envoyé à {{ email }}. Cliquez dessus pour activer votre compte (il reste valable 3 jours).{% endblocktranslate %}</p>
+  {% if lien_demo %}
+  <p class="message message--success">{% translate "Site de démonstration : aucun e-mail n'est réellement envoyé. Voici le lien :" %}
+    <a href="{{ lien_demo }}">{% translate "Confirmer mon adresse" %}</a></p>
+  {% endif %}
+</section>
+{% endblock %}

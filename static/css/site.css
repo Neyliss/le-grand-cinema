@@ -1066,7 +1066,7 @@ main.conteneur {
   font-variant-numeric: tabular-nums;
 }
 
-select, input[type=text], input[type=email], input[type=date] {
+select, input[type=text], input[type=email], input[type=date], input[type=password] {
   font: inherit;
   width: 100%;
   min-height: 44px;
@@ -1693,4 +1693,28 @@ table.donnees {
 
 .ligne-alerte td {
   background: var(--erreur-fond);
+}
+
+/* Compte spectateur (E9-US1) : formulaires courts, centrés */
+.formulaire--etroit {
+  max-width: 520px;
+  margin: 32px auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formulaire--etroit h1 {
+  margin: 0;
+}
+
+.formulaire--etroit .champs {
+  grid-template-columns: 1fr;
+}
+
+.liste-reservations {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 28px;
 }

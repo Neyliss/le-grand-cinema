@@ -1,0 +1,10 @@
+{% if form.non_field_errors %}<p class="message message--error">{{ form.non_field_errors|join:" " }}</p>{% endif %}
+<div class="champs">
+  {% for champ in form %}
+  <div class="champ">
+    <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+    {{ champ }}
+    {% for erreur in champ.errors %}<span class="erreur-champ">{{ erreur }}</span>{% endfor %}
+  </div>
+  {% endfor %}
+</div>

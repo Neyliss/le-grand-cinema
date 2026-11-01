@@ -38,6 +38,9 @@ class Reservation(models.Model):
     seance = models.ForeignKey("catalogue.Seance", on_delete=models.PROTECT, related_name="reservations")
     nom = models.CharField(max_length=100, blank=True)
     email = models.EmailField("e-mail", blank=True)
+    # Compte spectateur (E9-US1), facultatif : réserver sans compte reste possible (E3-US1).
+    compte = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                               related_name="reservations")
     canal = models.CharField(max_length=10, choices=Canal.choices, default=Canal.SITE)
     # Langue du spectateur au moment de la réservation : ses e-mails lui sont envoyés dans cette langue.
     langue = models.CharField(max_length=5, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)

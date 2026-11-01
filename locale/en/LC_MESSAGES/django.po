@@ -445,3 +445,120 @@ msgstr "The ticket has been sent again to %(email)s."
 msgid ""
 "Le billet ne peut plus être renvoyé : téléchargez-le en PDF ci-dessous."
 msgstr "The ticket can no longer be resent: download the PDF below."
+
+msgid "Créer mon compte"
+msgstr "Create my account"
+
+msgid ""
+"Facultatif : vous pouvez toujours réserver sans compte. Avec un compte, vous"
+" retrouvez toutes vos réservations."
+msgstr ""
+"Optional: you can always book without an account. With an account, you find "
+"all your bookings in one place."
+
+msgid "Déjà un compte ?"
+msgstr "Already have an account?"
+
+msgid "Se connecter"
+msgstr "Sign in"
+
+msgid "Confirmez votre adresse"
+msgstr "Confirm your address"
+
+msgid ""
+"Un lien de confirmation a été envoyé à %(email)s. Cliquez dessus pour "
+"activer votre compte (il reste valable 3 jours)."
+msgstr ""
+"A confirmation link has been sent to %(email)s. Click it to activate your "
+"account (it stays valid for 3 days)."
+
+msgid ""
+"Site de démonstration : aucun e-mail n'est réellement envoyé. Voici le lien "
+":"
+msgstr "Demo site: no e-mail is actually sent. Here is the link:"
+
+msgid "Confirmer mon adresse"
+msgstr "Confirm my address"
+
+msgid "Pas encore de compte ?"
+msgstr "No account yet?"
+
+msgid "Mon compte"
+msgstr "My account"
+
+msgid "Mes réservations"
+msgstr "My bookings"
+
+msgid "Voir mes billets"
+msgstr "See my tickets"
+
+msgid "Aucune réservation pour l'instant."
+msgstr "No bookings yet."
+
+msgid "Voir la programmation"
+msgstr "See what's on"
+
+msgid "Se déconnecter"
+msgstr "Sign out"
+
+msgid "Supprimer mon compte"
+msgstr "Delete my account"
+
+msgid ""
+"Votre compte, votre nom et votre adresse e-mail seront supprimés. Vos "
+"billets déjà achetés restent valables avec le lien reçu par e-mail."
+msgstr ""
+"Your account, your name and your e-mail address will be deleted. Tickets you"
+" have already bought stay valid with the link you received by e-mail."
+
+msgid "Supprimer définitivement"
+msgstr "Delete permanently"
+
+msgid "Annuler"
+msgstr "Cancel"
+
+msgid ""
+"Pour activer votre compte Le Grand Cinéma, confirmez votre adresse e-mail en"
+" ouvrant ce lien (valable 3 jours) :"
+msgstr ""
+"To activate your Le Grand Cinéma account, confirm your e-mail address by "
+"opening this link (valid for 3 days):"
+
+msgid "Si vous n'avez pas créé de compte, ignorez simplement ce message."
+msgstr "If you did not create an account, simply ignore this message."
+
+msgid "Un compte existe déjà avec cette adresse."
+msgstr "An account already exists with this address."
+
+msgid ""
+"Ce lien de confirmation n'est plus valable. Créez à nouveau votre compte."
+msgstr ""
+"This confirmation link is no longer valid. Please create your account again."
+
+msgid ""
+"Adresse confirmée : bienvenue ! Vos réservations passées ont été rattachées "
+"à votre compte."
+msgstr ""
+"Address confirmed: welcome! Your past bookings have been added to your "
+"account."
+
+msgid "Votre compte et vos données personnelles ont été supprimés."
+msgstr "Your account and your personal data have been deleted."
+
+msgid "Confirmez votre adresse e-mail — Le Grand Cinéma"
+msgstr "Confirm your e-mail address — Le Grand Cinéma"
+
+msgid "Mot de passe"
+msgstr "Password"
+
+msgid "Mot de passe (encore une fois)"
+msgstr "Password (again)"
+
+msgid "Les deux mots de passe ne sont pas identiques."
+msgstr "The two passwords do not match."
+
+msgid "Adresse e-mail ou mot de passe incorrect."
+msgstr "Incorrect e-mail address or password."
+
+msgid "Confirmez d'abord votre adresse e-mail avec le lien reçu."
+msgstr "Please confirm your e-mail address first with the link you received."

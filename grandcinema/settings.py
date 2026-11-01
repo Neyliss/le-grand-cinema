@@ -59,6 +59,11 @@ INSTALLED_APPS = [
     "billetterie",
     "guichet",
     "pilotage",
+    "comptes",  # compte spectateur facultatif (E9-US1)
+    # API REST et sa documentation Swagger (bloc 3)
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -120,7 +125,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-LOGIN_URL = "admin:login"
+# Page de connexion des spectateurs ; le personnel se connecte par l'administration (grandcinema/acces.py).
+LOGIN_URL = "comptes:connexion"
 
 # --- Langues (EPIC E1 : site en français et en anglais) -----------------------
 LANGUAGE_CODE = "fr"
@@ -183,6 +189,27 @@ PLACES_MAX_PAR_RESERVATION = 8
 RAFRAICHISSEMENT_PLAN_SECONDES = 5  # E2-US1 : plan mis à jour toutes les 5 secondes
 OBJECTIF_PART_EN_LIGNE = 50  # objectif O1 du bloc 1 : la moitié des places vendues sur le site
 RAFRAICHISSEMENT_PILOTAGE_SECONDES = 60  # E7-US1 : le tableau de remplissage se met à jour tout seul
+
+# --- API REST (Django REST Framework) et documentation Swagger ---------------------
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # Une application mobile s'identifie avec un jeton ; le site, avec sa session habituelle.
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    # Limite les essais de mot de passe et les créations de comptes en série
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {"comptes": "20/minute"},
+}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API du Grand Cinéma",
+    "DESCRIPTION": "Compte spectateur du Grand Cinéma. Les routes « moi » demandent un jeton, "
+                   "obtenu avec /api/comptes/jeton/ puis envoyé dans l'en-tête « Authorization: Token <jeton> ».",
+    "VERSION": "2.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 # --- Sécurité en production -----------------------------------------------------
 if not DEBUG:
