@@ -61,8 +61,15 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--reinitialiser", action="store_true", help="Efface les données existantes avant le chargement.")
+        parser.add_argument("--si-perime", action="store_true",
+                            help="Recharge tout seulement si la programmation se termine dans moins de 3 jours (déploiement).")
 
     def handle(self, *args, **options):
+        if options["si_perime"] and Film.objects.exists():
+            if Seance.objects.filter(debut__gte=timezone.now() + timedelta(days=3)).exists():
+                self.stdout.write("Programmation encore à jour : rien à recharger.")
+                return
+            options["reinitialiser"] = True
         if Film.objects.exists() and not options["reinitialiser"]:
             self.stdout.write(self.style.WARNING("Des données existent déjà. Utilisez --reinitialiser pour tout recharger."))
             return

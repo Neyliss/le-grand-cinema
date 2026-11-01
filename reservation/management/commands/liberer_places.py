@@ -1,5 +1,5 @@
 """Tâche planifiée : remet « libres » les sièges dont le blocage de 10 minutes est dépassé.
-Lancée chaque minute sur le serveur (voir .ebextensions/02_taches.config)."""
+Lancée chaque minute sur le serveur (voir .ebextensions/02_taches.config et deploiement/tache.sh)."""
 from django.core.management.base import BaseCommand
 
 from reservation.services import liberer_places_expirees

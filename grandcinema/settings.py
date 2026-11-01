@@ -42,7 +42,12 @@ if not SECRET_KEY:
         raise RuntimeError("La variable SECRET_KEY doit être définie en production.")
 
 ALLOWED_HOSTS = env_liste("ALLOWED_HOSTS", "localhost,127.0.0.1")
-CSRF_TRUSTED_ORIGINS = env_liste("CSRF_TRUSTED_ORIGINS")
+
+# Adresse publique du site (en production : le domaine CloudFront en HTTPS), utilisée dans les
+# liens des e-mails et pour renvoyer les visites directes du serveur vers cette adresse.
+SITE_URL = os.environ.get("SITE_URL") or "http://127.0.0.1:8000"
+# Formulaires envoyés depuis l'adresse publique : acceptés (protection CSRF)
+CSRF_TRUSTED_ORIGINS = env_liste("CSRF_TRUSTED_ORIGINS") or ([SITE_URL.rstrip("/")] if SITE_URL.startswith("https://") else [])
 
 # --- Applications ------------------------------------------------------------
 INSTALLED_APPS = [
@@ -109,6 +114,19 @@ if os.environ.get("DATABASE_URL"):
     import dj_database_url
 
     DATABASES = {"default": dj_database_url.parse(os.environ["DATABASE_URL"], conn_max_age=60)}
+elif os.environ.get("RDS_HOSTNAME"):
+    # Base créée avec l'environnement Elastic Beanstalk : AWS fournit ces variables lui-même
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("RDS_DB_NAME", "ebdb"),
+            "USER": os.environ.get("RDS_USERNAME", ""),
+            "PASSWORD": os.environ.get("RDS_PASSWORD", ""),
+            "HOST": os.environ["RDS_HOSTNAME"],
+            "PORT": os.environ.get("RDS_PORT", "5432"),
+            "CONN_MAX_AGE": 60,
+        }
+    }
 else:
     DATABASES = {
         "default": {
@@ -142,7 +160,8 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# Sur Elastic Beanstalk : dossier hors de l'application (/var/app/media), conservé d'un déploiement à l'autre
+MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT") or BASE_DIR / "media")
 # Pendant les tests, les fichiers créés (billets PDF, affiches) vont dans un dossier temporaire :
 # le dossier media du projet reste propre, et les tests passent même là où il n'est pas modifiable
 # (conteneur Docker de GitHub Actions).
@@ -164,6 +183,9 @@ if AWS_STORAGE_BUCKET_NAME:
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = True  # liens temporaires : les billets ne sont pas publics
     STORAGES["default"] = {"BACKEND": "storages.backends.s3.S3Storage"}
+# Sans S3 (site de démonstration), le serveur affiche lui-même les affiches des films.
+# Les billets PDF ne sont jamais servis ainsi : ils restent derrière le lien secret de chaque réservation.
+SERVIR_AFFICHES = env_bool("SERVIR_AFFICHES", not AWS_STORAGE_BUCKET_NAME)
 
 # --- E-mails (composant C6 : Amazon SES) --------------------------------------
 # Local : les e-mails s'affichent dans le terminal. Production : SMTP d'Amazon SES.
@@ -181,8 +203,6 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 PAIEMENT_DEMO = env_bool("PAIEMENT_DEMO", DEBUG and not STRIPE_SECRET_KEY)
 
-# Adresse publique du site, utilisée dans les liens des e-mails
-SITE_URL = os.environ.get("SITE_URL") or "http://127.0.0.1:8000"
 
 # --- Règles métier ---------------------------------------------------------------
 DUREE_BLOCAGE_MINUTES = 10  # E2-US2 : sièges bloqués 10 minutes pendant le paiement
@@ -218,12 +238,17 @@ SPECTACULAR_SETTINGS = {
 }
 
 # --- Sécurité en production -----------------------------------------------------
+# HTTPS_OBLIGATOIRE=False sert seulement à essayer le serveur avant d'avoir mis CloudFront devant.
+HTTPS_OBLIGATOIRE = env_bool("HTTPS_OBLIGATOIRE", True)
 if not DEBUG:
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     # CloudFront (C2) termine le HTTPS et transmet ce en-tête au serveur (C3)
     SECURE_PROXY_SSL_HEADER = ("HTTP_CLOUDFRONT_FORWARDED_PROTO", "https")
+    if HTTPS_OBLIGATOIRE:
+        SESSION_COOKIE_SECURE = True
+        CSRF_COOKIE_SECURE = True
+        # Visite directe du serveur (http://…elasticbeanstalk.com) : renvoyée vers l'adresse publique
+        MIDDLEWARE.insert(1, "grandcinema.middleware.RedirectionVersSitePublic")
 
 LOGGING = {
     "version": 1,
