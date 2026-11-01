@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import date, timedelta
 from decimal import Decimal
 
+from django.conf import settings
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -79,6 +80,9 @@ def tableau(request):
             "recette": sum((l["recette"] for l in lignes), Decimal("0")),
             "seances": len(lignes),
         },
+        "objectif_en_ligne": settings.OBJECTIF_PART_EN_LIGNE,
+        "objectif_atteint": vendues and round(100 * site / vendues) >= settings.OBJECTIF_PART_EN_LIGNE,
+        "rafraichissement": settings.RAFRAICHISSEMENT_PILOTAGE_SECONDES,
     })
 
 

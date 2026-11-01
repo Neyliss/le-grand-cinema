@@ -16,6 +16,7 @@ from catalogue.models import Film, Salle, Seance, Tarif
 from grandcinema.acces import GROUPE_ADMINISTRATEURS, GROUPE_AGENTS
 from paiement.models import Paiement
 from paiement.services import confirmer_paiement
+from reservation.models import Reservation
 from reservation.services import creer_reservation
 
 
@@ -28,18 +29,18 @@ def creer_seance(rangees=3, par_rangee=5, dans=timedelta(days=1)):
     return Seance.objects.create(film=film, salle=salle, debut=timezone.now() + dans)
 
 
-def reserver_avec_billets(seance, nb=1):
+def reserver_avec_billets(seance, nb=1, canal=Reservation.Canal.SITE):
     """Réservation en attente de paiement : les `nb` premiers sièges libres sont bloqués et les billets préparés."""
     libres = seance.places.filter(statut="libre").order_by("siege__rangee", "siege__numero")
-    reservation = creer_reservation(seance, list(libres.values_list("siege_id", flat=True)[:nb]))
+    reservation = creer_reservation(seance, list(libres.values_list("siege_id", flat=True)[:nb]), canal=canal)
     tarif = Tarif.objects.first()
     creer_billets(reservation, {place.id: tarif for place in reservation.places.all()})
     return reservation
 
 
 def vendre(seance, nb=1):
-    """Vente payée de `nb` places (comme au guichet, par carte)."""
-    reservation = reserver_avec_billets(seance, nb)
+    """Vente payée de `nb` places au guichet, par carte."""
+    reservation = reserver_avec_billets(seance, nb, canal=Reservation.Canal.GUICHET)
     confirmer_paiement(reservation.id, Paiement.Mode.GUICHET_CARTE)
     return reservation
 

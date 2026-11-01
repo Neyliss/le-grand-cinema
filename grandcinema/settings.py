@@ -181,6 +181,8 @@ SITE_URL = os.environ.get("SITE_URL") or "http://127.0.0.1:8000"
 DUREE_BLOCAGE_MINUTES = 10  # E2-US2 : sièges bloqués 10 minutes pendant le paiement
 PLACES_MAX_PAR_RESERVATION = 8
 RAFRAICHISSEMENT_PLAN_SECONDES = 5  # E2-US1 : plan mis à jour toutes les 5 secondes
+OBJECTIF_PART_EN_LIGNE = 50  # objectif O1 du bloc 1 : la moitié des places vendues sur le site
+RAFRAICHISSEMENT_PILOTAGE_SECONDES = 60  # E7-US1 : le tableau de remplissage se met à jour tout seul
 
 # --- Sécurité en production -----------------------------------------------------
 if not DEBUG:
