@@ -1,5 +1,6 @@
 # Intégration continue : à chaque envoi (push) sur main ou develop, et à chaque pull request,
-# GitHub lance les tests sur PostgreSQL et vérifie que l'image Docker fonctionne.
+# GitHub lance les tests sur PostgreSQL, envoie le code à SonarQube Cloud (qualité du code)
+# et vérifie que l'image Docker fonctionne.
 # Résultats : onglet « Actions » du dépôt (voir docs/guide-github.md).
 name: Tests et Docker
 
@@ -28,9 +29,13 @@ jobs:
     env:
       DEBUG: "True"
       DATABASE_URL: postgres://cinema:cinema@localhost:5432/grandcinema
+      # Clé secrète du dépôt (Settings > Secrets and variables > Actions), jamais écrite dans le code
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # tout l'historique : Sonar repère le code nouveau de chaque pull request
 
       - name: Installer Python 3.12
         uses: actions/setup-python@v5
@@ -42,6 +47,9 @@ jobs:
       - name: Installer les bibliothèques
         run: pip install -r requirements-dev.txt
 
+      - name: Vérifier le code avec ruff (erreurs simples, variables et imports inutilisés)
+        run: ruff check --select F,E9 .
+
       - name: Vérifier la configuration et les migrations
         run: |
           python manage.py check
@@ -51,6 +59,11 @@ jobs:
         run: |
           coverage run manage.py test --shuffle
           coverage report --fail-under=75
+          coverage xml
+
+      - name: Analyse de la qualité du code (SonarQube Cloud)
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v7
 
   docker:
     name: Image Docker
