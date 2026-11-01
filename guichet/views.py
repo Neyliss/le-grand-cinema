@@ -2,6 +2,8 @@
 Vente au guichet (EPIC E6) : même outil et même stock de places que le site.
 Une place vendue ici disparaît aussitôt du plan en ligne, et inversement.
 """
+from decimal import Decimal, InvalidOperation
+
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -18,6 +20,15 @@ from reservation.models import Reservation
 from reservation.services import SeanceNonReservable, SiegeIndisponible, compter_places, creer_reservation, plan_de_salle
 
 MODES = {"carte": Paiement.Mode.GUICHET_CARTE, "especes": Paiement.Mode.GUICHET_ESPECES}
+
+
+def montant_recu(request):
+    """Somme donnée par le client en espèces (facultative), par exemple « 50 » ou « 20,50 »."""
+    texte = request.POST.get("montant_recu", "").strip().replace(",", ".")
+    try:
+        return Decimal(texte).quantize(Decimal("0.01")) if texte else None
+    except InvalidOperation:
+        raise ValueError("somme reçue illisible") from None
 
 
 @agent_requis
@@ -61,12 +72,17 @@ def vendre(request, seance_id):
                 if choix[place.id] is None:
                     raise ValueError("tarif manquant")
             creer_billets(reservation, choix)
+            recu = montant_recu(request) if mode == Paiement.Mode.GUICHET_ESPECES else None
+            if recu is not None and recu < reservation.montant:
+                raise ValueError("somme reçue insuffisante")
             confirmer_paiement(reservation.id, mode)
+            if recu is not None:
+                Paiement.objects.filter(reservation=reservation).update(montant_recu=recu)
     except SiegeIndisponible:
         messages.error(request, "Un siège vient d'être pris en ligne : la vente est annulée, choisissez d'autres places.")
         return redirect(retour)
     except (SeanceNonReservable, ValueError):
-        messages.error(request, "Vente impossible : vérifiez la séance et les tarifs.")
+        messages.error(request, "Vente impossible : vérifiez la séance, les tarifs et la somme reçue.")
         return redirect(retour)
     messages.success(request, f"Vente {reservation.reference} enregistrée.")
     return redirect("guichet:imprimer", reference=reservation.reference)

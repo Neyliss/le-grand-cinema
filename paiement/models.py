@@ -21,6 +21,8 @@ class Paiement(models.Model):
     mode = models.CharField(max_length=20, choices=Mode.choices)
     reference_stripe = models.CharField("référence Stripe", max_length=255, blank=True)
     montant = models.DecimalField(max_digits=8, decimal_places=2)
+    # Vente en espèces au guichet : somme donnée par le client, pour calculer la monnaie à rendre.
+    montant_recu = models.DecimalField("montant reçu", max_digits=8, decimal_places=2, null=True, blank=True)
     statut = models.CharField(max_length=10, choices=Statut.choices, default=Statut.REUSSI)
     cree_le = models.DateTimeField("créé le", auto_now_add=True)
 
@@ -29,3 +31,7 @@ class Paiement(models.Model):
 
     def __str__(self):
         return f"{self.reservation} — {self.montant} € — {self.get_mode_display()}"
+
+    @property
+    def monnaie_a_rendre(self):
+        return self.montant_recu - self.montant if self.montant_recu is not None else None

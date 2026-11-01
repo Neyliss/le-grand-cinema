@@ -6,6 +6,9 @@
   <a class="bouton bouton--clair" href="{% url 'guichet:tableau' %}?seance={{ reservation.seance_id }}">Nouvelle vente</a>
 </div>
 <h1 style="font-size:22px">Vente {{ reservation.reference }} · {{ reservation.montant }} € · {{ reservation.paiement.get_mode_display }}</h1>
+{% if reservation.paiement.montant_recu is not None %}
+<p class="message message--success" style="font-size:18px">Reçu {{ reservation.paiement.montant_recu }} € · <strong>À rendre : {{ reservation.paiement.monnaie_a_rendre }} €</strong></p>
+{% endif %}
 <div class="impression">
   {% for billet, qr in billets %}
   <div class="carte ticket">
