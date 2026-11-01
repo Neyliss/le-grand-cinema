@@ -69,22 +69,42 @@ def url_de_paiement(request, reservation):
     return session.url
 
 
-@transaction.atomic
 def confirmer_paiement(reservation_id, mode, reference_stripe=""):
     """Étapes 10 et 11 : le paiement est confirmé, les sièges passent « vendus »,
-    la réservation « payée ». Fonction idempotente : un second appel ne fait rien."""
-    reservation = Reservation.objects.select_for_update().get(pk=reservation_id)
+    la réservation « payée ». Fonction idempotente : un second appel ne fait rien.
+
+    Si les places ne sont plus réservées (délai de 10 minutes dépassé, séance annulée), la
+    réservation est annulée, le paiement remboursé, et PaiementTropTardif est levée."""
+    reservation = _vendre_si_possible(reservation_id, mode, reference_stripe)
+    if reservation is None:
+        # Remboursement et erreur APRÈS l'enregistrement : l'annulation n'est pas effacée.
+        if reference_stripe:
+            rembourser_reference(reference_stripe)
+        raise PaiementTropTardif()
+    return reservation
+
+
+@transaction.atomic
+def _vendre_si_possible(reservation_id, mode, reference_stripe):
+    """Renvoie la réservation payée, ou None si elle ne peut plus l'être (elle est alors annulée)."""
+    reservation = Reservation.objects.select_for_update().select_related("seance").get(pk=reservation_id)
     if reservation.est_payee:
         return reservation
     places = list(reservation.places.select_for_update())
     billets = list(reservation.billets())
-    if not places or len(billets) != len(places) or any(p.statut != PlaceSeance.Statut.BLOQUEE for p in places):
-        # Le délai de 10 minutes est dépassé et les places ont été libérées : on rembourse.
+    seance_annulee = reservation.seance.statut == reservation.seance.Statut.ANNULEE
+    if (seance_annulee or not places or len(billets) != len(places)
+            or any(p.statut != PlaceSeance.Statut.BLOQUEE for p in places)):
+        # Délai de 10 minutes dépassé ou séance annulée : rien n'est vendu, les places sont rendues
+        # (avec leurs billets provisoires, comme dans reservation.services.liberer_places_expirees).
+        from billetterie.models import Billet
+
+        ids = [p.id for p in places]
+        Billet.objects.filter(place_id__in=ids).delete()
+        PlaceSeance.objects.filter(id__in=ids).update(statut=PlaceSeance.Statut.LIBRE, reservation=None, fin_blocage=None)
         reservation.statut = Reservation.Statut.ANNULEE
         reservation.save(update_fields=["statut"])
-        if reference_stripe:
-            rembourser_reference(reference_stripe)
-        raise PaiementTropTardif()
+        return None
     # E10-US1 : les places au tarif « abonné » sont décomptées de la carte (avant toute vente)
     from fidelite.services import CarteEpuisee, decompter
 
