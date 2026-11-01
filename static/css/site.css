@@ -693,6 +693,16 @@ main.conteneur {
   font-size: 14px;
 }
 
+.temps-reel--hors-ligne {
+  color: var(--alerte);
+  font-weight: 600;
+}
+
+.temps-reel--hors-ligne .point-vert {
+  background: var(--alerte);
+  animation: none;
+}
+
 .point-vert {
   width: 10px;
   height: 10px;
