@@ -29,6 +29,8 @@ Le code du projet est en ligne ici : **https://github.com/Neyliss/le-grand-cinem
 | `fix/…` | Une correction. Exemple : `fix/contraste-boutons`. |
 | `test/…`, `docs/…`, `ci/…` | Des tests, de la documentation, les tests automatiques de GitHub. |
 
+Les règles complètes de nommage sont dans [conventions.md](conventions.md).
+
 Le chemin d'une modification est toujours le même :
 
 ```
