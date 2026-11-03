@@ -107,7 +107,9 @@ def finaliser_billets(reservation_id):
     reservation.billets_pdf.save(f"{reservation.reference}.pdf", ContentFile(pdf), save=True)
     if reservation.email:
         try:
-            envoyer_billets(reservation, pdf)
+            # Même confirmé par Stripe (sans langue), l'e-mail part dans la langue du spectateur.
+            with translation.override(reservation.langue):
+                envoyer_billets(reservation, pdf)
         except Exception:  # un e-mail en échec ne doit pas annuler la vente
             log.exception("Envoi du billet %s impossible", reservation.reference)
 
