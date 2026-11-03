@@ -35,6 +35,7 @@ nommé `test_critere_N_…` : on retrouve tout de suite quel critère est vérif
 | `feature/deploiement-aws` | mise en ligne sur Elastic Beanstalk derrière CloudFront ([guide AWS](guide-aws.md)) |
 | `docs/base-de-donnees` | modèle de données et script SQL ([base de données](base-de-donnees/README.md)) |
 | `docs/tracabilite-tests` | ce document et le guide des tests à jour |
+| `fix/affiches-demo` | affiches de démonstration allégées (même image, fichiers 25 % plus légers) |
 
 ## Relancer les tests d'une story
 
