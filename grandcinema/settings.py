@@ -7,6 +7,8 @@ lues dans le fichier .env (voir .env.example). Sur AWS, elles sont définies dan
 l'environnement Elastic Beanstalk (gc-prod).
 """
 import os
+import sys
+import tempfile
 from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
@@ -134,6 +136,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# Pendant les tests, les fichiers créés (billets PDF, affiches) vont dans un dossier temporaire :
+# le dossier media du projet reste propre, et les tests passent même là où il n'est pas modifiable
+# (conteneur Docker de GitHub Actions).
+if sys.argv[1:2] == ["test"]:
+    MEDIA_ROOT = Path(tempfile.mkdtemp(prefix="grandcinema-tests-"))
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
