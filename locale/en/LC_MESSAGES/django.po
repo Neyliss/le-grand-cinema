@@ -659,3 +659,22 @@ msgid "%(nb)s place restante"
 msgid_plural "%(nb)s places restantes"
 msgstr[0] "%(nb)s seat left"
 msgstr[1] "%(nb)s seats left"
+
+msgid "Séance annulée"
+msgstr "Screening cancelled"
+
+msgid "Cette séance a été annulée"
+msgstr "This screening has been cancelled"
+
+msgid ""
+"Le cinéma a annulé cette séance : aucun billet n'est vendu et votre paiement"
+" va être remboursé automatiquement."
+msgstr ""
+"The cinema has cancelled this screening: no ticket is sold and your payment "
+"will be refunded automatically."
+
+msgid "Le cinéma a annulé cette séance : aucun billet n'est vendu."
+msgstr "The cinema has cancelled this screening: no ticket is sold."
+
+msgid "Choisir une autre séance"
+msgstr "Choose another screening"

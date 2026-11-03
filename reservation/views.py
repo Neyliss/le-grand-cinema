@@ -135,7 +135,8 @@ def recapitulatif(request, reference):
     reservation = reservation_du_visiteur(request, reference)
     if reservation.est_payee:
         return redirect("billetterie:billet", reservation.reference, reservation.jeton)
-    if reservation.statut == Reservation.Statut.ANNULEE or not places_encore_bloquees(reservation):
+    if (reservation.statut == Reservation.Statut.ANNULEE or reservation.seance.statut == Seance.Statut.ANNULEE
+            or not places_encore_bloquees(reservation)):
         return render(request, "reservation/expiree.html", {"reservation": reservation})
 
     places = list(reservation.places.select_related("siege", "billet"))

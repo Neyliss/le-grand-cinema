@@ -148,6 +148,10 @@ def annuler_seance(seance):
 
     seance.statut = seance.Statut.ANNULEE
     seance.save(update_fields=["statut"])
+    # Spectateurs en train de payer : leurs places sont rendues et la réservation annulée.
+    # Un paiement qui arriverait ensuite est refusé et remboursé (paiement/services.py).
+    for reservation in seance.reservations.filter(statut=Reservation.Statut.ATTENTE):
+        liberer_reservation(reservation)
     nb = 0
     for reservation in seance.reservations.filter(statut=Reservation.Statut.PAYEE):
         rembourser(reservation)
