@@ -117,7 +117,7 @@ class Command(BaseCommand):
         a_vendre = int(len(places) * part)
         random.shuffle(places)
         places = sorted(places[:a_vendre], key=lambda p: (p.siege.rangee, p.siege.numero))
-        billets = []
+        billets, paiements_dates = [], []
         i = 0
         while i < len(places):
             groupe = places[i:i + random.randint(1, 4)]
@@ -135,8 +135,12 @@ class Command(BaseCommand):
                 montant += tarif.prix
             mode = Paiement.Mode.CARTE_EN_LIGNE if canal == Reservation.Canal.SITE else random.choice(
                 [Paiement.Mode.GUICHET_CARTE, Paiement.Mode.GUICHET_ESPECES])
-            Paiement.objects.create(reservation=reservation, mode=mode, montant=montant,
-                                    reference_stripe=f"demo-{reservation.reference}" if canal == Reservation.Canal.SITE else "")
+            paiement = Paiement.objects.create(reservation=reservation, mode=mode, montant=montant,
+                                               reference_stripe=f"demo-{reservation.reference}" if canal == Reservation.Canal.SITE else "")
+            # Ventes étalées sur les 14 derniers jours : le tableau du festival (E8) montre leur progression.
+            paiements_dates.append((paiement.id, timezone.now() - timedelta(days=random.randint(0, 13), minutes=random.randint(0, 600))))
+        for paiement_id, date in paiements_dates:
+            Paiement.objects.filter(pk=paiement_id).update(cree_le=date)
         PlaceSeance.objects.bulk_update(places, ["statut", "reservation"])
         Billet.objects.bulk_create(billets)
         return len(billets)

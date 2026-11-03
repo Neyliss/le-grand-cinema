@@ -6,4 +6,5 @@ app_name = "pilotage"
 urlpatterns = [
     path("", views.tableau, name="tableau"),
     path("export.csv", views.export_csv, name="export_csv"),
+    path("festival/", views.festival, name="festival"),
 ]
