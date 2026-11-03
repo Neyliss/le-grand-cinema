@@ -20,4 +20,5 @@ staticfiles/
 
 # Couverture des tests
 .coverage
+coverage.xml
 htmlcov/
