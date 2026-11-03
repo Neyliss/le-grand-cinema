@@ -8,7 +8,7 @@ il crée lui-même les données dont il a besoin, avec ces fabriques.
 from datetime import timedelta
 from decimal import Decimal
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group, Permission, User
 from django.utils import timezone
 
 from billetterie.services import creer_billets
@@ -51,7 +51,11 @@ def creer_agent(identifiant="agent"):
 
 
 def creer_administrateur(identifiant="direction"):
-    """Compte d'administrateur : groupe « Administrateurs »."""
+    """Compte d'administrateur : groupe « Administrateurs », avec les mêmes droits que sur le site
+    (programmation, réservations, paiements, billets)."""
     admin = User.objects.create_user(identifiant, password="mot-de-passe-de-test", is_staff=True)
-    admin.groups.add(Group.objects.get_or_create(name=GROUPE_ADMINISTRATEURS)[0])
+    groupe = Group.objects.get_or_create(name=GROUPE_ADMINISTRATEURS)[0]
+    groupe.permissions.set(Permission.objects.filter(
+        content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie"]))
+    admin.groups.add(groupe)
     return admin
