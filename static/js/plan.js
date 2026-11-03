@@ -15,6 +15,8 @@ class PlanDeSalle {
     this.statuts = new Map();     // identifiant du siège -> statut connu
     this.surChangement = options.surChangement || (() => {});
     this.surPerte = options.surPerte || (() => {});
+    // Indicateur « temps réel » : vert quand le plan est à jour, rouge si la connexion est perdue.
+    this.indicateur = document.querySelector("[data-indicateur-temps-reel]");
   }
 
   demarrer(planInitial) {
@@ -26,10 +28,20 @@ class PlanDeSalle {
   async charger() {
     try {
       const reponse = await fetch(this.url, { headers: { Accept: "application/json" }, cache: "no-store" });
-      if (reponse.ok) this.afficher(await reponse.json());
+      if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
+      this.afficher(await reponse.json());
+      this.signalerConnexion(true);
     } catch (erreur) {
-      // Réseau coupé : on réessaiera au prochain rafraîchissement.
+      // Réseau coupé : on le signale, et on réessaiera au prochain rafraîchissement.
+      this.signalerConnexion(false);
     }
+  }
+
+  signalerConnexion(enLigne) {
+    if (!this.indicateur) return;
+    this.indicateur.classList.toggle("temps-reel--hors-ligne", !enLigne);
+    const texte = this.indicateur.querySelector("[data-texte]");
+    if (texte) texte.textContent = enLigne ? this.indicateur.dataset.texteEnLigne : this.indicateur.dataset.texteHorsLigne;
   }
 
   construire(plan) {
