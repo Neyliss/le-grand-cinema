@@ -1,0 +1,96 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#E3F2F4", "primaryBorderColor": "#1F8A9A", "lineColor": "#505050", "fontFamily": "DejaVu Sans, sans-serif", "fontSize": "14px", "tertiaryColor": "#ffffff"}, "er": {"layoutDirection": "LR", "entityPadding": 12}}}%%
+erDiagram
+    UTILISATEUR["Utilisateur (auth_user)"] {
+        int id PK
+        string username UK "e-mail du spectateur"
+        string password "empreinte, jamais en clair"
+        bool is_staff "personnel du cinéma"
+    }
+    PROFIL["Profil"] {
+        bool email_confirme
+        bool accepte_offres "faux par défaut"
+    }
+    FILM["Film"] {
+        int id PK
+        string titre
+        int duree "minutes"
+        string version "VF ou VOST"
+        bool festival
+    }
+    SALLE["Salle"] {
+        int id PK
+        string nom UK
+    }
+    SIEGE["Siège"] {
+        int id PK
+        string rangee
+        int numero
+        string type "standard, PMR ou VIP"
+    }
+    SEANCE["Séance"] {
+        int id PK
+        datetime debut
+        string statut "publiée ou annulée"
+    }
+    PLACE["Place (place_seance)"] {
+        int id PK
+        string statut "libre, bloquée, vendue"
+        datetime fin_blocage "10 minutes"
+    }
+    RESERVATION["Réservation"] {
+        int id PK
+        string reference UK
+        string email
+        string canal "site ou guichet"
+        string statut "attente, payée, annulée"
+    }
+    BILLET["Billet"] {
+        string code_qr UK
+        decimal prix
+        datetime utilise_le
+    }
+    TARIF["Tarif"] {
+        string libelle
+        decimal prix
+        bool reserve_abonnes
+    }
+    PAIEMENT["Paiement"] {
+        string mode
+        decimal montant
+        string reference_stripe
+    }
+    ABONNEMENT["Carte d'abonnement"] {
+        int places_restantes "jamais négatif"
+    }
+    FORMULE["Formule d'abonnement"] {
+        string libelle
+        int nb_places
+        decimal prix
+    }
+    OFFRE["Offre"] {
+        string titre
+        datetime envoyee_le "aux comptes qui l'acceptent"
+        int nb_destinataires
+    }
+
+    UTILISATEUR ||--o| PROFIL : "a"
+    UTILISATEUR |o--o{ RESERVATION : "retrouve (compte facultatif)"
+    UTILISATEUR |o--o{ ABONNEMENT : "achète"
+    FILM ||--o{ SEANCE : "est projeté"
+    SALLE ||--o{ SEANCE : "accueille"
+    SALLE ||--|{ SIEGE : "contient"
+    SEANCE ||--|{ PLACE : "une par siège"
+    SIEGE ||--o{ PLACE : "une par séance"
+    SEANCE ||--o{ RESERVATION : "concerne"
+    RESERVATION |o--o{ PLACE : "bloque puis achète"
+    PLACE ||--o| BILLET : "donne"
+    TARIF ||--o{ BILLET : "fixe le prix"
+    RESERVATION ||--o| PAIEMENT : "réglée par"
+    ABONNEMENT |o--o{ RESERVATION : "décomptée"
+    FORMULE ||--o{ ABONNEMENT : "modèle de"
+
+    style UTILISATEUR stroke:#0F5560,stroke-width:3px
+    style FILM stroke:#0F5560,stroke-width:3px
+    style SEANCE stroke:#0F5560,stroke-width:3px
+    style RESERVATION stroke:#0F5560,stroke-width:3px
+    style PLACE stroke:#0F5560,stroke-width:3px
