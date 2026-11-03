@@ -4,11 +4,13 @@
 [![Porte qualité SonarQube Cloud](https://sonarcloud.io/api/project_badges/measure?project=Neyliss_le-grand-cinema&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Neyliss_le-grand-cinema)
 [![Couverture des tests](https://sonarcloud.io/api/project_badges/measure?project=Neyliss_le-grand-cinema&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Neyliss_le-grand-cinema)
 
-Application web Django qui réalise le MVP décrit dans le dossier de conception (Bloc 1) :
+Application web Django qui réalise les **15 user stories** du projet (blocs 1 et 2) :
 programmation en ligne, plan de salle en temps réel, réservation sans compte, paiement Stripe,
-billet QR par e-mail, vente au guichet sur le même stock de places, contrôle à l'entrée et pilotage.
+billet QR par e-mail, vente au guichet sur le même stock de places, contrôle à l'entrée et pilotage
+(MVP), puis tableau du festival, compte spectateur facultatif et carte d'abonnement (V2 et V3),
+avec une **API REST documentée dans Swagger** (`/api/docs/`).
 
-**Guides** : [Conventions de branches et de commits](docs/conventions.md) · [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md) · [API et Swagger](docs/api.md) · [Qualité du code (SonarQube Cloud)](docs/guide-sonarcloud.md) · [Mise en ligne sur AWS](docs/guide-aws.md) · [Base de données](docs/base-de-donnees/README.md)
+**Guides** : [Conventions de branches et de commits](docs/conventions.md) · [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md) · [API et Swagger](docs/api.md) · [Qualité du code (SonarQube Cloud)](docs/guide-sonarcloud.md) · [Mise en ligne sur AWS](docs/guide-aws.md) · [Base de données](docs/base-de-donnees/README.md) · [Traçabilité stories → tests](docs/tracabilite.md)
 
 **Schémas** (architecture AWS, cas d'utilisation, séquence et classes UML) : [docs/schemas/Le_Grand_Cinema_schemas.drawio](docs/schemas/Le_Grand_Cinema_schemas.drawio), [à ouvrir dans draw.io](https://viewer.diagrams.net/?nav=1&title=Le_Grand_Cinema_schemas.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2FNeyliss%2Fle-grand-cinema%2Fdevelop%2Fdocs%2Fschemas%2FLe_Grand_Cinema_schemas.drawio) sans compte.
 
@@ -115,10 +117,10 @@ python manage.py test                          # avec Python
 docker compose exec web python manage.py test  # avec Docker (PostgreSQL)
 ```
 
-42 tests vérifient les règles du dossier, en particulier la règle critique « un siège ne se vend
-qu'une fois » (`reservation/tests/test_double_vente.py`), le blocage de 10 minutes, le parcours
-complet en ligne, le webhook Stripe signé, le contrôle d'un billet déjà scanné, l'export CSV
-et les données de démonstration.
+128 tests vérifient les règles du projet : **un test par critère d'acceptation** de chaque user
+story (44 critères, voir la [traçabilité](docs/tracabilite.md)), la règle critique « un siège ne se
+vend qu'une fois » (`reservation/tests/test_double_vente.py`), le webhook Stripe signé, l'API et
+les cas de refus. Ils couvrent 90 % du code.
 Chaque module range ses tests dans un dossier `tests/`, un fichier par sujet ; GitHub les relance
 à chaque envoi (onglet *Actions*). Voir le [guide des tests](docs/guide-tests.md).
 
@@ -139,7 +141,8 @@ Le projet suit le modèle **MVT** de Django (dossier 3, figure 7) :
 - `tests/` (dans chaque module) : les tests ; `outils_de_test/` : les données de test partagées.
 
 Branches Git : `main` (versions stables, avec tags), `develop` (intégration) et une branche par
-travail (`feature/…`, `fix/…`). Voir le [guide Git et GitHub](docs/guide-github.md).
+travail (`feature/…`, `fix/…`), fusionnée par merge request. Voir les [conventions](docs/conventions.md)
+et le [guide Git et GitHub](docs/guide-github.md).
 
 La règle critique (dossier 3, § 3.3) se trouve dans `reservation/services.py`, fonction
 `bloquer_sieges` : verrou `select_for_update` dans une transaction, plus la contrainte d'unicité
