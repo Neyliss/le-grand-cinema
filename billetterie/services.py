@@ -2,6 +2,7 @@
 Billets : création, QR code, PDF, envoi par e-mail et contrôle à l'entrée.
 """
 import base64
+from datetime import timedelta
 import io
 import logging
 
@@ -163,3 +164,21 @@ def controler_billet(code, seance=None):
     billet.save(update_fields=["utilise_le"])
     return {"resultat": "valide", "titre": "Billet valide", "detail": detail,
             "heure": f"{timezone.localtime(billet.utilise_le):%H:%M}"}
+
+
+DELAI_ANNULATION_ENTREE = timedelta(minutes=10)
+
+
+@transaction.atomic
+def annuler_entree(code, seance):
+    """Erreur de l'agent (mauvais billet scanné, spectateur ressorti avant la séance) : l'entrée est
+    annulée et le billet redevient valable. Possible seulement dans les 10 minutes qui suivent le scan."""
+    billet = (Billet.objects.select_for_update(of=("self",)).select_related("place")
+              .filter(code_qr=code.strip(), place__seance=seance).first())
+    if billet is None or billet.utilise_le is None:
+        return {"resultat": "refuse", "titre": "Rien à annuler", "detail": "Ce billet n'a pas été scanné pour cette séance."}
+    if timezone.now() - billet.utilise_le > DELAI_ANNULATION_ENTREE:
+        return {"resultat": "refuse", "titre": "Annulation impossible", "detail": "Le scan date de plus de 10 minutes."}
+    billet.utilise_le = None
+    billet.save(update_fields=["utilise_le"])
+    return {"resultat": "annule", "titre": "Entrée annulée", "detail": f"Le billet {billet.place.siege} est de nouveau valable."}
