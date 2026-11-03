@@ -45,6 +45,24 @@ def vendre(seance, nb=1):
     return reservation
 
 
+def acheter_en_ligne(seance, email, nb=1):
+    """Achat payé sur le site, par carte, avec cette adresse e-mail (sans compte)."""
+    reservation = reserver_avec_billets(seance, nb)
+    reservation.nom, reservation.email = "Ada", email
+    reservation.save(update_fields=["nom", "email"])
+    return confirmer_paiement(reservation.id, Paiement.Mode.CARTE_EN_LIGNE)
+
+
+def creer_spectateur(email="ada@exemple.fr", mot_de_passe="Cinema-2026!", confirme=True):
+    """Compte spectateur (E9-US1), adresse déjà confirmée par défaut."""
+    from comptes.services import creer_compte
+
+    spectateur = creer_compte(email, mot_de_passe, "Ada")
+    spectateur.profil.email_confirme = confirme
+    spectateur.profil.save()
+    return spectateur
+
+
 def creer_agent(identifiant="agent"):
     """Compte d'agent d'accueil : membre du personnel, groupe « Agents d'accueil »."""
     agent = User.objects.create_user(identifiant, password="mot-de-passe-de-test", is_staff=True)

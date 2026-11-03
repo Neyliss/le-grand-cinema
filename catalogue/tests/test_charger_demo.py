@@ -47,6 +47,13 @@ class ChargerDemoTests(TestCase):
         self.assertTrue(agent.groups.filter(name=GROUPE_AGENTS).exists())
         self.assertFalse(agent.is_superuser)
 
+    def test_le_compte_spectateur_de_demonstration_a_trois_reservations(self):
+        spectateur = User.objects.get(username="spectateur.demo@exemple.fr")
+
+        self.assertTrue(spectateur.profil.email_confirme)
+        self.assertFalse(spectateur.is_staff)
+        self.assertEqual(spectateur.reservations.filter(statut="payee").count(), 3)
+
     def test_un_second_lancement_ne_duplique_rien(self):
         sortie = StringIO()
 

@@ -53,8 +53,11 @@ PROGRAMME = [
 TARIFS = [("Plein", "10.00", 1), ("Réduit (étudiant)", "8.00", 2), ("Moins de 14 ans", "6.00", 3)]
 
 
+SPECTATEUR_DEMO = "spectateur.demo@exemple.fr"
+
+
 class Command(BaseCommand):
-    help = "Charge des données de démonstration (salles, films, séances, ventes, comptes du personnel)."
+    help = "Charge des données de démonstration (salles, films, séances, ventes, comptes du personnel et spectateur)."
 
     def add_arguments(self, parser):
         parser.add_argument("--reinitialiser", action="store_true", help="Efface les données existantes avant le chargement.")
@@ -97,9 +100,10 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f"{len(SALLES)} salles ({sum(r * s for _, _, r, s, _ in SALLES)} places), {len(films)} films, "
             f"{nb_seances} séances et {nb_billets} billets vendus chargés."))
-        self.stdout.write("Comptes du personnel (pour le développement uniquement) :")
+        self.stdout.write("Comptes de démonstration (site de démonstration uniquement) :")
         self.stdout.write("  administrateur : admin / admin-gc-2026")
         self.stdout.write("  agent d'accueil : agent / agent-gc-2026")
+        self.stdout.write(f"  spectateur : {SPECTATEUR_DEMO} / spectateur-gc-2026")
 
     def vider(self):
         Billet.objects.all().delete()
@@ -158,3 +162,26 @@ class Command(BaseCommand):
         if not User.objects.filter(username="agent").exists():
             agent = User.objects.create_user("agent", "agent@exemple.fr", "agent-gc-2026", first_name="Accueil 1", is_staff=True)
             agent.groups.add(agents)
+        self.creer_spectateur_demo()
+
+    def creer_spectateur_demo(self):
+        """Compte spectateur confirmé (E9-US1), avec trois réservations payées sur le site."""
+        from comptes.models import Profil
+        from comptes.services import GROUPE_SPECTATEURS
+
+        spectateur = User.objects.filter(username=SPECTATEUR_DEMO).first()
+        if spectateur is None:
+            spectateur = User.objects.create_user(SPECTATEUR_DEMO, SPECTATEUR_DEMO, "spectateur-gc-2026", first_name="Camille")
+            Profil.objects.create(utilisateur=spectateur, email_confirme=True)
+            spectateur.groups.add(Group.objects.get_or_create(name=GROUPE_SPECTATEURS)[0])
+        # Une réservation par film, à des jours différents
+        ids, films = [], set()
+        for jour in (0, 2, 4):
+            date = timezone.localdate() + timedelta(days=jour)
+            reservation = (Reservation.objects.filter(canal=Reservation.Canal.SITE, statut=Reservation.Statut.PAYEE,
+                                                      seance__debut__date=date).exclude(seance__film__in=films)
+                           .order_by("seance__debut").first())
+            if reservation:
+                ids.append(reservation.id)
+                films.add(reservation.seance.film_id)
+        Reservation.objects.filter(id__in=ids).update(compte=spectateur, nom="Camille", email=SPECTATEUR_DEMO)

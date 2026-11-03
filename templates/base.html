@@ -21,6 +21,11 @@
         <a href="{% url 'catalogue:programmation' %}"{% if nom == 'programmation' or nom == 'plan' or nom == 'recapitulatif' %} aria-current="page"{% endif %}>{% translate "Programmation" %}</a>
         <a href="{% url 'catalogue:festival' %}"{% if nom == 'festival' %} aria-current="page"{% endif %}>{% translate "Festival de Jazz" %}</a>
         <a href="{% url 'catalogue:infos' %}"{% if nom == 'infos' %} aria-current="page"{% endif %}>{% translate "Infos pratiques" %}</a>
+        {% if user.is_authenticated and user.profil %}
+        <a href="{% url 'comptes:mon_compte' %}"{% if nom == 'mon_compte' %} aria-current="page"{% endif %}>{% translate "Mon compte" %}</a>
+        {% else %}
+        <a href="{% url 'comptes:connexion' %}"{% if nom == 'connexion' or nom == 'inscription' %} aria-current="page"{% endif %}>{% translate "Se connecter" %}</a>
+        {% endif %}
       </nav>
       {% endwith %}
       {% include "includes/langues.html" %}
@@ -44,6 +49,7 @@
       <span>
         <a href="{% url 'catalogue:festival' %}">{% translate "Festival de Jazz" %}</a> ·
         <a href="{% url 'catalogue:infos' %}">{% translate "Infos pratiques" %}</a> ·
+        <a href="{% url 'comptes:mon_compte' %}">{% translate "Mon compte" %}</a> ·
         {% translate "Mentions légales" %} · {% translate "Accessibilité" %}
       </span>
     </div>
