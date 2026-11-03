@@ -35,12 +35,13 @@
     <div class="horaires">
       {% for seance in seances %}
         {% if seance.nb_libres == 0 %}
-          <span class="horaire horaire--complet"><strong>{{ seance.debut|time:"H:i" }}</strong><span>{% translate "Complet" %}</span></span>
+          <span class="horaire horaire--complet"><strong>{{ seance.debut|time:"H:i" }}</strong><span>{% translate "Complet" %}</span><span class="horaire__salle">{{ seance.salle }}</span></span>
         {% else %}
           <a class="horaire{% if seance.nb_libres <= 10 %} horaire--peu{% endif %}" href="{% url 'reservation:plan' seance.id %}"
              aria-label="{{ seance.debut|time:'H:i' }}, {{ seance.salle }}, {% blocktranslate count n=seance.nb_libres %}{{ n }} place libre{% plural %}{{ n }} places libres{% endblocktranslate %}">
             <strong>{{ seance.debut|time:"H:i" }}</strong>
             <span>{% blocktranslate count n=seance.nb_libres %}{{ n }} libre{% plural %}{{ n }} libres{% endblocktranslate %}</span>
+            <span class="horaire__salle">{{ seance.salle }}</span>
           </a>
         {% endif %}
       {% endfor %}

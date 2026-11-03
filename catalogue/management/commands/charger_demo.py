@@ -53,13 +53,23 @@ PROGRAMME = [
 TARIFS = [("Plein", "10.00", 1), ("Réduit (étudiant)", "8.00", 2), ("Moins de 14 ans", "6.00", 3)]
 
 
+SPECTATEUR_DEMO = "spectateur.demo@exemple.fr"
+
+
 class Command(BaseCommand):
-    help = "Charge des données de démonstration (salles, films, séances, ventes, comptes du personnel)."
+    help = "Charge des données de démonstration (salles, films, séances, ventes, comptes du personnel et spectateur)."
 
     def add_arguments(self, parser):
         parser.add_argument("--reinitialiser", action="store_true", help="Efface les données existantes avant le chargement.")
+        parser.add_argument("--si-perime", action="store_true",
+                            help="Recharge tout seulement si la programmation se termine dans moins de 3 jours (déploiement).")
 
     def handle(self, *args, **options):
+        if options["si_perime"] and Film.objects.exists():
+            if Seance.objects.filter(debut__gte=timezone.now() + timedelta(days=3)).exists():
+                self.stdout.write("Programmation encore à jour : rien à recharger.")
+                return
+            options["reinitialiser"] = True
         if Film.objects.exists() and not options["reinitialiser"]:
             self.stdout.write(self.style.WARNING("Des données existent déjà. Utilisez --reinitialiser pour tout recharger."))
             return
@@ -97,11 +107,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f"{len(SALLES)} salles ({sum(r * s for _, _, r, s, _ in SALLES)} places), {len(films)} films, "
             f"{nb_seances} séances et {nb_billets} billets vendus chargés."))
-        self.stdout.write("Comptes du personnel (pour le développement uniquement) :")
+        self.stdout.write("Comptes de démonstration (site de démonstration uniquement) :")
         self.stdout.write("  administrateur : admin / admin-gc-2026")
         self.stdout.write("  agent d'accueil : agent / agent-gc-2026")
+        self.stdout.write(f"  spectateur : {SPECTATEUR_DEMO} / spectateur-gc-2026")
 
     def vider(self):
+        from fidelite.models import Abonnement, FormuleAbonnement
+
+        Abonnement.objects.all().delete()
+        FormuleAbonnement.objects.all().delete()
         Billet.objects.all().delete()
         Paiement.objects.all().delete()
         PlaceSeance.objects.all().delete()
@@ -117,7 +132,7 @@ class Command(BaseCommand):
         a_vendre = int(len(places) * part)
         random.shuffle(places)
         places = sorted(places[:a_vendre], key=lambda p: (p.siege.rangee, p.siege.numero))
-        billets = []
+        billets, paiements_dates = [], []
         i = 0
         while i < len(places):
             groupe = places[i:i + random.randint(1, 4)]
@@ -135,8 +150,14 @@ class Command(BaseCommand):
                 montant += tarif.prix
             mode = Paiement.Mode.CARTE_EN_LIGNE if canal == Reservation.Canal.SITE else random.choice(
                 [Paiement.Mode.GUICHET_CARTE, Paiement.Mode.GUICHET_ESPECES])
-            Paiement.objects.create(reservation=reservation, mode=mode, montant=montant,
-                                    reference_stripe=f"demo-{reservation.reference}" if canal == Reservation.Canal.SITE else "")
+            paiement = Paiement.objects.create(reservation=reservation, mode=mode, montant=montant,
+                                               reference_stripe=f"demo-{reservation.reference}" if canal == Reservation.Canal.SITE else "")
+            # Ventes étalées sur les 14 derniers jours : le tableau du festival (E8) montre leur progression.
+            # Simple calcul à partir du numéro (pas de tirage au hasard) : mêmes dates à chaque chargement.
+            jours, minutes = (paiement.id * 5) % 14, (paiement.id * 37) % 600
+            paiements_dates.append((paiement.id, timezone.now() - timedelta(days=jours, minutes=minutes)))
+        for paiement_id, date in paiements_dates:
+            Paiement.objects.filter(pk=paiement_id).update(cree_le=date)
         PlaceSeance.objects.bulk_update(places, ["statut", "reservation"])
         Billet.objects.bulk_create(billets)
         return len(billets)
@@ -145,7 +166,7 @@ class Command(BaseCommand):
         agents, _ = Group.objects.get_or_create(name=GROUPE_AGENTS)
         administrateurs, _ = Group.objects.get_or_create(name=GROUPE_ADMINISTRATEURS)
         administrateurs.permissions.set(Permission.objects.filter(
-            content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie"]))
+            content_type__app_label__in=["catalogue", "reservation", "paiement", "billetterie", "fidelite"]))
         agents.permissions.set(Permission.objects.filter(codename__startswith="view_",
                                                          content_type__app_label__in=["catalogue", "reservation"]))
         if not User.objects.filter(username="admin").exists():
@@ -154,3 +175,39 @@ class Command(BaseCommand):
         if not User.objects.filter(username="agent").exists():
             agent = User.objects.create_user("agent", "agent@exemple.fr", "agent-gc-2026", first_name="Accueil 1", is_staff=True)
             agent.groups.add(agents)
+        self.creer_spectateur_demo()
+
+    def creer_spectateur_demo(self):
+        """Compte spectateur confirmé (E9-US1), avec trois réservations payées sur le site."""
+        from comptes.models import Profil
+        from comptes.services import GROUPE_SPECTATEURS
+
+        spectateur = User.objects.filter(username=SPECTATEUR_DEMO).first()
+        if spectateur is None:
+            spectateur = User.objects.create_user(SPECTATEUR_DEMO, SPECTATEUR_DEMO, "spectateur-gc-2026", first_name="Camille")
+            Profil.objects.create(utilisateur=spectateur, email_confirme=True)
+            spectateur.groups.add(Group.objects.get_or_create(name=GROUPE_SPECTATEURS)[0])
+        spectateur.profil.accepte_offres = True
+        spectateur.profil.save(update_fields=["accepte_offres"])
+        self.creer_fidelite(spectateur)
+        # Une réservation par film, à des jours différents
+        ids, films = [], set()
+        for jour in (0, 2, 4):
+            date = timezone.localdate() + timedelta(days=jour)
+            reservation = (Reservation.objects.filter(canal=Reservation.Canal.SITE, statut=Reservation.Statut.PAYEE,
+                                                      seance__debut__date=date).exclude(seance__film__in=films)
+                           .order_by("seance__debut").first())
+            if reservation:
+                ids.append(reservation.id)
+                films.add(reservation.seance.film_id)
+        Reservation.objects.filter(id__in=ids).update(compte=spectateur, nom="Camille", email=SPECTATEUR_DEMO)
+
+    def creer_fidelite(self, spectateur):
+        """E10-US1 : une formule de carte, le tarif « Abonné » et une carte entamée pour le spectateur."""
+        from fidelite.models import Abonnement, FormuleAbonnement
+
+        formule, _ = FormuleAbonnement.objects.get_or_create(libelle="Carte 10 places", defaults={"nb_places": 10, "prix": Decimal("75.00")})
+        Tarif.objects.get_or_create(libelle="Abonné", defaults={"prix": Decimal("0.00"), "reserve_abonnes": True, "ordre": 4})
+        if not Abonnement.objects.filter(compte=spectateur).exists():
+            Abonnement.objects.create(compte=spectateur, formule=formule, prix=formule.prix, places_restantes=7,
+                                      statut=Abonnement.Statut.ACTIVE, active_le=timezone.now() - timedelta(days=20))

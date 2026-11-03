@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Supprimer mon compte" %}{% endblock %}
+{% block contenu %}
+<form method="post" class="carte formulaire--etroit">
+  {% csrf_token %}
+  <h1>{% translate "Supprimer mon compte" %}</h1>
+  <p>{% translate "Votre compte, votre nom et votre adresse e-mail seront supprimés. Vos billets déjà achetés restent valables avec le lien reçu par e-mail." %}</p>
+  <button class="bouton bouton--large" type="submit">{% translate "Supprimer définitivement" %}</button>
+  <a class="bouton bouton--clair bouton--large" href="{% url 'comptes:mon_compte' %}">{% translate "Annuler" %}</a>
+</form>
+{% endblock %}

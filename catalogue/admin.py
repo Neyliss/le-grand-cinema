@@ -39,7 +39,7 @@ class SalleAdmin(admin.ModelAdmin):
 
 @admin.register(Tarif)
 class TarifAdmin(admin.ModelAdmin):
-    list_display = ("libelle", "prix", "actif", "ordre")
+    list_display = ("libelle", "prix", "actif", "reserve_abonnes", "ordre")
     list_editable = ("prix", "actif", "ordre")
 
 

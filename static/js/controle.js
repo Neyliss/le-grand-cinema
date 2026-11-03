@@ -7,28 +7,44 @@
   const jauge = document.getElementById("jauge");
   let dernier = { code: "", heure: 0 };
 
+  function afficher(r, code) {
+    const carte = document.createElement("div");
+    carte.className = `resultat resultat--${r.resultat}`;
+    const titre = document.createElement("strong");
+    titre.textContent = (r.resultat === "valide" ? "✓ " : r.resultat === "annule" ? "↺ " : "✕ ") + r.titre;
+    const detail = document.createElement("p");
+    detail.textContent = r.detail;
+    carte.append(titre, detail);
+    if (r.resultat === "valide") {
+      // Erreur de scan : l'agent peut annuler cette entrée (10 minutes au plus).
+      const annuler = document.createElement("button");
+      annuler.type = "button";
+      annuler.className = "bouton bouton--clair";
+      annuler.textContent = "Annuler cette entrée";
+      annuler.addEventListener("click", () => envoyer(form.dataset.urlAnnuler, code));
+      carte.append(annuler);
+    }
+    zone.replaceChildren(carte);
+    compteur.textContent = `${r.compteur.entrees} / ${r.compteur.vendus}`;
+    jauge.style.width = `${r.compteur.vendus ? Math.round((100 * r.compteur.entrees) / r.compteur.vendus) : 0}%`;
+  }
+
+  async function envoyer(url, code) {
+    const donnees = new FormData(form);
+    donnees.set("code", code);
+    const reponse = await fetch(url, { method: "POST", body: donnees });
+    afficher(await reponse.json(), code);
+    champ.value = "";
+    champ.focus();
+  }
+
   async function verifier(code) {
     code = code.trim();
     if (!code) return;
     // Évite de scanner deux fois de suite le même billet par erreur (caméra)
     if (code === dernier.code && Date.now() - dernier.heure < 3000) return;
     dernier = { code, heure: Date.now() };
-    const donnees = new FormData(form);
-    donnees.set("code", code);
-    const reponse = await fetch(form.action, { method: "POST", body: donnees });
-    const r = await reponse.json();
-    const carte = document.createElement("div");
-    carte.className = `resultat resultat--${r.resultat}`;
-    const titre = document.createElement("strong");
-    titre.textContent = (r.resultat === "valide" ? "✓ " : "✕ ") + r.titre;
-    const detail = document.createElement("p");
-    detail.textContent = r.detail;
-    carte.append(titre, detail);
-    zone.replaceChildren(carte);
-    compteur.textContent = `${r.compteur.entrees} / ${r.compteur.vendus}`;
-    jauge.style.width = `${r.compteur.vendus ? Math.round((100 * r.compteur.entrees) / r.compteur.vendus) : 0}%`;
-    champ.value = "";
-    champ.focus();
+    await envoyer(form.action, code);
   }
 
   form.addEventListener("submit", (e) => { e.preventDefault(); verifier(champ.value); });

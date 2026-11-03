@@ -24,7 +24,11 @@
       <li><span class="siege siege--bloquee"></span>{% translate "Bloquée" %}</li>
       <li><span class="siege siege--pmr"></span>{% translate "Place PMR" %}</li>
     </ul>
-    <p class="temps-reel petit"><span class="point-vert" aria-hidden="true"></span>{% blocktranslate %}Plan mis à jour automatiquement toutes les {{ rafraichissement }} secondes{% endblocktranslate %}</p>
+    {% blocktranslate asvar texte_en_ligne %}Plan mis à jour automatiquement toutes les {{ rafraichissement }} secondes{% endblocktranslate %}
+    <p class="temps-reel petit" role="status" data-indicateur-temps-reel data-texte-en-ligne="{{ texte_en_ligne }}"
+       data-texte-hors-ligne="{% translate 'Connexion perdue : le plan sera mis à jour dès son retour.' %}">
+      <span class="point-vert" aria-hidden="true"></span><span data-texte>{{ texte_en_ligne }}</span>
+    </p>
   </section>
 
   <form class="carte selection" method="post" action="{% url 'reservation:bloquer' seance.id %}" id="form-selection">

@@ -1,0 +1,8 @@
+{% load i18n %}{% translate "Bonjour" %} {{ utilisateur.first_name }},
+
+{% translate "Pour activer votre compte Le Grand Cinéma, confirmez votre adresse e-mail en ouvrant ce lien (valable 3 jours) :" %}
+{{ lien }}
+
+{% translate "Si vous n'avez pas créé de compte, ignorez simplement ce message." %}
+
+Le Grand Cinéma

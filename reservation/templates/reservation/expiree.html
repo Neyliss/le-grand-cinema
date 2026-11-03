@@ -3,6 +3,16 @@
 {% block titre %}{% translate "Délai dépassé" %}{% endblock %}
 {% block contenu %}
 <section class="carte demo">
+  {% if reservation.seance.statut == "annulee" %}
+  <span class="badge">{% translate "Séance annulée" %}</span>
+  <h1>{% translate "Cette séance a été annulée" %}</h1>
+  {% if rembourse %}
+    <p>{% translate "Le cinéma a annulé cette séance : aucun billet n'est vendu et votre paiement va être remboursé automatiquement." %}</p>
+  {% else %}
+    <p>{% translate "Le cinéma a annulé cette séance : aucun billet n'est vendu." %}</p>
+  {% endif %}
+  <a class="bouton" href="{% url 'catalogue:programmation' %}">{% translate "Choisir une autre séance" %}</a>
+  {% else %}
   <span class="badge">{% translate "Délai dépassé" %}</span>
   <h1>{% translate "Vos places ont été libérées" %}</h1>
   {% if rembourse %}
@@ -11,5 +21,6 @@
     <p class="muet">{% translate "Le délai de 10 minutes pour payer est dépassé. Choisissez à nouveau vos places : beaucoup sont peut-être encore libres." %}</p>
   {% endif %}
   <a class="bouton" href="{% url 'reservation:plan' reservation.seance_id %}">{% translate "Choisir à nouveau mes places" %}</a>
+  {% endif %}
 </section>
 {% endblock %}

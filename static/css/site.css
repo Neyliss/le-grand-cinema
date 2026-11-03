@@ -621,8 +621,8 @@ main.conteneur {
   align-items: center;
   justify-content: center;
   min-width: 96px;
-  height: 54px;
-  padding: 0 8px;
+  min-height: 62px;
+  padding: 4px 8px;
   border: 1.5px solid var(--accent);
   border-radius: 10px;
   text-decoration: none;
@@ -646,6 +646,12 @@ main.conteneur {
   color: var(--gris);
 }
 
+.horaire .horaire__salle {
+  font-size: 11px;
+  color: var(--gris);
+  font-weight: 500;
+}
+
 .horaire--peu {
   border-color: var(--alerte);
 }
@@ -665,7 +671,7 @@ main.conteneur {
 @media (max-width: 760px) {
   .horaire {
     min-width: 72px;
-    height: 46px;
+    min-height: 52px;
   }
   .horaire strong {
     font-size: 15px;
@@ -685,6 +691,16 @@ main.conteneur {
   gap: 10px;
   color: var(--gris);
   font-size: 14px;
+}
+
+.temps-reel--hors-ligne {
+  color: var(--alerte);
+  font-weight: 600;
+}
+
+.temps-reel--hors-ligne .point-vert {
+  background: var(--alerte);
+  animation: none;
 }
 
 .point-vert {
@@ -1050,7 +1066,7 @@ main.conteneur {
   font-variant-numeric: tabular-nums;
 }
 
-select, input[type=text], input[type=email], input[type=date] {
+select, input[type=text], input[type=email], input[type=date], input[type=password] {
   font: inherit;
   width: 100%;
   min-height: 44px;
@@ -1516,6 +1532,15 @@ select {
   color: var(--succes);
 }
 
+.resultat--annule {
+  background: var(--fond);
+  border: 2px solid var(--gris);
+}
+
+.resultat .bouton {
+  margin-top: 10px;
+}
+
 .resultat--refuse, .resultat--deja_utilise {
   background: var(--erreur-fond);
   border-color: var(--erreur);
@@ -1635,4 +1660,97 @@ table.donnees {
     break-inside: avoid;
     border: 1px solid #000;
   }
+}
+
+.objectif-atteint {
+  color: var(--succes);
+  font-weight: 600;
+}
+
+.objectif-en-cours {
+  color: var(--alerte);
+  font-weight: 600;
+}
+
+/* E8-US1 : petite courbe des ventes cumulées, une barre par jour */
+.courbe {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 36px;
+  min-width: 120px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--inactif);
+}
+
+.courbe i {
+  display: block;
+  width: 6px;
+  min-height: 1px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+.ligne-alerte td {
+  background: var(--erreur-fond);
+}
+
+/* Compte spectateur (E9-US1) : formulaires courts, centrés */
+.formulaire--etroit {
+  max-width: 520px;
+  margin: 32px auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formulaire--etroit h1 {
+  margin: 0;
+}
+
+.formulaire--etroit .champs {
+  grid-template-columns: 1fr;
+}
+
+.liste-reservations {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+/* Fidélité (E10-US1) : carte d'abonnement et accord pour les offres */
+.compte-bloc {
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.compte-bloc h2 {
+  margin-top: 0;
+}
+
+.case {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.case input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.case-offres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--trait);
 }

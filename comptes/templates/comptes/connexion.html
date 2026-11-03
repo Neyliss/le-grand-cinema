@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Se connecter" %}{% endblock %}
+{% block contenu %}
+<form method="post" class="formulaire carte formulaire--etroit" novalidate>
+  {% csrf_token %}
+  <h1>{% translate "Se connecter" %}</h1>
+  {% include "comptes/champs.html" %}
+  <button class="bouton bouton--large" type="submit">{% translate "Se connecter" %}</button>
+  <p class="petit">{% translate "Pas encore de compte ?" %} <a href="{% url 'comptes:inscription' %}">{% translate "Créer mon compte" %}</a></p>
+</form>
+{% endblock %}

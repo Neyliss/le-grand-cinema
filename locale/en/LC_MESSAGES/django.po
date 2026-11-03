@@ -10,12 +10,12 @@ msgstr ""
 "POT-Creation-Date: 2026-10-17 19:34+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
 msgid "Réservation confirmée"
@@ -51,7 +51,9 @@ msgstr "Download ticket (PDF)"
 msgid "Retour à la programmation"
 msgstr "Back to showtimes"
 
-msgid "Chaque QR code ne peut être utilisé qu'une seule fois. Il est aussi présent dans l'e-mail."
+msgid ""
+"Chaque QR code ne peut être utilisé qu'une seule fois. Il est aussi présent "
+"dans l'e-mail."
 msgstr "Each QR code can only be used once. It is also in the email."
 
 #, python-format
@@ -67,8 +69,11 @@ msgstr "your booking is confirmed."
 msgid "Afficher mes billets"
 msgstr "View my tickets"
 
-msgid "Vos billets sont aussi joints en PDF. Chaque QR code ne peut être utilisé qu'une seule fois."
-msgstr "Your tickets are also attached as a PDF. Each QR code can only be used once."
+msgid ""
+"Vos billets sont aussi joints en PDF. Chaque QR code ne peut être utilisé "
+"qu'une seule fois."
+msgstr ""
+"Your tickets are also attached as a PDF. Each QR code can only be used once."
 
 msgid "Paiement (démonstration)"
 msgstr "Payment (demo)"
@@ -80,11 +85,11 @@ msgid "Page de paiement"
 msgstr "Payment page"
 
 msgid ""
-"Avec une clé Stripe, le spectateur serait ici sur la page sécurisée de Stripe pour saisir sa carte. Sans clé, on "
-"simule la réponse de Stripe."
+"Avec une clé Stripe, le spectateur serait ici sur la page sécurisée de "
+"Stripe pour saisir sa carte. Sans clé, on simule la réponse de Stripe."
 msgstr ""
-"With a Stripe key, you would now be on Stripe’s secure page to enter your card. Without a key, Stripe’s answer is "
-"simulated."
+"With a Stripe key, you would now be on Stripe’s secure page to enter your "
+"card. Without a key, Stripe’s answer is simulated."
 
 msgid "Total"
 msgstr "Total"
@@ -98,13 +103,16 @@ msgstr "Back to summary"
 msgid "Paiement en cours de confirmation"
 msgstr "Confirming your payment"
 
-msgid "Stripe nous confirme votre paiement. Cette page se met à jour toute seule."
+msgid ""
+"Stripe nous confirme votre paiement. Cette page se met à jour toute seule."
 msgstr "Stripe is confirming your payment. This page updates by itself."
 
 msgid "Programmation"
 msgstr "Showtimes"
 
-msgid "Programmation, plan de salle en temps réel et réservation en ligne du Grand Cinéma."
+msgid ""
+"Programmation, plan de salle en temps réel et réservation en ligne du Grand "
+"Cinéma."
 msgstr "Showtimes, live seating plans and online booking at Le Grand Cinéma."
 
 msgid "Navigation principale"
@@ -192,7 +200,8 @@ msgid "Continuer"
 msgstr "Continue"
 
 #, python-format
-msgid "Plan mis à jour automatiquement toutes les %(rafraichissement)s secondes"
+msgid ""
+"Plan mis à jour automatiquement toutes les %(rafraichissement)s secondes"
 msgstr "Plan updated automatically every %(rafraichissement)s seconds"
 
 #, python-format
@@ -210,14 +219,19 @@ msgid "Vos places ont été libérées"
 msgstr "Your seats have been released"
 
 msgid ""
-"Le paiement est arrivé après la fin du délai de 10 minutes et les places ont été attribuées à un autre spectateur. "
-"Vous allez être remboursé automatiquement."
-msgstr "Your payment arrived after the 10-minute limit and the seats went to someone else. You will be refunded automatically."
+"Le paiement est arrivé après la fin du délai de 10 minutes et les places ont"
+" été attribuées à un autre spectateur. Vous allez être remboursé "
+"automatiquement."
+msgstr ""
+"Your payment arrived after the 10-minute limit and the seats went to someone"
+" else. You will be refunded automatically."
 
 msgid ""
-"Le délai de 10 minutes pour payer est dépassé. Choisissez à nouveau vos places : beaucoup sont peut-être encore "
-"libres."
-msgstr "The 10 minutes to pay are over. Choose your seats again: many may still be available."
+"Le délai de 10 minutes pour payer est dépassé. Choisissez à nouveau vos "
+"places : beaucoup sont peut-être encore libres."
+msgstr ""
+"The 10 minutes to pay are over. Choose your seats again: many may still be "
+"available."
 
 msgid "Choisir à nouveau mes places"
 msgstr "Choose my seats again"
@@ -249,8 +263,12 @@ msgstr "Pay with Stripe"
 msgid "Payer (démonstration)"
 msgstr "Pay (demo)"
 
-msgid "Paiement sécurisé sur la page de Stripe. Le cinéma ne reçoit aucune donnée de carte."
-msgstr "Secure payment on Stripe’s page. The cinema never receives your card details."
+msgid ""
+"Paiement sécurisé sur la page de Stripe. Le cinéma ne reçoit aucune donnée "
+"de carte."
+msgstr ""
+"Secure payment on Stripe’s page. The cinema never receives your card "
+"details."
 
 msgid "Choisir le jour"
 msgstr "Choose the day"
@@ -258,8 +276,12 @@ msgstr "Choose the day"
 msgid "Aujourd'hui"
 msgstr "Today"
 
-msgid "Les séances du festival sont ouvertes à la réservation : réservez vos places en ligne, sans compte."
-msgstr "Festival screenings are open for booking: book your seats online, no account needed."
+msgid ""
+"Les séances du festival sont ouvertes à la réservation : réservez vos places"
+" en ligne, sans compte."
+msgstr ""
+"Festival screenings are open for booking: book your seats online, no account"
+" needed."
 
 msgid "Voir les séances du festival"
 msgstr "See festival screenings"
@@ -270,7 +292,9 @@ msgstr "Films showing today"
 msgid "Complet"
 msgstr "Sold out"
 
-msgid "Le nombre de places libres est mis à jour en temps réel, y compris les ventes faites au guichet."
+msgid ""
+"Le nombre de places libres est mis à jour en temps réel, y compris les "
+"ventes faites au guichet."
 msgstr "Available seats are updated in real time, including box office sales."
 
 msgid "Aucune séance à venir ce jour-là"
@@ -312,7 +336,8 @@ msgstr[1] "%(n)s left"
 msgid "10 salles, 1 700 places"
 msgstr "10 screens, 1,700 seats"
 
-msgid "Des places accessibles aux personnes à mobilité réduite dans chaque salle."
+msgid ""
+"Des places accessibles aux personnes à mobilité réduite dans chaque salle."
 msgstr "Wheelchair-accessible spaces in every screen."
 
 msgid "Réservation en ligne"
@@ -330,7 +355,9 @@ msgstr "Show the QR code from your email at the entrance."
 msgid "Tarifs"
 msgstr "Prices"
 
-msgid "Toutes les séances du festival, réservables en ligne jusqu'au début de la projection."
+msgid ""
+"Toutes les séances du festival, réservables en ligne jusqu'au début de la "
+"projection."
 msgstr "All festival screenings, bookable online until the film starts."
 
 msgid "Aucune séance du festival n'est programmée pour le moment."
@@ -339,8 +366,11 @@ msgstr "No festival screenings are scheduled yet."
 msgid "Votre réservation est confirmée."
 msgstr "Your booking is confirmed."
 
-msgid "Vos billets sont joints en PDF. Vous pouvez aussi les afficher sur votre téléphone :"
-msgstr "Your tickets are attached as a PDF. You can also display them on your phone:"
+msgid ""
+"Vos billets sont joints en PDF. Vous pouvez aussi les afficher sur votre "
+"téléphone :"
+msgstr ""
+"Your tickets are attached as a PDF. You can also display them on your phone:"
 
 msgid "Chaque QR code ne peut être utilisé qu'une seule fois."
 msgstr "Each QR code can only be used once."
@@ -397,3 +427,254 @@ msgstr "Email address"
 msgid "publiée"
 msgstr "published"
 
+msgid "Connexion perdue : le plan sera mis à jour dès son retour."
+msgstr "Connection lost: the plan will update as soon as it is back."
+
+msgid "Changer de places"
+msgstr "Change seats"
+
+msgid "Vos places ont été libérées. Choisissez-en d'autres."
+msgstr "Your seats have been released. Choose other ones."
+
+msgid "Renvoyer le billet par e-mail"
+msgstr "Send the ticket again by e-mail"
+
+msgid "Le billet a été renvoyé à %(email)s."
+msgstr "The ticket has been sent again to %(email)s."
+
+msgid ""
+"Le billet ne peut plus être renvoyé : téléchargez-le en PDF ci-dessous."
+msgstr "The ticket can no longer be resent: download the PDF below."
+
+msgid "Créer mon compte"
+msgstr "Create my account"
+
+msgid ""
+"Facultatif : vous pouvez toujours réserver sans compte. Avec un compte, vous"
+" retrouvez toutes vos réservations."
+msgstr ""
+"Optional: you can always book without an account. With an account, you find "
+"all your bookings in one place."
+
+msgid "Déjà un compte ?"
+msgstr "Already have an account?"
+
+msgid "Se connecter"
+msgstr "Sign in"
+
+msgid "Confirmez votre adresse"
+msgstr "Confirm your address"
+
+msgid ""
+"Un lien de confirmation a été envoyé à %(email)s. Cliquez dessus pour "
+"activer votre compte (il reste valable 3 jours)."
+msgstr ""
+"A confirmation link has been sent to %(email)s. Click it to activate your "
+"account (it stays valid for 3 days)."
+
+msgid ""
+"Site de démonstration : aucun e-mail n'est réellement envoyé. Voici le lien "
+":"
+msgstr "Demo site: no e-mail is actually sent. Here is the link:"
+
+msgid "Confirmer mon adresse"
+msgstr "Confirm my address"
+
+msgid "Pas encore de compte ?"
+msgstr "No account yet?"
+
+msgid "Mon compte"
+msgstr "My account"
+
+msgid "Mes réservations"
+msgstr "My bookings"
+
+msgid "Voir mes billets"
+msgstr "See my tickets"
+
+msgid "Aucune réservation pour l'instant."
+msgstr "No bookings yet."
+
+msgid "Voir la programmation"
+msgstr "See what's on"
+
+msgid "Se déconnecter"
+msgstr "Sign out"
+
+msgid "Supprimer mon compte"
+msgstr "Delete my account"
+
+msgid ""
+"Votre compte, votre nom et votre adresse e-mail seront supprimés. Vos "
+"billets déjà achetés restent valables avec le lien reçu par e-mail."
+msgstr ""
+"Your account, your name and your e-mail address will be deleted. Tickets you"
+" have already bought stay valid with the link you received by e-mail."
+
+msgid "Supprimer définitivement"
+msgstr "Delete permanently"
+
+msgid "Annuler"
+msgstr "Cancel"
+
+msgid ""
+"Pour activer votre compte Le Grand Cinéma, confirmez votre adresse e-mail en"
+" ouvrant ce lien (valable 3 jours) :"
+msgstr ""
+"To activate your Le Grand Cinéma account, confirm your e-mail address by "
+"opening this link (valid for 3 days):"
+
+msgid "Si vous n'avez pas créé de compte, ignorez simplement ce message."
+msgstr "If you did not create an account, simply ignore this message."
+
+msgid "Un compte existe déjà avec cette adresse."
+msgstr "An account already exists with this address."
+
+msgid ""
+"Ce lien de confirmation n'est plus valable. Créez à nouveau votre compte."
+msgstr ""
+"This confirmation link is no longer valid. Please create your account again."
+
+msgid ""
+"Adresse confirmée : bienvenue ! Vos réservations passées ont été rattachées "
+"à votre compte."
+msgstr ""
+"Address confirmed: welcome! Your past bookings have been added to your "
+"account."
+
+msgid "Votre compte et vos données personnelles ont été supprimés."
+msgstr "Your account and your personal data have been deleted."
+
+msgid "Confirmez votre adresse e-mail — Le Grand Cinéma"
+msgstr "Confirm your e-mail address — Le Grand Cinéma"
+
+msgid "Mot de passe"
+msgstr "Password"
+
+msgid "Mot de passe (encore une fois)"
+msgstr "Password (again)"
+
+msgid "Les deux mots de passe ne sont pas identiques."
+msgstr "The two passwords do not match."
+
+msgid "Adresse e-mail ou mot de passe incorrect."
+msgstr "Incorrect e-mail address or password."
+
+msgid "Confirmez d'abord votre adresse e-mail avec le lien reçu."
+msgstr "Please confirm your e-mail address first with the link you received."
+
+msgid "Votre carte d'abonnement n'a plus que %(nb)s place(s)."
+msgstr "Your season card only has %(nb)s seat(s) left."
+
+msgid "Votre carte d'abonnement n'a plus assez de places."
+msgstr "Your season card does not have enough seats left."
+
+msgid "Carte d'abonnement et offres"
+msgstr "Season card and offers"
+
+msgid "Pas de carte en cours."
+msgstr "No current card."
+
+msgid "Acheter une carte d'abonnement"
+msgstr "Buy a season card"
+
+msgid "Je veux recevoir les offres réservées aux habitués."
+msgstr "I want to receive offers for regular customers."
+
+msgid "Enregistrer mon choix"
+msgstr "Save my choice"
+
+msgid "Votre choix est enregistré."
+msgstr "Your choice has been saved."
+
+msgid "Je veux recevoir les offres réservées aux habitués (facultatif)."
+msgstr "I want to receive offers for regular customers (optional)."
+
+msgid ""
+"Votre carte a encore des places : vous pourrez en acheter une nouvelle quand"
+" elle sera épuisée."
+msgstr "Your card still has seats: you can buy a new one once it is used up."
+
+msgid "Votre carte d'abonnement est active."
+msgstr "Your season card is active."
+
+msgid ""
+"Paiement en cours de vérification : votre carte sera active dans quelques "
+"instants."
+msgstr "Payment being checked: your card will be active in a few moments."
+
+msgid "Carte d'abonnement"
+msgstr "Season card"
+
+msgid ""
+"Payez vos places à l'avance, moins cher. À chaque réservation, choisissez le"
+" tarif « Abonné » : la place est décomptée de votre carte."
+msgstr ""
+"Pay for your seats in advance, for less. Each time you book, choose the "
+"“Abonné” (season card) price: the seat is deducted from your card."
+
+msgid ""
+"Votre carte a encore %(nb)s place(s). Vous pourrez en acheter une nouvelle "
+"quand elle sera épuisée."
+msgstr ""
+"Your card still has %(nb)s seat(s). You can buy a new one once it is used "
+"up."
+
+msgid "%(nb)s places"
+msgstr "%(nb)s seats"
+
+msgid "Acheter avec Stripe"
+msgstr "Buy with Stripe"
+
+msgid "Acheter (démonstration)"
+msgstr "Buy (demo)"
+
+msgid "Aucune carte n'est en vente pour l'instant."
+msgstr "No card is on sale at the moment."
+
+msgid "Retour à mon compte"
+msgstr "Back to my account"
+
+msgid ""
+"Site de démonstration : aucun paiement réel. Sur le site en ligne, cette "
+"page est celle de Stripe."
+msgstr "Demo site: no real payment. On the live site, this page is Stripe's."
+
+msgid "Simuler le paiement"
+msgstr "Simulate the payment"
+
+msgid ""
+"Votre carte d'abonnement a encore %(nb)s place : choisissez le tarif « "
+"Abonné » pour l'utiliser."
+msgid_plural ""
+"Votre carte d'abonnement a encore %(nb)s places : choisissez le tarif « "
+"Abonné » pour les utiliser."
+msgstr[0] ""
+"Your season card has %(nb)s seat left: choose the “Abonné” price to use it."
+msgstr[1] ""
+"Your season card has %(nb)s seats left: choose the “Abonné” price to use "
+"them."
+
+msgid "%(nb)s place restante"
+msgid_plural "%(nb)s places restantes"
+msgstr[0] "%(nb)s seat left"
+msgstr[1] "%(nb)s seats left"
+
+msgid "Séance annulée"
+msgstr "Screening cancelled"
+
+msgid "Cette séance a été annulée"
+msgstr "This screening has been cancelled"
+
+msgid ""
+"Le cinéma a annulé cette séance : aucun billet n'est vendu et votre paiement"
+" va être remboursé automatiquement."
+msgstr ""
+"The cinema has cancelled this screening: no ticket is sold and your payment "
+"will be refunded automatically."
+
+msgid "Le cinéma a annulé cette séance : aucun billet n'est vendu."
+msgstr "The cinema has cancelled this screening: no ticket is sold."
+
+msgid "Choisir une autre séance"
+msgstr "Choose another screening"

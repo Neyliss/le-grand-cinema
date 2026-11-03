@@ -35,6 +35,11 @@
 
 <div class="actions">
   <a class="bouton" href="{% url 'billetterie:billet_pdf' reservation.reference reservation.jeton %}">{% translate "Télécharger le billet (PDF)" %}</a>
+  {% if reservation.email %}
+  <form method="post" action="{% url 'billetterie:renvoyer' reservation.reference reservation.jeton %}">
+    {% csrf_token %}<button class="bouton bouton--clair" type="submit">{% translate "Renvoyer le billet par e-mail" %}</button>
+  </form>
+  {% endif %}
   <a class="bouton bouton--clair" href="{% url 'catalogue:programmation' %}">{% translate "Retour à la programmation" %}</a>
 </div>
 <p class="muet petit" style="text-align:center">{% translate "Chaque QR code ne peut être utilisé qu'une seule fois. Il est aussi présent dans l'e-mail." %}</p>

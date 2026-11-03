@@ -6,6 +6,7 @@ Chaque classe devient une table de la base grâce à l'ORM de Django.
 """
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -99,6 +100,17 @@ class Siege(models.Model):
         return f"{self.rangee}{self.numero}"
 
 
+class TarifQuerySet(models.QuerySet):
+    def publics(self):
+        """Tarifs proposés à tous (site sans carte, guichet, infos pratiques)."""
+        return self.filter(actif=True, reserve_abonnes=False)
+
+    def proposes(self, carte=None):
+        """Tarifs proposés sur le site : le tarif « abonné » en plus si le spectateur a une carte (E10-US1)."""
+        tarifs = self.filter(actif=True)
+        return tarifs if carte is not None and carte.places_restantes > 0 else tarifs.filter(reserve_abonnes=False)
+
+
 class Tarif(models.Model):
     """Le tarif est une donnée, pas du code : l'administrateur peut en créer sans développement."""
 
@@ -106,6 +118,12 @@ class Tarif(models.Model):
     prix = models.DecimalField(max_digits=6, decimal_places=2)
     actif = models.BooleanField(default=True)
     ordre = models.PositiveSmallIntegerField(default=0)
+    # E10-US1 : chaque place prise à ce tarif est décomptée de la carte d'abonnement du spectateur.
+    reserve_abonnes = models.BooleanField(
+        "réservé aux abonnés", default=False,
+        help_text="Proposé seulement aux spectateurs qui ont une carte d'abonnement ; chaque place est décomptée de la carte.")
+
+    objects = TarifQuerySet.as_manager()
 
     class Meta:
         ordering = ["ordre", "prix"]
@@ -152,6 +170,21 @@ class Seance(models.Model):
     @property
     def est_reservable(self):
         return self.statut == self.Statut.PUBLIEE and self.debut > timezone.now()
+
+    def seances_qui_chevauchent(self):
+        """Autres séances publiées de la même salle dont l'horaire recouvre celui-ci."""
+        if not (self.salle_id and self.film_id and self.debut):
+            return Seance.objects.none()
+        autres = (Seance.objects.filter(salle_id=self.salle_id, statut=self.Statut.PUBLIEE,
+                                        debut__lt=self.fin, debut__gt=self.debut - timedelta(hours=6))
+                  .exclude(pk=self.pk).select_related("film"))
+        return [s for s in autres if s.fin > self.debut]
+
+    def clean(self):
+        """Une salle ne peut pas accueillir deux séances en même temps (vérifié dans l'administration)."""
+        conflits = self.seances_qui_chevauchent()
+        if conflits:
+            raise ValidationError({"debut": f"La salle est déjà occupée à cet horaire : {conflits[0]}."})
 
     def save(self, *args, **kwargs):
         nouvelle = self._state.adding

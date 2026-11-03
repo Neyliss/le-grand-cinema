@@ -8,4 +8,5 @@ urlpatterns = [
     path("seance/<int:seance_id>/plan.json", views.api_plan, name="api_plan"),
     path("seance/<int:seance_id>/bloquer/", views.bloquer, name="bloquer"),
     path("<str:reference>/", views.recapitulatif, name="recapitulatif"),
+    path("<str:reference>/liberer/", views.liberer, name="liberer"),
 ]

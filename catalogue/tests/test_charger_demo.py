@@ -1,11 +1,13 @@
 """Commande charger_demo : les données de démonstration utilisées par Docker et pour la soutenance."""
 import shutil
 import tempfile
+from datetime import timedelta
 from io import StringIO
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from django.utils import timezone
 
 from billetterie.models import Billet
 from catalogue.models import Film, Salle, Seance
@@ -47,6 +49,14 @@ class ChargerDemoTests(TestCase):
         self.assertTrue(agent.groups.filter(name=GROUPE_AGENTS).exists())
         self.assertFalse(agent.is_superuser)
 
+    def test_le_compte_spectateur_de_demonstration_a_trois_reservations(self):
+        spectateur = User.objects.get(username="spectateur.demo@exemple.fr")
+
+        self.assertTrue(spectateur.profil.email_confirme)
+        self.assertFalse(spectateur.is_staff)
+        self.assertEqual(spectateur.reservations.filter(statut="payee").count(), 3)
+        self.assertEqual(spectateur.abonnements.get().places_restantes, 7)
+
     def test_un_second_lancement_ne_duplique_rien(self):
         sortie = StringIO()
 
@@ -54,6 +64,17 @@ class ChargerDemoTests(TestCase):
 
         self.assertIn("--reinitialiser", sortie.getvalue())
         self.assertEqual(Film.objects.count(), 3)
+
+    def test_si_perime_ne_recharge_que_si_la_programmation_se_termine_bientot(self):
+        sortie = StringIO()
+        call_command("charger_demo", "--si-perime", stdout=sortie)
+        self.assertIn("encore à jour", sortie.getvalue())
+
+        # Quelques jours plus tard : il ne reste plus de séance au-delà de 3 jours
+        Seance.objects.filter(debut__gte=timezone.now() + timedelta(days=3)).update(debut=timezone.now() + timedelta(days=1))
+        call_command("charger_demo", "--si-perime", stdout=StringIO())
+        self.assertTrue(Seance.objects.filter(debut__gte=timezone.now() + timedelta(days=5)).exists())
+        self.assertEqual(Seance.objects.count(), 7 * 7)
 
     def test_reinitialiser_recharge_les_donnees(self):
         call_command("charger_demo", "--reinitialiser", stdout=StringIO())

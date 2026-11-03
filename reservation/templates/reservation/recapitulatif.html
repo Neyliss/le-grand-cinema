@@ -10,6 +10,7 @@
     {% if form.non_field_errors %}<p class="message message--error">{{ form.non_field_errors|join:" " }}</p>{% endif %}
     <fieldset>
       <legend>{% translate "Tarif par place" %}</legend>
+      {% if carte %}<p class="encart petit">{% blocktranslate count nb=carte.places_restantes %}Votre carte d'abonnement a encore {{ nb }} place : choisissez le tarif « Abonné » pour l'utiliser.{% plural %}Votre carte d'abonnement a encore {{ nb }} places : choisissez le tarif « Abonné » pour les utiliser.{% endblocktranslate %}</p>{% endif %}
       {% for place, champ in form.champs_tarifs %}
       <div class="carte ligne-tarif">
         <label for="{{ champ.id_for_label }}"><strong>{{ place.siege }}</strong></label>
@@ -43,12 +44,18 @@
       <h2>{{ seance.film.titre }}</h2>
       <p class="muet petit">{{ seance.debut|date:"l j F"|capfirst }} · {{ seance.debut|time:"H:i" }} · {{ seance.salle }} · {{ seance.film.version }}</p>
     </div>
-    <div class="recap__lignes" id="lignes-recap"></div>
-    <div class="recap__total"><span>{% translate "Total" %}</span><span id="total"></span></div>
+    <div class="recap__lignes" id="lignes-recap">
+      {% for ligne in lignes %}<div class="recap__ligne"><span>{{ ligne.siege }} · {{ ligne.tarif }}</span><span>{{ ligne.prix }} €</span></div>{% endfor %}
+    </div>
+    <div class="recap__total"><span>{% translate "Total" %}</span><span id="total">{{ total }} €</span></div>
     <button class="bouton bouton--large" type="submit" form="form-recap" id="bouton-payer">
       {% if stripe %}{% translate "Payer avec Stripe" %}{% else %}{% translate "Payer (démonstration)" %}{% endif %}
     </button>
     <p class="securite">{% translate "Paiement sécurisé sur la page de Stripe. Le cinéma ne reçoit aucune donnée de carte." %}</p>
+    <form method="post" action="{% url 'reservation:liberer' reservation.reference %}">
+      {% csrf_token %}
+      <button class="bouton bouton--clair bouton--large" type="submit">{% translate "Changer de places" %}</button>
+    </form>
   </section>
 </div>
 {{ prix_tarifs|json_script:"prix-tarifs" }}

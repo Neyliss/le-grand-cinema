@@ -9,7 +9,7 @@
   <div class="camera" id="camera">
     <button class="bouton bouton--clair" type="button" id="activer-camera">Activer la caméra</button>
   </div>
-  <form class="saisie" id="form-controle" method="post" action="{% url 'controle:verifier' seance.id %}">
+  <form class="saisie" id="form-controle" method="post" action="{% url 'controle:verifier' seance.id %}" data-url-annuler="{% url 'controle:annuler' seance.id %}">
     {% csrf_token %}
     <label class="visuellement-cache" for="code">Code du billet</label>
     <input type="text" id="code" name="code" placeholder="Code du billet (ou douchette)" autocomplete="off" autofocus>

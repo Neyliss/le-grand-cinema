@@ -2,23 +2,26 @@
 {% block espace %}Pilotage{% endblock %}
 {% block titre %}Pilotage{% endblock %}
 {% block contenu %}
+<meta http-equiv="refresh" content="{{ rafraichissement }}">
 <div class="tool-head" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px">
   <div>
     <h1>Pilotage</h1>
-    <p class="muet">Remplissage et ventes du {{ debut|date:"j F" }} au {{ fin|date:"j F Y" }}</p>
+    <p class="muet">Remplissage et ventes du {{ debut|date:"j F" }} au {{ fin|date:"j F Y" }} · mis à jour toutes les {{ rafraichissement }} secondes</p>
   </div>
   <form class="filtres" method="get">
     <div class="champ"><label for="du">Du</label><input type="date" id="du" name="du" value="{{ debut|date:'Y-m-d' }}"></div>
     <div class="champ"><label for="au">Au</label><input type="date" id="au" name="au" value="{{ fin|date:'Y-m-d' }}"></div>
     <button class="bouton" type="submit">Afficher</button>
     <a class="bouton bouton--clair" href="{% url 'pilotage:export_csv' %}?du={{ debut|date:'Y-m-d' }}&amp;au={{ fin|date:'Y-m-d' }}">Exporter (CSV)</a>
+    <a class="bouton bouton--clair" href="{% url 'pilotage:festival' %}">Festival : anticiper les pics</a>
   </form>
 </div>
 
 <section class="indicateurs" aria-label="Indicateurs">
   <div class="carte indicateur"><span>Places vendues</span><strong>{{ indicateurs.vendues }}</strong></div>
   <div class="carte indicateur"><span>Taux de remplissage (O4)</span><strong>{{ indicateurs.taux }} %</strong></div>
-  <div class="carte indicateur"><span>Part vendue en ligne (O1)</span><strong>{{ indicateurs.part_site }} %</strong></div>
+  <div class="carte indicateur"><span>Part vendue en ligne (O1)</span><strong>{{ indicateurs.part_site }} %</strong>
+    <small class="{% if objectif_atteint %}objectif-atteint{% else %}objectif-en-cours{% endif %}">Objectif {{ objectif_en_ligne }} % · {% if objectif_atteint %}atteint{% else %}pas encore atteint{% endif %}</small></div>
   <div class="carte indicateur"><span>Recette billetterie</span><strong>{{ indicateurs.recette|floatformat:0 }} €</strong></div>
   <div class="carte indicateur"><span>Séances</span><strong>{{ indicateurs.seances }}</strong></div>
 </section>

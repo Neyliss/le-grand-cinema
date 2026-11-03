@@ -1,8 +1,8 @@
 # Les tests : le guide simple
 
 Un **test** est un petit programme qui vérifie tout seul qu'une règle du projet est respectée.
-Par exemple : « un siège ne peut pas être vendu deux fois ». Le projet en compte **42**. On les
-lance en une commande, et ils répondent en quelques secondes.
+Par exemple : « un siège ne peut pas être vendu deux fois ». Le projet en compte **128**. On les
+lance en une commande, et ils répondent en moins d'une minute.
 
 À quoi ça sert ? À **modifier le code sans peur** : si une modification casse une règle, un
 test le signale tout de suite, avant que les spectateurs ne s'en rendent compte.
@@ -40,15 +40,21 @@ Chaque partie du site a un dossier `tests/`. Dedans, **un fichier par sujet**, d
 commence par `test_` :
 
 ```
-reservation/tests/   règle « un siège, une vente », blocage de 10 minutes, plan de salle, parcours complet, référence unique
-paiement/tests/      paiement Stripe, confirmation signée, paiement en retard
-billetterie/tests/   contrôle des billets à l'entrée, billet PDF
-catalogue/tests/     programmation, site en anglais, données de démonstration
-guichet/tests/       vente au guichet
-pilotage/tests/      tableau de remplissage, export CSV
-grandcinema/tests/   qui a le droit d'ouvrir quelle page
+reservation/tests/   règle « un siège, une vente », blocage de 10 minutes, plan de salle, parcours complet
+paiement/tests/      paiement Stripe, confirmation signée, paiement en retard, séance annulée pendant le paiement
+billetterie/tests/   billet QR par e-mail, contrôle des billets à l'entrée, billet PDF
+catalogue/tests/     programmation, site en anglais, créer et annuler une séance, API, démonstration
+guichet/tests/       vente au guichet (carte, espèces, monnaie à rendre)
+pilotage/tests/      tableau de remplissage, export CSV, tableau du festival
+comptes/tests/       compte spectateur et son API
+fidelite/tests/      carte d'abonnement et offres
+grandcinema/tests/   qui a le droit d'ouvrir quelle page, réglages de production
 outils_de_test/      petites fonctions qui créent les données des tests
 ```
+
+**Les tests d'acceptation** : pour chaque user story, un fichier `test_e<EPIC>_us<n>_<sujet>.py`
+contient un test par critère d'acceptation de la carte Trello (`test_critere_1_…`). La liste
+complète est dans la [traçabilité](tracabilite.md).
 
 ## 4. Les bonnes pratiques suivies
 
@@ -75,7 +81,8 @@ def test_un_autre_spectateur_peut_reprendre_un_siege_expire(self):
 
 **4. Les tests ne dépendent pas les uns des autres.** Chaque test part d'une base vide et crée
 ses propres données. On le vérifie en mélangeant l'ordre (`--shuffle`). Cela a permis de trouver
-un vrai défaut : un test laissait le site en anglais pour le test suivant. C'est corrigé.
+deux vrais défauts : un test laissait le site en anglais pour le test suivant, et un autre
+supposait que le premier tarif porte toujours le numéro 1 (faux sur PostgreSQL). C'est corrigé.
 
 **5. Les données de test se créent en une ligne**, avec les fonctions de
 `outils_de_test/fabriques.py` : `creer_seance()`, `vendre(seance, nb=3)`, `creer_agent()`…
@@ -88,7 +95,8 @@ deux fois, un agent qui essaie d'ouvrir une page réservée à la direction.
 
 **8. Un test doit pouvoir échouer.** Le test des 5 spectateurs a été vérifié en retirant la
 protection du code : il échoue alors, car 3 spectateurs sur 5 obtiennent le même siège.
-Avec la protection, un seul l'obtient.
+Avec la protection, un seul l'obtient. De même, pour corriger un bug, on écrit d'abord le test
+qui le montre (il échoue), puis on corrige (il réussit) : voir la branche `fix/paiement-seance-annulee`.
 
 **9. GitHub relance tous les tests à chaque envoi** (onglet **Actions**), sur PostgreSQL et
 dans Docker. On ne fusionne une modification que si tout est vert.
@@ -103,7 +111,7 @@ coverage run manage.py test
 coverage report
 ```
 
-Aujourd'hui : **85 %**. GitHub refuse une modification qui ferait descendre ce chiffre sous 75 %.
+Aujourd'hui : **90 %** (mesurée aussi par SonarQube Cloud, voir le [guide](guide-sonarcloud.md)). GitHub refuse une modification qui ferait descendre ce chiffre sous 75 %.
 Attention : un chiffre élevé ne suffit pas. Ce qui compte, c'est de tester les règles
 importantes et les cas de refus.
 

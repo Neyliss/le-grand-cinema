@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Carte d'abonnement" %}{% endblock %}
+{% block contenu %}
+<section class="carte formulaire--etroit">
+  <h1>{% translate "Carte d'abonnement" %}</h1>
+  <p class="muet">{% translate "Payez vos places à l'avance, moins cher. À chaque réservation, choisissez le tarif « Abonné » : la place est décomptée de votre carte." %}</p>
+  {% if carte %}
+    <p class="encart">{% blocktranslate with nb=carte.places_restantes %}Votre carte a encore {{ nb }} place(s). Vous pourrez en acheter une nouvelle quand elle sera épuisée.{% endblocktranslate %}</p>
+  {% else %}
+    {% for formule in formules %}
+    <form method="post" class="carte ligne-seance">
+      {% csrf_token %}
+      <input type="hidden" name="formule" value="{{ formule.id }}">
+      <div><strong>{{ formule.libelle }}</strong><br>
+        <span class="muet petit">{% blocktranslate with nb=formule.nb_places %}{{ nb }} places{% endblocktranslate %} · {{ formule.prix }} €</span></div>
+      <button class="bouton" type="submit">{% if stripe %}{% translate "Acheter avec Stripe" %}{% else %}{% translate "Acheter (démonstration)" %}{% endif %}</button>
+    </form>
+    {% empty %}
+    <p class="encart">{% translate "Aucune carte n'est en vente pour l'instant." %}</p>
+    {% endfor %}
+  {% endif %}
+  <a class="bouton bouton--clair bouton--large" href="{% url 'comptes:mon_compte' %}">{% translate "Retour à mon compte" %}</a>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Mon compte" %}{% endblock %}
+{% block contenu %}
+<section class="titre-page">
+  <h1>{% translate "Mon compte" %}</h1>
+  <p class="muet">{{ user.email }}</p>
+</section>
+<section class="carte compte-bloc">
+  <h2>{% translate "Carte d'abonnement et offres" %}</h2>
+  {% if carte %}
+    <p>{{ carte.formule.libelle }} : <strong>{% blocktranslate count nb=carte.places_restantes %}{{ nb }} place restante{% plural %}{{ nb }} places restantes{% endblocktranslate %}</strong></p>
+  {% else %}
+    <p class="muet">{% translate "Pas de carte en cours." %} <a href="{% url 'fidelite:abonnement' %}">{% translate "Acheter une carte d'abonnement" %}</a></p>
+  {% endif %}
+  <form method="post" action="{% url 'comptes:preferences' %}" class="case-offres">
+    {% csrf_token %}
+    <label class="case"><input type="checkbox" name="accepte_offres" {% if user.profil.accepte_offres %}checked{% endif %}>
+      <span>{% translate "Je veux recevoir les offres réservées aux habitués." %}</span></label>
+    <button class="bouton bouton--clair" type="submit">{% translate "Enregistrer mon choix" %}</button>
+  </form>
+</section>
+<section>
+  <h2>{% translate "Mes réservations" %}</h2>
+  <div class="liste-reservations">
+  {% for reservation in reservations %}
+  <div class="carte ligne-seance">
+    <div><strong>{{ reservation.seance.film.titre }}</strong>
+      <br><span class="muet petit">{{ reservation.seance.debut|date:"l j F Y"|capfirst }} · {{ reservation.seance.debut|time:"H:i" }} · {{ reservation.seance.salle }}</span></div>
+    {% if reservation.est_payee %}
+      <a class="bouton bouton--clair" href="{% url 'billetterie:billet' reservation.reference reservation.jeton %}">{% translate "Voir mes billets" %}</a>
+    {% else %}<span class="muet">{{ reservation.get_statut_display|capfirst }}</span>{% endif %}
+  </div>
+  {% empty %}
+  <p class="encart">{% translate "Aucune réservation pour l'instant." %} <a href="{% url 'catalogue:programmation' %}">{% translate "Voir la programmation" %}</a></p>
+  {% endfor %}
+  </div>
+</section>
+<section class="actions" style="justify-content:flex-start">
+  <form method="post" action="{% url 'comptes:deconnexion' %}">{% csrf_token %}<button class="bouton bouton--clair" type="submit">{% translate "Se déconnecter" %}</button></form>
+  <a class="bouton bouton--clair" href="{% url 'comptes:supprimer' %}">{% translate "Supprimer mon compte" %}</a>
+</section>
+{% endblock %}
