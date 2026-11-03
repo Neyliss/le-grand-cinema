@@ -1661,3 +1661,13 @@ table.donnees {
     border: 1px solid #000;
   }
 }
+
+.objectif-atteint {
+  color: var(--succes);
+  font-weight: 600;
+}
+
+.objectif-en-cours {
+  color: var(--alerte);
+  font-weight: 600;
+}
