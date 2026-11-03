@@ -153,7 +153,9 @@ class Command(BaseCommand):
             paiement = Paiement.objects.create(reservation=reservation, mode=mode, montant=montant,
                                                reference_stripe=f"demo-{reservation.reference}" if canal == Reservation.Canal.SITE else "")
             # Ventes étalées sur les 14 derniers jours : le tableau du festival (E8) montre leur progression.
-            paiements_dates.append((paiement.id, timezone.now() - timedelta(days=random.randint(0, 13), minutes=random.randint(0, 600))))
+            # Simple calcul à partir du numéro (pas de tirage au hasard) : mêmes dates à chaque chargement.
+            jours, minutes = (paiement.id * 5) % 14, (paiement.id * 37) % 600
+            paiements_dates.append((paiement.id, timezone.now() - timedelta(days=jours, minutes=minutes)))
         for paiement_id, date in paiements_dates:
             Paiement.objects.filter(pk=paiement_id).update(cree_le=date)
         PlaceSeance.objects.bulk_update(places, ["statut", "reservation"])

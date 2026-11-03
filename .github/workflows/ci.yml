@@ -63,7 +63,8 @@ jobs:
 
       - name: Analyse de la qualité du code (SonarQube Cloud)
         if: env.SONAR_TOKEN != ''
-        uses: SonarSource/sonarqube-scan-action@v7
+        # Version fixée par son empreinte (v7.2.1) : une modification de l'outil ne peut pas passer inaperçue
+        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2
 
   docker:
     name: Image Docker

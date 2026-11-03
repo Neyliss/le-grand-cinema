@@ -6,7 +6,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .forms import ConnexionForm, InscriptionForm
 from .services import (CompteExistant, confirmer, creer_compte, lien_confirmation, rattacher_reservations,
@@ -28,6 +28,7 @@ def inscription(request):
     return render(request, "comptes/inscription.html", {"form": form})
 
 
+@require_GET
 def confirmation(request, jeton):
     utilisateur = confirmer(jeton)
     if utilisateur is None:
@@ -55,6 +56,7 @@ def deconnexion(request):
 
 
 @login_required
+@require_GET
 def mon_compte(request):
     from fidelite.services import carte_active
 
