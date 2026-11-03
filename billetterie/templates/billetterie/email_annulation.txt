@@ -4,4 +4,6 @@ Nous sommes désolés : la séance « {{ reservation.seance.film.titre }} » du 
 
 Votre réservation {{ reservation.reference }} est remboursée sur le moyen de paiement utilisé.
 
+Pour choisir une autre séance : {{ lien_programmation }}
+
 Le Grand Cinéma

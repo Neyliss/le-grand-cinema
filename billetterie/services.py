@@ -125,7 +125,8 @@ def envoyer_billets(reservation, pdf=None):
 def prevenir_annulation(reservation):
     if not reservation.email:
         return
-    contexte = {"reservation": reservation}
+    contexte = {"reservation": reservation,
+                "lien_programmation": settings.SITE_URL.rstrip("/") + reverse("catalogue:programmation")}
     EmailMultiAlternatives(
         f"Séance annulée — {reservation.seance.film}",
         render_to_string("billetterie/email_annulation.txt", contexte),
