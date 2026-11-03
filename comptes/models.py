@@ -11,6 +11,8 @@ from django.db import models
 
 class Profil(models.Model):
     utilisateur = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profil")
+    # E10-US1 : offres envoyées seulement si le spectateur l'a accepté (case non cochée par défaut)
+    accepte_offres = models.BooleanField("accepte les offres", default=False)
     email_confirme = models.BooleanField("adresse e-mail confirmée", default=False)
     cree_le = models.DateTimeField("créé le", auto_now_add=True)
 

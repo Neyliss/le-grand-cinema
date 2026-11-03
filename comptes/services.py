@@ -27,14 +27,14 @@ def normaliser(email):
 
 
 @transaction.atomic
-def creer_compte(email, mot_de_passe, nom=""):
+def creer_compte(email, mot_de_passe, nom="", accepte_offres=False):
     """Crée le compte (non confirmé) puis envoie le lien de confirmation par e-mail."""
     email = normaliser(email)
     Utilisateur = get_user_model()
     if Utilisateur.objects.filter(username=email).exists():
         raise CompteExistant()
     utilisateur = Utilisateur.objects.create_user(username=email, email=email, password=mot_de_passe, first_name=nom[:150])
-    Profil.objects.create(utilisateur=utilisateur)
+    Profil.objects.create(utilisateur=utilisateur, accepte_offres=accepte_offres)
     utilisateur.groups.add(Group.objects.get_or_create(name=GROUPE_SPECTATEURS)[0])
     transaction.on_commit(lambda: envoyer_confirmation(utilisateur))
     return utilisateur

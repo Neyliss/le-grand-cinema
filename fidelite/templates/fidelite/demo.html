@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block titre %}{% translate "Paiement (démonstration)" %}{% endblock %}
+{% block contenu %}
+<form method="post" class="carte formulaire--etroit">
+  {% csrf_token %}
+  <h1>{% translate "Paiement (démonstration)" %}</h1>
+  <p>{{ carte.formule.libelle }} · <strong>{{ carte.prix }} €</strong></p>
+  <p class="message message--info">{% translate "Site de démonstration : aucun paiement réel. Sur le site en ligne, cette page est celle de Stripe." %}</p>
+  <button class="bouton bouton--large" type="submit">{% translate "Simuler le paiement" %}</button>
+</form>
+{% endblock %}

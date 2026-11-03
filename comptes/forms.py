@@ -10,6 +10,9 @@ class InscriptionForm(forms.Form):
     email = forms.EmailField(label=_("Adresse e-mail"))
     mot_de_passe = forms.CharField(label=_("Mot de passe"), widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}))
     confirmation = forms.CharField(label=_("Mot de passe (encore une fois)"), widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}))
+    # E10-US1 : case non cochée par défaut, les offres ne sont envoyées qu'avec l'accord du spectateur
+    accepte_offres = forms.BooleanField(label=_("Je veux recevoir les offres réservées aux habitués (facultatif)."),
+                                        required=False, initial=False)
 
     def clean_email(self):
         return normaliser(self.cleaned_data["email"])

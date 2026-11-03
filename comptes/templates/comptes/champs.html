@@ -1,10 +1,14 @@
 {% if form.non_field_errors %}<p class="message message--error">{{ form.non_field_errors|join:" " }}</p>{% endif %}
 <div class="champs">
   {% for champ in form %}
+  {% if champ.widget_type == "checkbox" %}
+  <label class="case">{{ champ }} <span>{{ champ.label }}</span></label>
+  {% else %}
   <div class="champ">
     <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
     {{ champ }}
     {% for erreur in champ.errors %}<span class="erreur-champ">{{ erreur }}</span>{% endfor %}
   </div>
+  {% endif %}
   {% endfor %}
 </div>

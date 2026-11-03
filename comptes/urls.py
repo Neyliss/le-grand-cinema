@@ -10,4 +10,5 @@ urlpatterns = [
     path("deconnexion/", views.deconnexion, name="deconnexion"),
     path("", views.mon_compte, name="mon_compte"),
     path("supprimer/", views.suppression, name="supprimer"),
+    path("preferences/", views.preferences, name="preferences"),
 ]

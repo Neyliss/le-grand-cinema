@@ -49,7 +49,7 @@ def tableau(request):
         "seances": seances,
         "seance": choisie,
         "plan": plan_de_salle(choisie) if choisie else None,
-        "tarifs": Tarif.objects.filter(actif=True),
+        "tarifs": Tarif.objects.publics(),
         "maintenant": timezone.localtime(),
     })
 
@@ -60,7 +60,7 @@ def vendre(request, seance_id):
     seance = get_object_or_404(Seance, pk=seance_id)
     ids = [int(i) for i in request.POST.getlist("sieges") if i.isdigit()]
     mode = MODES.get(request.POST.get("mode"), Paiement.Mode.GUICHET_CARTE)
-    tarifs = {t.id: t for t in Tarif.objects.filter(actif=True)}
+    tarifs = {t.id: t for t in Tarif.objects.publics()}
     retour = reverse("guichet:tableau") + f"?seance={seance.id}"
     try:
         with transaction.atomic():

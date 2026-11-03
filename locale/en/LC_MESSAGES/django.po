@@ -562,3 +562,100 @@ msgstr "Incorrect e-mail address or password."
 
 msgid "Confirmez d'abord votre adresse e-mail avec le lien reçu."
 msgstr "Please confirm your e-mail address first with the link you received."
+
+msgid "Votre carte d'abonnement n'a plus que %(nb)s place(s)."
+msgstr "Your season card only has %(nb)s seat(s) left."
+
+msgid "Votre carte d'abonnement n'a plus assez de places."
+msgstr "Your season card does not have enough seats left."
+
+msgid "Carte d'abonnement et offres"
+msgstr "Season card and offers"
+
+msgid "Pas de carte en cours."
+msgstr "No current card."
+
+msgid "Acheter une carte d'abonnement"
+msgstr "Buy a season card"
+
+msgid "Je veux recevoir les offres réservées aux habitués."
+msgstr "I want to receive offers for regular customers."
+
+msgid "Enregistrer mon choix"
+msgstr "Save my choice"
+
+msgid "Votre choix est enregistré."
+msgstr "Your choice has been saved."
+
+msgid "Je veux recevoir les offres réservées aux habitués (facultatif)."
+msgstr "I want to receive offers for regular customers (optional)."
+
+msgid ""
+"Votre carte a encore des places : vous pourrez en acheter une nouvelle quand"
+" elle sera épuisée."
+msgstr "Your card still has seats: you can buy a new one once it is used up."
+
+msgid "Votre carte d'abonnement est active."
+msgstr "Your season card is active."
+
+msgid ""
+"Paiement en cours de vérification : votre carte sera active dans quelques "
+"instants."
+msgstr "Payment being checked: your card will be active in a few moments."
+
+msgid "Carte d'abonnement"
+msgstr "Season card"
+
+msgid ""
+"Payez vos places à l'avance, moins cher. À chaque réservation, choisissez le"
+" tarif « Abonné » : la place est décomptée de votre carte."
+msgstr ""
+"Pay for your seats in advance, for less. Each time you book, choose the "
+"“Abonné” (season card) price: the seat is deducted from your card."
+
+msgid ""
+"Votre carte a encore %(nb)s place(s). Vous pourrez en acheter une nouvelle "
+"quand elle sera épuisée."
+msgstr ""
+"Your card still has %(nb)s seat(s). You can buy a new one once it is used "
+"up."
+
+msgid "%(nb)s places"
+msgstr "%(nb)s seats"
+
+msgid "Acheter avec Stripe"
+msgstr "Buy with Stripe"
+
+msgid "Acheter (démonstration)"
+msgstr "Buy (demo)"
+
+msgid "Aucune carte n'est en vente pour l'instant."
+msgstr "No card is on sale at the moment."
+
+msgid "Retour à mon compte"
+msgstr "Back to my account"
+
+msgid ""
+"Site de démonstration : aucun paiement réel. Sur le site en ligne, cette "
+"page est celle de Stripe."
+msgstr "Demo site: no real payment. On the live site, this page is Stripe's."
+
+msgid "Simuler le paiement"
+msgstr "Simulate the payment"
+
+msgid ""
+"Votre carte d'abonnement a encore %(nb)s place : choisissez le tarif « "
+"Abonné » pour l'utiliser."
+msgid_plural ""
+"Votre carte d'abonnement a encore %(nb)s places : choisissez le tarif « "
+"Abonné » pour les utiliser."
+msgstr[0] ""
+"Your season card has %(nb)s seat left: choose the “Abonné” price to use it."
+msgstr[1] ""
+"Your season card has %(nb)s seats left: choose the “Abonné” price to use "
+"them."
+
+msgid "%(nb)s place restante"
+msgid_plural "%(nb)s places restantes"
+msgstr[0] "%(nb)s seat left"
+msgstr[1] "%(nb)s seats left"

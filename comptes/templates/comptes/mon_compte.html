@@ -6,6 +6,20 @@
   <h1>{% translate "Mon compte" %}</h1>
   <p class="muet">{{ user.email }}</p>
 </section>
+<section class="carte compte-bloc">
+  <h2>{% translate "Carte d'abonnement et offres" %}</h2>
+  {% if carte %}
+    <p>{{ carte.formule.libelle }} : <strong>{% blocktranslate count nb=carte.places_restantes %}{{ nb }} place restante{% plural %}{{ nb }} places restantes{% endblocktranslate %}</strong></p>
+  {% else %}
+    <p class="muet">{% translate "Pas de carte en cours." %} <a href="{% url 'fidelite:abonnement' %}">{% translate "Acheter une carte d'abonnement" %}</a></p>
+  {% endif %}
+  <form method="post" action="{% url 'comptes:preferences' %}" class="case-offres">
+    {% csrf_token %}
+    <label class="case"><input type="checkbox" name="accepte_offres" {% if user.profil.accepte_offres %}checked{% endif %}>
+      <span>{% translate "Je veux recevoir les offres réservées aux habitués." %}</span></label>
+    <button class="bouton bouton--clair" type="submit">{% translate "Enregistrer mon choix" %}</button>
+  </form>
+</section>
 <section>
   <h2>{% translate "Mes réservations" %}</h2>
   <div class="liste-reservations">

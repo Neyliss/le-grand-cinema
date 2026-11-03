@@ -85,6 +85,15 @@ def confirmer_paiement(reservation_id, mode, reference_stripe=""):
         if reference_stripe:
             rembourser_reference(reference_stripe)
         raise PaiementTropTardif()
+    # E10-US1 : les places au tarif « abonné » sont décomptées de la carte (avant toute vente)
+    from fidelite.services import CarteEpuisee, decompter
+
+    try:
+        decompter(reservation, billets)
+    except CarteEpuisee:
+        if reference_stripe:
+            rembourser_reference(reference_stripe)
+        raise
     for place in places:
         place.statut, place.fin_blocage = PlaceSeance.Statut.VENDUE, None
         place.save(update_fields=["statut", "fin_blocage"])
@@ -104,6 +113,13 @@ def confirmer_session_stripe(session):
     session = en_dict(session)
     if session.get("payment_status") != "paid":
         return None
+    if (session.get("metadata") or {}).get("abonnement"):
+        # Achat d'une carte d'abonnement (E10-US1)
+        from fidelite.models import Abonnement
+        from fidelite.services import activer
+
+        carte = Abonnement.objects.filter(reference=session["metadata"]["abonnement"]).first()
+        return activer(carte.id, session.get("id", "")) if carte else None
     reference = (session.get("metadata") or {}).get("reservation") or session.get("client_reference_id")
     reservation = Reservation.objects.filter(reference=reference).first()
     if reservation is None:
@@ -129,6 +145,10 @@ def rembourser(reservation):
         return
     if paiement.mode == Paiement.Mode.CARTE_EN_LIGNE:
         rembourser_reference(paiement.reference_stripe)
+    # Les places prises avec une carte d'abonnement lui sont rendues (E10-US1)
+    from fidelite.services import recrediter
+
+    recrediter(reservation)
     # Au guichet, le remboursement se fait sur place : on le note simplement.
     paiement.statut = Paiement.Statut.REMBOURSE
     paiement.save(update_fields=["statut"])

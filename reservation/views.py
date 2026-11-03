@@ -17,8 +17,10 @@ from django.views.decorators.http import require_POST
 from billetterie.services import creer_billets
 from catalogue.models import Seance, Tarif
 from comptes.services import est_spectateur_confirme
+from fidelite.services import CarteEpuisee, carte_active, nb_places_abonne
+from paiement.models import Paiement
 from grandcinema.acces import est_agent
-from paiement.services import stripe_actif, url_de_paiement
+from paiement.services import confirmer_paiement, stripe_actif, url_de_paiement
 
 from .models import Reservation
 from .services import (SeanceNonReservable, SiegeIndisponible, creer_reservation, liberer_reservation,
@@ -82,16 +84,24 @@ class RecapitulatifForm(forms.Form):
     nom = forms.CharField(label=gettext_lazy("Nom"), max_length=100)
     email = forms.EmailField(label=gettext_lazy("Adresse e-mail"))
 
-    def __init__(self, *args, places, **kwargs):
+    def __init__(self, *args, places, carte=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.places = places
-        tarifs = Tarif.objects.filter(actif=True)
+        self.carte = carte
+        tarifs = Tarif.objects.proposes(carte)
         for place in places:
             champ = self.fields[f"tarif_{place.id}"] = forms.ModelChoiceField(
                 queryset=tarifs, empty_label=None, label=str(place.siege),
                 widget=forms.Select(attrs={"data-siege": str(place.siege)}),
                 initial=getattr(getattr(place, "billet", None), "tarif_id", None) or tarifs.first())
             champ.label_from_instance = lambda tarif: tarif.libelle  # le prix est affiché à côté
+
+    def clean(self):
+        donnees = super().clean()
+        nb_abonne = sum(1 for p in self.places if getattr(donnees.get(f"tarif_{p.id}"), "reserve_abonnes", False))
+        if nb_abonne and nb_abonne > self.carte.places_restantes:
+            raise forms.ValidationError(_("Votre carte d'abonnement n'a plus que %(nb)s place(s).") % {"nb": self.carte.places_restantes})
+        return donnees
 
     def tarifs_par_place(self):
         return {place.id: self.cleaned_data[f"tarif_{place.id}"] for place in self.places}
@@ -129,14 +139,24 @@ def recapitulatif(request, reference):
         return render(request, "reservation/expiree.html", {"reservation": reservation})
 
     places = list(reservation.places.select_related("siege", "billet"))
-    form = RecapitulatifForm(request.POST or None, places=places,
+    carte = carte_active(reservation.compte)  # E10-US1 : carte d'abonnement du spectateur connecté
+    form = RecapitulatifForm(request.POST or None, places=places, carte=carte,
                              initial={"nom": reservation.nom, "email": reservation.email})
     if request.method == "POST" and form.is_valid():
         reservation.nom = form.cleaned_data["nom"]
         reservation.email = form.cleaned_data["email"]
         reservation.save(update_fields=["nom", "email"])
-        creer_billets(reservation, form.tarifs_par_place())
-        return redirect(url_de_paiement(request, reservation))
+        billets = creer_billets(reservation, form.tarifs_par_place())
+        if nb_places_abonne(billets) and sum(b.prix for b in billets) == 0:
+            # Toutes les places sont prises avec la carte : rien à payer, elles sont décomptées tout de suite.
+            try:
+                confirmer_paiement(reservation.id, Paiement.Mode.ABONNEMENT)
+            except CarteEpuisee:
+                form.add_error(None, _("Votre carte d'abonnement n'a plus assez de places."))
+            else:
+                return redirect("billetterie:billet", reservation.reference, reservation.jeton)
+        else:
+            return redirect(url_de_paiement(request, reservation))
 
     lignes, total = form.lignes_recapitulatif()
     return render(request, "reservation/recapitulatif.html", {
@@ -146,7 +166,8 @@ def recapitulatif(request, reference):
         "lignes": lignes,
         "total": total,
         "fin_blocage": reservation.fin_blocage(),
-        "prix_tarifs": {str(t.id): str(t.prix) for t in Tarif.objects.filter(actif=True)},
+        "prix_tarifs": {str(t.id): str(t.prix) for t in Tarif.objects.proposes(carte)},
+        "carte": carte,
         "stripe": stripe_actif(),
     })
 

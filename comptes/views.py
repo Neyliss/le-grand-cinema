@@ -17,7 +17,8 @@ def inscription(request):
     form = InscriptionForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         try:
-            utilisateur = creer_compte(form.cleaned_data["email"], form.cleaned_data["mot_de_passe"], form.cleaned_data["nom"])
+            utilisateur = creer_compte(form.cleaned_data["email"], form.cleaned_data["mot_de_passe"], form.cleaned_data["nom"],
+                                       accepte_offres=form.cleaned_data["accepte_offres"])
         except CompteExistant:
             form.add_error("email", _("Un compte existe déjà avec cette adresse."))
         else:
@@ -55,7 +56,24 @@ def deconnexion(request):
 
 @login_required
 def mon_compte(request):
-    return render(request, "comptes/mon_compte.html", {"reservations": reservations_du_compte(request.user)})
+    from fidelite.services import carte_active
+
+    return render(request, "comptes/mon_compte.html", {
+        "reservations": reservations_du_compte(request.user),
+        "carte": carte_active(request.user),
+    })
+
+
+@login_required
+@require_POST
+def preferences(request):
+    """E10-US1 : le spectateur choisit lui-même de recevoir, ou non, les offres."""
+    profil = getattr(request.user, "profil", None)
+    if profil is not None:
+        profil.accepte_offres = request.POST.get("accepte_offres") == "on"
+        profil.save(update_fields=["accepte_offres"])
+        messages.success(request, _("Votre choix est enregistré."))
+    return redirect("comptes:mon_compte")
 
 
 @login_required
