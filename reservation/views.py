@@ -12,7 +12,7 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from billetterie.services import creer_billets
 from catalogue.models import Seance, Tarif
@@ -33,6 +33,7 @@ def seance_reservable_ou_404(seance_id):
     return get_object_or_404(Seance.objects.select_related("film", "salle"), pk=seance_id, statut=Seance.Statut.PUBLIEE)
 
 
+@require_GET
 def plan(request, seance_id):
     """Étapes 1 à 3 : le spectateur choisit une séance et voit le plan de salle à jour."""
     seance = seance_reservable_ou_404(seance_id)
@@ -49,6 +50,7 @@ def plan(request, seance_id):
 
 
 @never_cache
+@require_GET
 def api_plan(request, seance_id):
     """Plan de salle en JSON, lu par JavaScript toutes les 5 secondes (E2-US1)."""
     seance = seance_reservable_ou_404(seance_id)
