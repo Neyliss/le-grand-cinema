@@ -8,7 +8,7 @@ Application web Django qui réalise le MVP décrit dans le dossier de conception
 programmation en ligne, plan de salle en temps réel, réservation sans compte, paiement Stripe,
 billet QR par e-mail, vente au guichet sur le même stock de places, contrôle à l'entrée et pilotage.
 
-**Guides** : [Conventions de branches et de commits](docs/conventions.md) · [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md) · [API et Swagger](docs/api.md) · [Qualité du code (SonarQube Cloud)](docs/guide-sonarcloud.md)
+**Guides** : [Conventions de branches et de commits](docs/conventions.md) · [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md) · [API et Swagger](docs/api.md) · [Qualité du code (SonarQube Cloud)](docs/guide-sonarcloud.md) · [Mise en ligne sur AWS](docs/guide-aws.md)
 
 **Schémas** (architecture AWS, cas d'utilisation, séquence et classes UML) : [docs/schemas/Le_Grand_Cinema_schemas.drawio](docs/schemas/Le_Grand_Cinema_schemas.drawio), [à ouvrir dans draw.io](https://viewer.diagrams.net/?nav=1&title=Le_Grand_Cinema_schemas.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2FNeyliss%2Fle-grand-cinema%2Fdevelop%2Fdocs%2Fschemas%2FLe_Grand_Cinema_schemas.drawio) sans compte.
 
@@ -173,23 +173,24 @@ python manage.py makemessages -l en   # ajoute le texte dans locale/en/LC_MESSAG
 python manage.py compilemessages
 ```
 
-## 4. Déployer sur AWS (dossier 3)
+## 4. Déployer sur AWS
 
-L'architecture retenue est un environnement **Elastic Beanstalk « instance unique »** (C3)
-derrière **CloudFront** (C2), avec une base **RDS PostgreSQL** (C4), S3 (C5) et SES (C6).
+**Guide pas à pas, sans outil à installer : [docs/guide-aws.md](docs/guide-aws.md).**
 
-1. Installer l'outil `eb` : `pip install awsebcli`.
-2. `eb init` (région `eu-west-3`, plateforme Python), puis
-   `eb create gc-prod --single --instance-types t4g.small`.
-3. Créer la base RDS PostgreSQL `gc-prod-db` (db.t4g.micro, sous-réseau privé) et autoriser
-   seulement le groupe de sécurité du serveur.
-4. Dans la console Elastic Beanstalk, renseigner les propriétés de l'environnement :
-   `SECRET_KEY`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `SITE_URL`, `DATABASE_URL`,
-   `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `AWS_STORAGE_BUCKET_NAME`,
-   `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`.
-5. `eb deploy` : les migrations et les fichiers statiques sont traités par `.ebextensions/01_django.config`.
-6. Créer la distribution CloudFront devant l'environnement, transmettre l'en-tête
-   `CloudFront-Forwarded-Proto` et déclarer le webhook Stripe sur `https://<domaine>/webhooks/stripe/`.
+Le site de démonstration tourne sur un environnement **Elastic Beanstalk « instance unique »**
+(C3) derrière **CloudFront** (C2, HTTPS), avec une base **RDS PostgreSQL** (C4). Tout ce que fait
+le serveur au déploiement est décrit dans le code :
+
+| Fichier | Rôle |
+|---|---|
+| `Procfile` | démarre le site avec Gunicorn |
+| `.ebextensions/01_django.config` | réglages, mise à jour de la base, fichiers statiques, démonstration |
+| `.ebextensions/02_taches.config` | tâches planifiées : sièges libérés chaque minute, démonstration rechargée chaque nuit |
+| `deploiement/tache.sh` | lance une commande Django avec les réglages du serveur |
+
+Les secrets (`SECRET_KEY`, mot de passe de la base) se saisissent dans la console, jamais dans Git.
+En vraie production s'ajoutent Stripe (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+`PAIEMENT_DEMO=False`), Amazon SES pour les e-mails et S3 pour les fichiers (`AWS_STORAGE_BUCKET_NAME`).
 
 **Mode festival** : dans la console, *Configuration › Capacité*, passer le type d'environnement
 de « instance unique » à « avec répartiteur de charge » (2 instances), et passer la base RDS en

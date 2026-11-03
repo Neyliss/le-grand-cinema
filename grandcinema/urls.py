@@ -3,7 +3,8 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from paiement.views import webhook_stripe
@@ -41,3 +42,6 @@ urlpatterns += i18n_patterns(
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+elif settings.SERVIR_AFFICHES:
+    # Site de démonstration sans S3 : seules les affiches sont servies (jamais les billets PDF)
+    urlpatterns += [re_path(r"^media/(?P<path>affiches/[\w.-]+)$", serve, {"document_root": settings.MEDIA_ROOT})]
