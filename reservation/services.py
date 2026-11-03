@@ -80,6 +80,24 @@ def creer_reservation(seance, siege_ids, canal=Reservation.Canal.SITE):
     return reservation
 
 
+@transaction.atomic
+def liberer_reservation(reservation):
+    """Le spectateur renonce avant de payer : ses sièges sont rendus tout de suite, sans attendre
+    la fin des 10 minutes, et la réservation est annulée."""
+    from billetterie.models import Billet
+
+    reservation = Reservation.objects.select_for_update().get(pk=reservation.pk)
+    if reservation.statut != Reservation.Statut.ATTENTE:
+        return 0
+    places = list(reservation.places.select_for_update().filter(statut=PlaceSeance.Statut.BLOQUEE))
+    ids = [p.id for p in places]
+    Billet.objects.filter(place_id__in=ids).delete()
+    PlaceSeance.objects.filter(id__in=ids).update(statut=PlaceSeance.Statut.LIBRE, reservation=None, fin_blocage=None)
+    reservation.statut = Reservation.Statut.ANNULEE
+    reservation.save(update_fields=["statut"])
+    return len(ids)
+
+
 def places_encore_bloquees(reservation):
     """Vrai si toutes les places de la réservation lui appartiennent encore."""
     places = reservation.places.all()
