@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_GET
 
 from comptes.services import est_spectateur_confirme
 from paiement.services import client_stripe, en_dict, stripe_actif
@@ -51,6 +52,7 @@ def demo(request, reference):
 
 
 @login_required
+@require_GET
 def retour(request, reference):
     """Retour depuis Stripe : la session est vérifiée auprès de Stripe avant d'activer la carte."""
     carte = carte_du_spectateur(request, reference)
