@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from django.db.models import Count, Q
 from django.shortcuts import render
 from django.utils import timezone
+from django.views.decorators.http import require_GET
 
 from .models import Film, Seance, Tarif
 
@@ -23,6 +24,7 @@ def regrouper_par_film(seances):
     return sorted(films.items(), key=lambda item: item[0].id)
 
 
+@require_GET
 def programmation(request):
     """E1-US1 : les films du jour avec leurs horaires et leurs places libres, sans compte."""
     aujourdhui = timezone.localdate()
@@ -42,6 +44,7 @@ def programmation(request):
     })
 
 
+@require_GET
 def festival(request):
     """Séances des films du festival de Jazz, sur les 30 prochains jours."""
     fin = timezone.now() + timedelta(days=30)
@@ -55,5 +58,6 @@ def festival(request):
     })
 
 
+@require_GET
 def infos(request):
     return render(request, "catalogue/infos.html", {"tarifs": Tarif.objects.publics()})

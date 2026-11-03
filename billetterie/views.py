@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from catalogue.models import Seance
 from grandcinema.acces import agent_requis
@@ -23,6 +23,7 @@ def reservation_payee(reference, jeton):
     return reservation
 
 
+@require_GET
 def billet(request, reference, jeton):
     """Confirmation de réservation et billets avec QR code (lien envoyé par e-mail)."""
     reservation = reservation_payee(reference, jeton)
@@ -48,6 +49,7 @@ def renvoyer(request, reference, jeton):
     return redirect("billetterie:billet", reservation.reference, reservation.jeton)
 
 
+@require_GET
 def billet_pdf(request, reference, jeton):
     reservation = reservation_payee(reference, jeton)
     if reservation.billets_pdf:
