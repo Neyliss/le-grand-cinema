@@ -7,7 +7,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from reservation.views import reservation_du_visiteur
 
@@ -33,6 +33,7 @@ def demo(request, reference):
     return render(request, "paiement/demo.html", {"reservation": reservation, "billets": reservation.billets()})
 
 
+@require_GET
 def retour(request, reference):
     """Le spectateur revient de Stripe. On vérifie la session auprès de Stripe (sans attendre le webhook)."""
     reservation = reservation_du_visiteur(request, reference)
