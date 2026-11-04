@@ -4,18 +4,20 @@ La base est **PostgreSQL** (Amazon RDS en ligne, Docker en local). Elle contient
 Les cinq demandées sont en **trait épais** sur le schéma : utilisateurs, films, séances,
 réservations et places.
 
-![Modèle de données](modele-de-donnees.png)
+![Diagramme de classes UML : les 14 tables](classes-uml.png)
 
-**Lire le schéma** : chaque boîte est une table ; `PK` est l'identifiant, `UK` une valeur
-unique. Le symbole au bout d'un trait dit « combien » : `||` exactement un, `o|` zéro ou un,
-`o{` zéro ou plusieurs, `|{` un ou plusieurs. Exemple : une séance a **une place par siège**,
-et une place appartient à **une seule** séance.
+**Lire le schéma** (diagramme de classes UML, comme au bloc 1) : chaque boîte est une table, avec ses
+attributs et leur type. Les chiffres au bout d'un lien disent « combien » : `1` exactement un,
+`0..1` zéro ou un, `0..*` zéro ou plusieurs, `1..*` au moins un. Exemple : une séance a **une
+place par siège** (`1` → `1..*`), et une place appartient à **une seule** séance. Le losange
+noir est une composition : la place n'existe pas sans sa séance. En rouge : les règles imposées
+par la base.
 
 | Fichier | Contenu |
 |---|---|
-| `modele-de-donnees.png` (source `.mmd`) | le schéma ci-dessus (Mermaid) |
+| `../schemas/Le_Grand_Cinema_schemas.drawio`, page « Bloc 3 · Figure 2 » | le schéma ci-dessus, à ouvrir dans draw.io ([lien sans compte](https://viewer.diagrams.net/?nav=1&title=Le_Grand_Cinema_schemas.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2FNeyliss%2Fle-grand-cinema%2Fdevelop%2Fdocs%2Fschemas%2FLe_Grand_Cinema_schemas.drawio)) ; `classes-uml.png` en est l'image |
+| `modele-de-donnees.png` (source `.mmd`) | le même modèle vu comme les tables de la base (identifiants `PK`, valeurs uniques `UK`) |
 | `schema.sql` | le script SQL commenté de toutes les tables, liens et règles |
-| `../schemas/Le_Grand_Cinema_schemas.drawio`, page « Bloc 3 · Figure 2 » | le même modèle en diagramme de classes UML, à ouvrir dans draw.io ([lien sans compte](https://viewer.diagrams.net/?nav=1&title=Le_Grand_Cinema_schemas.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2FNeyliss%2Fle-grand-cinema%2Fdevelop%2Fdocs%2Fschemas%2FLe_Grand_Cinema_schemas.drawio)) |
 
 ## Les cinq tables demandées
 
