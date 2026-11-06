@@ -43,6 +43,16 @@ if not SECRET_KEY:
 
 ALLOWED_HOSTS = env_liste("ALLOWED_HOSTS", "localhost,127.0.0.1")
 
+# Comptes du personnel de la démonstration (charger_demo) : mots de passe connus seulement en local.
+# En ligne, leur mot de passe vient de MOT_DE_PASSE_DEMO (console AWS), jamais du code.
+COMPTES_DEMO_LOCAUX = DEBUG
+
+# Connexion : après 10 mots de passe faux pour un même identifiant, il est bloqué 15 minutes
+# (site, administration et API). Empêche d'essayer des milliers de mots de passe.
+AUTHENTICATION_BACKENDS = ["grandcinema.connexion.ConnexionLimitee"]
+CONNEXION_ESSAIS_MAX = 10
+CONNEXION_BLOCAGE_SECONDES = 15 * 60
+
 # Adresse publique du site (en production : le domaine CloudFront en HTTPS), utilisée dans les
 # liens des e-mails et pour renvoyer les visites directes du serveur vers cette adresse.
 SITE_URL = os.environ.get("SITE_URL") or "http://127.0.0.1:8000"
@@ -247,6 +257,12 @@ if not DEBUG:
     if HTTPS_OBLIGATOIRE:
         SESSION_COOKIE_SECURE = True
         CSRF_COOKIE_SECURE = True
+        # HSTS : le navigateur retient que le site ne s'ouvre qu'en HTTPS (1 an, sans les sous-domaines)
+        SECURE_HSTS_SECONDS = 365 * 24 * 3600
+        # La redirection HTTP -> HTTPS est faite par CloudFront (« Rediriger HTTP vers HTTPS ») et par
+        # RedirectionVersSitePublic ci-dessous : SECURE_SSL_REDIRECT n'est donc pas utilisé.
+        # Pas de « sous-domaines » ni de « preload » : le site vit sous cloudfront.net, domaine d'AWS.
+        SILENCED_SYSTEM_CHECKS = ["security.W008", "security.W005", "security.W021"]
         # Visite directe du serveur (http://…elasticbeanstalk.com) : renvoyée vers l'adresse publique
         MIDDLEWARE.insert(1, "grandcinema.middleware.RedirectionVersSitePublic")
 

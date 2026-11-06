@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
@@ -34,7 +35,7 @@ def confirmation(request, jeton):
     if utilisateur is None:
         messages.error(request, _("Ce lien de confirmation n'est plus valable. Créez à nouveau votre compte."))
         return redirect("comptes:inscription")
-    login(request, utilisateur, backend="django.contrib.auth.backends.ModelBackend")
+    login(request, utilisateur, backend=settings.AUTHENTICATION_BACKENDS[0])
     messages.success(request, _("Adresse confirmée : bienvenue ! Vos réservations passées ont été rattachées à votre compte."))
     return redirect("comptes:mon_compte")
 
@@ -45,7 +46,10 @@ def connexion(request):
         login(request, form.utilisateur)
         rattacher_reservations(form.utilisateur)  # réservations faites sans être connecté, avec la même adresse
         suite = request.GET.get("next", "")
-        return redirect(suite if suite.startswith("/") and not suite.startswith("//") else "comptes:mon_compte")
+        # Seulement une page de ce site : « //autre-site » ou « /\autre-site » mèneraient ailleurs
+        if url_has_allowed_host_and_scheme(suite, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+            return redirect(suite)
+        return redirect("comptes:mon_compte")
     return render(request, "comptes/connexion.html", {"form": form})
 
 

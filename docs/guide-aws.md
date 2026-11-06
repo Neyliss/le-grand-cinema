@@ -32,6 +32,9 @@ gratuite. Pensez à tout supprimer après l'examen (étape 8).
    `git archive --format=zip -o le-grand-cinema.zip main`
 4. Créer une **clé secrète** Django (une longue suite de caractères au hasard) dans le Terminal :
    `python3 -c "import secrets; print(secrets.token_urlsafe(50))"`. La garder pour l'étape 3.
+5. Choisir le **mot de passe des comptes du personnel** (`admin` et `agent`) du site en ligne :
+   au moins 12 caractères, utilisé nulle part ailleurs. Le garder pour l'étape 3 : c'est lui qu'on
+   donne au jury. Les mots de passe du README ne marchent qu'en local.
 
 ## Étape 1 : le rôle du serveur (une seule fois)
 
@@ -76,6 +79,7 @@ Toujours dans l'assistant, écran *Mises à jour, surveillance et journalisation
 |---|---|---|
 | `SECRET_KEY` | la clé créée à l'étape 0 | signer les sessions et les liens ; le site refuse de démarrer sans elle |
 | `ALLOWED_HOSTS` | `.elasticbeanstalk.com,.cloudfront.net` | adresses par lesquelles le site accepte d'être appelé |
+| `MOT_DE_PASSE_DEMO` | le mot de passe choisi à l'étape 0 | mot de passe des comptes `admin` et `agent` ; sans lui, ces comptes sont bloqués |
 
 Les autres réglages sont déjà dans le code (`.ebextensions/01_django.config`) : `DEBUG=False`,
 paiement simulé, dossier des affiches. Les accès à la base (`RDS_HOSTNAME`, `RDS_PASSWORD`…)
@@ -135,8 +139,8 @@ Ouvrir **`https://d1abcdef.cloudfront.net`** :
 | La programmation s'affiche, en français et en anglais | `/` et `/en/` | aucun |
 | Réserver et payer (paiement simulé), recevoir le billet QR | une séance | aucun |
 | Mon compte, ma carte d'abonnement | *Se connecter* | `spectateur.demo@exemple.fr` / `spectateur-gc-2026` |
-| Le guichet et le contrôle des billets | `/guichet/`, `/controle/` | `agent` / `agent-gc-2026` |
-| Le pilotage et l'administration | `/pilotage/`, `/admin/` | `admin` / `admin-gc-2026` |
+| Le guichet et le contrôle des billets | `/guichet/`, `/controle/` | `agent` / mot de passe `MOT_DE_PASSE_DEMO` |
+| Le pilotage et l'administration | `/pilotage/`, `/admin/` | `admin` / mot de passe `MOT_DE_PASSE_DEMO` |
 | La documentation de l'API | `/api/docs/` | aucun |
 
 Les e-mails (billets, confirmation de compte) ne partent pas vraiment sur ce site de
@@ -163,6 +167,7 @@ Après une nouvelle version : créer le zip (étape 0), puis Elastic Beanstalk >
 | Santé **rouge** après le déploiement | *Journaux* > *Demander les journaux* > *100 dernières lignes* : l'erreur est écrite en clair |
 | « Bad Request (400) » | vérifier `ALLOWED_HOSTS` (étape 3) |
 | La connexion ne marche pas | utiliser l'adresse **CloudFront** en `https://`, pas celle d'Elastic Beanstalk ; vérifier `SITE_URL` |
+| `admin` ou `agent` refusé | vérifier `MOT_DE_PASSE_DEMO` (étape 3), puis redéployer la même version (*Charger et déployer*) ; après 10 essais faux, attendre 15 minutes |
 | « CSRF » au moment d'envoyer un formulaire | vérifier la politique de requête d'origine de CloudFront (étape 4) et `SITE_URL` |
 | Aucune séance visible | la démonstration se recharge chaque nuit ; pour le faire tout de suite, redéployer la même version (*Charger et déployer*) : elle est rechargée si la programmation est périmée |
 

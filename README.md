@@ -77,8 +77,13 @@ Puis ouvrir **http://127.0.0.1:8000**. Dans VS Code, la configuration « Django 
 | http://127.0.0.1:8000/pilotage/ | Administrateurs | `admin` / `admin-gc-2026` |
 | http://127.0.0.1:8000/admin/ | Administrateurs | `admin` / `admin-gc-2026` |
 
-Ces mots de passe servent uniquement en local. En production, on crée les comptes avec
-`python manage.py createsuperuser`.
+Ces mots de passe servent uniquement en local (`DEBUG=True`). Sur le site en ligne, ils ne
+marchent pas : le mot de passe des comptes `admin` et `agent` est celui de la variable
+`MOT_DE_PASSE_DEMO`, saisie dans la console AWS (docs/guide-aws.md, étape 3). Le code est public :
+un mot de passe écrit dedans ne protégerait rien.
+
+Autres protections : après 10 mots de passe faux pour un même identifiant, il est bloqué
+15 minutes (site, administration et API, `grandcinema/connexion.py`).
 
 ### Paiement en local
 
