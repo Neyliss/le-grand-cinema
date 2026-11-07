@@ -17,6 +17,9 @@ class ApiCompteTests(TestCase):
         cache.clear()  # remet à zéro le compteur de la limite de requêtes
         self.api = APIClient()
 
+    def tearDown(self):
+        cache.clear()  # les mots de passe faux de ces tests ne bloquent pas les tests suivants
+
     def obtenir_jeton(self, email="ada@exemple.fr", mot_de_passe=MOT_DE_PASSE):
         return self.api.post("/api/comptes/jeton/", {"email": email, "mot_de_passe": mot_de_passe}, format="json")
 

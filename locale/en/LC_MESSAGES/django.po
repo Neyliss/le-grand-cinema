@@ -560,6 +560,9 @@ msgstr "The two passwords do not match."
 msgid "Adresse e-mail ou mot de passe incorrect."
 msgstr "Incorrect e-mail address or password."
 
+msgid "Trop d'essais : réessayez dans 15 minutes."
+msgstr "Too many attempts: please try again in 15 minutes."
+
 msgid "Confirmez d'abord votre adresse e-mail avec le lien reçu."
 msgstr "Please confirm your e-mail address first with the link you received."
 
