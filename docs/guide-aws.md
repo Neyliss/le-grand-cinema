@@ -27,7 +27,7 @@ gratuite. Pensez à tout supprimer après l'examen (étape 8).
 2. **Alerte de budget** (5 minutes, et 20 $ de crédits en plus) : rechercher **Budgets** >
    *Créer un budget* > modèle **Budget à dépense nulle** > saisir son e-mail > *Créer*.
    AWS prévient par e-mail dès le premier centime dépensé.
-3. Avoir le fichier **`le-grand-cinema.zip`** (le code de la version `v2.0.0`). Il est créé par le
+3. Avoir le fichier **`le-grand-cinema.zip`** (le code de la dernière version, sur `main`). Il est créé par le
    script de publication. Sinon, dans le dossier du projet :
    `git archive --format=zip -o le-grand-cinema.zip main`
 4. Créer une **clé secrète** Django (une longue suite de caractères au hasard) dans le Terminal :
@@ -55,25 +55,20 @@ Rechercher **Elastic Beanstalk** > *Créer une application*.
 | | Nom de l'application | `le-grand-cinema` |
 | | Nom de l'environnement | `gc-prod` |
 | | Plateforme | **Python**, branche **Python 3.12 running on 64bit Amazon Linux 2023** |
-| | Code de l'application | **Charger votre code** > fichier `le-grand-cinema.zip`, étiquette `v2.0.0` |
+| | Code de l'application | **Charger votre code** > fichier `le-grand-cinema.zip`, étiquette du nom de la version (par exemple `v2.0.2`) |
 | | Préréglages | **Instance unique (éligible à l'offre gratuite)** |
 | Accès au service | Rôle de service | **Créer et utiliser un nouveau rôle de service** |
 | | Profil d'instance EC2 | `aws-elasticbeanstalk-ec2-role` (étape 1) |
 | | Paire de clés EC2 | laisser vide |
-| Réseau et base de données | VPC | celui par défaut ; cocher **Adresse IP publique** et tous les sous-réseaux |
-| | Base de données | **Activer** |
-| | Moteur | **postgres** (dernière version proposée) |
-| | Classe d'instance | **db.t4g.micro** (ou db.t3.micro) |
-| | Stockage | **20** Go |
-| | Nom d'utilisateur, mot de passe | à choisir ; ne les écrire nulle part dans le code |
-| | Conservation de la base | **Supprimer** (pas de copie payante à la fin) |
+| Mise en réseau | VPC | celui par défaut ; cocher **Adresse IP publique** et tous les sous-réseaux |
+| | Groupes de sécurité EC2 | laisser vide (Elastic Beanstalk crée le bon groupe) |
 | Instances et mise à l'échelle | Types d'instance | garder **t3.micro** seulement |
-| Mises à jour et surveillance | Propriétés de l'environnement | voir l'étape 3 |
+| Propriétés de l'environnement | | voir l'étape 3 |
 
 ## Étape 3 : les propriétés de l'environnement
 
-Toujours dans l'assistant, écran *Mises à jour, surveillance et journalisation*, en bas :
-**Propriétés de l'environnement** > *Ajouter une propriété*.
+Toujours dans l'assistant, partie **Propriétés de l'environnement** > *Ajouter une propriété*
+(source : **Texte brut**).
 
 | Nom | Valeur | À quoi ça sert |
 |---|---|---|
@@ -85,7 +80,7 @@ Les autres réglages sont déjà dans le code (`.ebextensions/01_django.config`)
 paiement simulé, dossier des affiches. Les accès à la base (`RDS_HOSTNAME`, `RDS_PASSWORD`…)
 sont donnés par AWS lui-même.
 
-Cliquer sur **Soumettre**. AWS crée la base et le serveur : **10 à 15 minutes**. À la fin, la
+Cliquer sur **Soumettre**. AWS crée le serveur : **5 à 10 minutes**. À la fin, la
 santé de l'environnement passe au **vert (Ok)** et une adresse s'affiche, par exemple
 `gc-prod.eu-west-3.elasticbeanstalk.com`.
 
@@ -95,6 +90,54 @@ chargement de la démonstration (`charger_demo` : 10 salles, 3 films, 7 jours de
 comptes de test), puis démarrage du site avec Gunicorn (`Procfile`). Deux tâches planifiées
 sont installées : libérer les sièges non payés chaque minute, et recharger la démonstration
 chaque nuit.
+
+## Étape 3 bis : la base de données PostgreSQL (Amazon RDS)
+
+La console actuelle d'Elastic Beanstalk n'a plus de bouton pour ajouter la base de données. Le
+service sait toujours le faire : on le lui demande par une commande, dans **CloudShell** (le
+terminal intégré à la console AWS, déjà connecté au compte : aucune clé à créer). Le code ne
+change pas : dès que la base existe, AWS donne ses accès au site (`RDS_HOSTNAME`, `RDS_PASSWORD`…).
+
+1. Attendre que la santé de l'environnement soit **verte**.
+2. En haut de la console, région **Paris (eu-west-3)**, puis l'icône **>_** (CloudShell).
+3. Coller ces lignes (remplacer `gc-prod` par le nom de l'environnement s'il est différent). La
+   deuxième demande le mot de passe de la base : 8 à 16 lettres et chiffres, rien d'autre. Il ne
+   s'affiche pas et n'est écrit nulle part : AWS le donne lui-même au site.
+
+```bash
+ENV=gc-prod
+read -s -p "Mot de passe de la base : " MDP_BDD; echo
+SOUS_RESEAUX=$(aws elasticbeanstalk describe-configuration-settings --region eu-west-3 \
+  --application-name le-grand-cinema --environment-name "$ENV" \
+  --query "ConfigurationSettings[0].OptionSettings[?Namespace=='aws:ec2:vpc'&&OptionName=='Subnets'].Value" --output text)
+cat > bdd.json <<FIN
+[
+ {"Namespace":"aws:ec2:vpc","OptionName":"DBSubnets","Value":"$SOUS_RESEAUX"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"HasCoupledDatabase","Value":"true"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"DBEngine","Value":"postgres"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"DBInstanceClass","Value":"db.t4g.micro"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"DBAllocatedStorage","Value":"20"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"MultiAZDatabase","Value":"false"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"DBDeletionPolicy","Value":"Delete"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"DBUser","Value":"gcadmin"},
+ {"Namespace":"aws:rds:dbinstance","OptionName":"DBPassword","Value":"$MDP_BDD"}
+]
+FIN
+aws elasticbeanstalk update-environment --region eu-west-3 --environment-name "$ENV" \
+  --option-settings file://bdd.json --query Status
+rm bdd.json; unset MDP_BDD
+```
+
+   La commande répond **"Updating"**. Elle demande une base PostgreSQL `db.t4g.micro` de 20 Go,
+   dans une seule zone (Multi-AZ est payant), dans les sous-réseaux de l'environnement, et
+   supprimée avec lui.
+4. Attendre **10 à 15 minutes** : l'onglet *Événements* montre la création de la base RDS, puis
+   « Environment update completed successfully ».
+5. **Redéployer la même version**, une fois, pour créer les tables et la démonstration dans
+   PostgreSQL : *Applications* > `le-grand-cinema` > **Versions d'application** > cocher la
+   version > *Actions* > *Déployer* > l'environnement.
+
+Avant cette étape, le site tourne sur une base provisoire : ne pas le tester.
 
 ## Étape 4 : l'adresse publique en HTTPS (CloudFront)
 
@@ -120,8 +163,8 @@ par exemple `d1abcdef.cloudfront.net`.
 
 ## Étape 5 : donner l'adresse publique au site
 
-Elastic Beanstalk > `gc-prod` > *Configuration* > *Mises à jour, surveillance et journalisation*
-> *Modifier* > Propriétés de l'environnement, ajouter :
+Elastic Beanstalk > `gc-prod` > *Configuration* > partie **Détails de l'environnement** > *Modifier*
+> **Propriétés de l'environnement** > *Ajouter une propriété* (texte brut) :
 
 | Nom | Valeur |
 |---|---|
