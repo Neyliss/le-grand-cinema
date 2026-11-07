@@ -4,12 +4,20 @@ des ventes déjà faites (site et guichet) et deux comptes du personnel.
 
     python manage.py charger_demo
     python manage.py charger_demo --reinitialiser   # efface d'abord les données existantes
+
+Mots de passe des comptes du personnel (admin, agent) :
+- en local (DEBUG=True) : ceux du README, pratiques pour tester ;
+- sur le site en ligne : celui de la variable MOT_DE_PASSE_DEMO, saisie dans la console AWS et jamais
+  écrite dans le code. Sans elle, ces comptes sont bloqués : le code est public sur GitHub, un mot de
+  passe écrit dedans ne protège rien.
 """
+import os
 import random
 from datetime import datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth.models import Group, Permission, User
 from django.core.files import File
 from django.core.management.base import BaseCommand
@@ -54,6 +62,15 @@ TARIFS = [("Plein", "10.00", 1), ("Réduit (étudiant)", "8.00", 2), ("Moins de 
 
 
 SPECTATEUR_DEMO = "spectateur.demo@exemple.fr"
+# Comptes du personnel : identifiant -> mot de passe utilisé en local seulement
+PERSONNEL_DEMO = {"admin": "admin-gc-2026", "agent": "agent-gc-2026"}
+
+
+def mot_de_passe_personnel(identifiant):
+    """Local : mot de passe connu (README). En ligne : MOT_DE_PASSE_DEMO, ou rien (compte bloqué)."""
+    if settings.COMPTES_DEMO_LOCAUX:
+        return PERSONNEL_DEMO[identifiant]
+    return os.environ.get("MOT_DE_PASSE_DEMO", "").strip() or None
 
 
 class Command(BaseCommand):
@@ -68,10 +85,12 @@ class Command(BaseCommand):
         if options["si_perime"] and Film.objects.exists():
             if Seance.objects.filter(debut__gte=timezone.now() + timedelta(days=3)).exists():
                 self.stdout.write("Programmation encore à jour : rien à recharger.")
+                self.regler_mots_de_passe_personnel()
                 return
             options["reinitialiser"] = True
         if Film.objects.exists() and not options["reinitialiser"]:
             self.stdout.write(self.style.WARNING("Des données existent déjà. Utilisez --reinitialiser pour tout recharger."))
+            self.regler_mots_de_passe_personnel()
             return
         random.seed(2026)
         with transaction.atomic():
@@ -107,9 +126,12 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f"{len(SALLES)} salles ({sum(r * s for _, _, r, s, _ in SALLES)} places), {len(films)} films, "
             f"{nb_seances} séances et {nb_billets} billets vendus chargés."))
-        self.stdout.write("Comptes de démonstration (site de démonstration uniquement) :")
-        self.stdout.write("  administrateur : admin / admin-gc-2026")
-        self.stdout.write("  agent d'accueil : agent / agent-gc-2026")
+        self.stdout.write("Comptes de démonstration :")
+        if settings.COMPTES_DEMO_LOCAUX:
+            self.stdout.write("  administrateur : admin / admin-gc-2026")
+            self.stdout.write("  agent d'accueil : agent / agent-gc-2026")
+        else:
+            self.stdout.write("  administrateur : admin, agent d'accueil : agent (mot de passe : MOT_DE_PASSE_DEMO)")
         self.stdout.write(f"  spectateur : {SPECTATEUR_DEMO} / spectateur-gc-2026")
 
     def vider(self):
@@ -170,12 +192,28 @@ class Command(BaseCommand):
         agents.permissions.set(Permission.objects.filter(codename__startswith="view_",
                                                          content_type__app_label__in=["catalogue", "reservation"]))
         if not User.objects.filter(username="admin").exists():
-            admin = User.objects.create_superuser("admin", "admin@exemple.fr", "admin-gc-2026", first_name="Direction")
+            admin = User.objects.create_superuser("admin", "admin@exemple.fr", None, first_name="Direction")
             admin.groups.add(administrateurs)
         if not User.objects.filter(username="agent").exists():
-            agent = User.objects.create_user("agent", "agent@exemple.fr", "agent-gc-2026", first_name="Accueil 1", is_staff=True)
+            agent = User.objects.create_user("agent", "agent@exemple.fr", None, first_name="Accueil 1", is_staff=True)
             agent.groups.add(agents)
+        self.regler_mots_de_passe_personnel()
         self.creer_spectateur_demo()
+
+    def regler_mots_de_passe_personnel(self):
+        """Donne aux comptes du personnel le bon mot de passe (voir en haut du fichier). Refait à chaque
+        lancement : un changement de MOT_DE_PASSE_DEMO s'applique au déploiement suivant."""
+        for compte in User.objects.filter(username__in=PERSONNEL_DEMO):
+            mot_de_passe = mot_de_passe_personnel(compte.username)
+            if mot_de_passe is None:
+                if compte.has_usable_password():
+                    compte.set_unusable_password()
+                    compte.save(update_fields=["password"])
+                self.stdout.write(self.style.WARNING(
+                    f"Compte « {compte.username} » bloqué : définir MOT_DE_PASSE_DEMO pour s'y connecter."))
+            elif not compte.check_password(mot_de_passe):
+                compte.set_password(mot_de_passe)
+                compte.save(update_fields=["password"])
 
     def creer_spectateur_demo(self):
         """Compte spectateur confirmé (E9-US1), avec trois réservations payées sur le site."""

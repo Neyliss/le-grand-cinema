@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import authenticate, password_validation
 from django.utils.translation import gettext_lazy as _
 
+from grandcinema.connexion import identifiant_bloque
+
 from .services import est_spectateur_confirme, normaliser
 
 
@@ -42,6 +44,8 @@ class ConnexionForm(forms.Form):
         donnees = super().clean()
         if self.errors:
             return donnees
+        if identifiant_bloque(normaliser(donnees["email"])):
+            raise forms.ValidationError(_("Trop d'essais : réessayez dans 15 minutes."))
         utilisateur = authenticate(self.request, username=normaliser(donnees["email"]), password=donnees["mot_de_passe"])
         if utilisateur is None:
             raise forms.ValidationError(_("Adresse e-mail ou mot de passe incorrect."))
