@@ -1,0 +1,31 @@
+# Hébergement de démonstration sur Render (offre gratuite), avec la base PostgreSQL chez Neon.
+# Même image Docker que sur AWS et en local (Dockerfile). Guide pas à pas : docs/guide-render.md
+# Les secrets ne sont jamais écrits ici : Render les demande à la création (sync: false) ou les
+# génère lui-même (generateValue).
+services:
+  - type: web
+    name: le-grand-cinema
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT                 # le conteneur écoute sur le port 8000 (Dockerfile)
+        value: "8000"
+      - key: DEBUG
+        value: "False"
+      - key: TIME_ZONE
+        value: Europe/Paris
+      - key: PROXY_HTTPS          # le proxy de Render dit « HTTPS » par l'en-tête X-Forwarded-Proto
+        value: standard
+      - key: PAIEMENT_DEMO        # site de démonstration : paiement simulé, aucune clé Stripe
+        value: "True"
+      - key: CHARGER_DEMO         # salles, films et séances de démonstration, rechargés quand ils périment
+        value: "1"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL         # adresse de la base Neon (docs/guide-render.md, étape 1)
+        sync: false
+      - key: MOT_DE_PASSE_DEMO    # mot de passe des comptes admin et agent du site en ligne
+        sync: false
