@@ -27,7 +27,7 @@ gratuite. Pensez à tout supprimer après l'examen (étape 8).
 2. **Alerte de budget** (5 minutes, et 20 $ de crédits en plus) : rechercher **Budgets** >
    *Créer un budget* > modèle **Budget à dépense nulle** > saisir son e-mail > *Créer*.
    AWS prévient par e-mail dès le premier centime dépensé.
-3. Avoir le fichier **`le-grand-cinema.zip`** (le code de la version `v2.0.0`). Il est créé par le
+3. Avoir le fichier **`le-grand-cinema.zip`** (le code de la dernière version, sur `main`). Il est créé par le
    script de publication. Sinon, dans le dossier du projet :
    `git archive --format=zip -o le-grand-cinema.zip main`
 4. Créer une **clé secrète** Django (une longue suite de caractères au hasard) dans le Terminal :
@@ -45,6 +45,36 @@ Le serveur a besoin d'une autorisation pour fonctionner avec Elastic Beanstalk.
 3. Cocher les autorisations **AWSElasticBeanstalkWebTier** > *Suivant*.
 4. Nom du rôle : **aws-elasticbeanstalk-ec2-role** > *Créer le rôle*.
 
+## Étape 1 bis : la base de données PostgreSQL (Amazon RDS)
+
+La console actuelle d'Elastic Beanstalk n'a plus de bouton pour créer la base avec
+l'environnement. On la crée donc **avant**, dans la console RDS, et on donne son adresse au site
+par la propriété `DATABASE_URL` (étape 3). Le site crée ainsi ses tables dès le premier déploiement.
+
+1. Console AWS > **RDS** > *Bases de données* > **Créer une base de données**.
+
+| Réglage | Valeur |
+|---|---|
+| Méthode | **Création standard** |
+| Moteur | **PostgreSQL** (version proposée) |
+| Modèle | **Offre gratuite** |
+| Identifiant de l'instance | `gc-db` |
+| Nom d'utilisateur principal | `gcadmin` |
+| Mot de passe | **autogéré** : 12 à 16 lettres et chiffres, rien d'autre ; ne l'écrire nulle part dans le code |
+| Classe d'instance | **db.t4g.micro** (ou db.t3.micro) |
+| Stockage | **20** Go, sans mise à l'échelle automatique |
+| Ressource de calcul | **Ne pas se connecter à une ressource de calcul EC2** |
+| VPC | celui par défaut |
+| Accès public | **Non** |
+| Groupe de sécurité VPC | **Créer**, nom `gc-db-sg` |
+| Configuration supplémentaire > Nom de base de données initial | **`grandcinema`** |
+
+2. *Créer la base de données* : **10 minutes**, jusqu'au statut **Disponible**. Ouvrir `gc-db` et
+   copier son **point de terminaison** (`gc-db.….eu-west-3.rds.amazonaws.com`).
+3. Ouvrir la base au réseau privé d'AWS seulement : **EC2** > *Groupes de sécurité* > `gc-db-sg` >
+   *Règles entrantes* > *Modifier* : une seule règle, type **PostgreSQL** (port 5432), source
+   `172.31.0.0/16` (le réseau du VPC par défaut). La base n'est pas joignable depuis Internet.
+
 ## Étape 2 : créer l'application Elastic Beanstalk
 
 Rechercher **Elastic Beanstalk** > *Créer une application*.
@@ -55,37 +85,32 @@ Rechercher **Elastic Beanstalk** > *Créer une application*.
 | | Nom de l'application | `le-grand-cinema` |
 | | Nom de l'environnement | `gc-prod` |
 | | Plateforme | **Python**, branche **Python 3.12 running on 64bit Amazon Linux 2023** |
-| | Code de l'application | **Charger votre code** > fichier `le-grand-cinema.zip`, étiquette `v2.0.0` |
+| | Code de l'application | **Charger votre code** > fichier `le-grand-cinema.zip`, étiquette du nom de la version (par exemple `v2.0.2`) |
 | | Préréglages | **Instance unique (éligible à l'offre gratuite)** |
 | Accès au service | Rôle de service | **Créer et utiliser un nouveau rôle de service** |
 | | Profil d'instance EC2 | `aws-elasticbeanstalk-ec2-role` (étape 1) |
 | | Paire de clés EC2 | laisser vide |
-| Réseau et base de données | VPC | celui par défaut ; cocher **Adresse IP publique** et tous les sous-réseaux |
-| | Base de données | **Activer** |
-| | Moteur | **postgres** (dernière version proposée) |
-| | Classe d'instance | **db.t4g.micro** (ou db.t3.micro) |
-| | Stockage | **20** Go |
-| | Nom d'utilisateur, mot de passe | à choisir ; ne les écrire nulle part dans le code |
-| | Conservation de la base | **Supprimer** (pas de copie payante à la fin) |
+| Mise en réseau | VPC | celui par défaut ; cocher **Adresse IP publique** et tous les sous-réseaux |
+| | Groupes de sécurité EC2 | laisser vide (Elastic Beanstalk crée le bon groupe) |
 | Instances et mise à l'échelle | Types d'instance | garder **t3.micro** seulement |
-| Mises à jour et surveillance | Propriétés de l'environnement | voir l'étape 3 |
+| Propriétés de l'environnement | | voir l'étape 3 |
 
 ## Étape 3 : les propriétés de l'environnement
 
-Toujours dans l'assistant, écran *Mises à jour, surveillance et journalisation*, en bas :
-**Propriétés de l'environnement** > *Ajouter une propriété*.
+Toujours dans l'assistant, partie **Propriétés de l'environnement** > *Ajouter une propriété*
+(source : **Texte brut**).
 
 | Nom | Valeur | À quoi ça sert |
 |---|---|---|
 | `SECRET_KEY` | la clé créée à l'étape 0 | signer les sessions et les liens ; le site refuse de démarrer sans elle |
 | `ALLOWED_HOSTS` | `.elasticbeanstalk.com,.cloudfront.net` | adresses par lesquelles le site accepte d'être appelé |
 | `MOT_DE_PASSE_DEMO` | le mot de passe choisi à l'étape 0 | mot de passe des comptes `admin` et `agent` ; sans lui, ces comptes sont bloqués |
+| `DATABASE_URL` | `postgres://gcadmin:MOTDEPASSE@POINT-DE-TERMINAISON:5432/grandcinema` | adresse de la base de l'étape 1 bis (son mot de passe et son point de terminaison) |
 
 Les autres réglages sont déjà dans le code (`.ebextensions/01_django.config`) : `DEBUG=False`,
-paiement simulé, dossier des affiches. Les accès à la base (`RDS_HOSTNAME`, `RDS_PASSWORD`…)
-sont donnés par AWS lui-même.
+paiement simulé, dossier des affiches.
 
-Cliquer sur **Soumettre**. AWS crée la base et le serveur : **10 à 15 minutes**. À la fin, la
+Cliquer sur **Soumettre**. AWS crée le serveur : **5 à 10 minutes**. À la fin, la
 santé de l'environnement passe au **vert (Ok)** et une adresse s'affiche, par exemple
 `gc-prod.eu-west-3.elasticbeanstalk.com`.
 
@@ -120,8 +145,8 @@ par exemple `d1abcdef.cloudfront.net`.
 
 ## Étape 5 : donner l'adresse publique au site
 
-Elastic Beanstalk > `gc-prod` > *Configuration* > *Mises à jour, surveillance et journalisation*
-> *Modifier* > Propriétés de l'environnement, ajouter :
+Elastic Beanstalk > `gc-prod` > *Configuration* > partie **Détails de l'environnement** > *Modifier*
+> **Propriétés de l'environnement** > *Ajouter une propriété* (texte brut) :
 
 | Nom | Valeur |
 |---|---|
@@ -155,9 +180,10 @@ Après une nouvelle version : créer le zip (étape 0), puis Elastic Beanstalk >
 ## Étape 8 : tout arrêter après l'examen
 
 1. CloudFront : sélectionner la distribution > *Désactiver*, attendre, puis *Supprimer*.
-2. Elastic Beanstalk : `gc-prod` > *Actions* > **Terminer l'environnement** (supprime aussi le
-   serveur et la base).
-3. Vérifier dans **RDS** et **EC2** qu'il ne reste rien, et dans **Billing** que les crédits ne
+2. Elastic Beanstalk : `gc-prod` > *Actions* > **Terminer l'environnement** (supprime le
+   serveur).
+3. RDS : `gc-db` > *Actions* > **Supprimer**, sans instantané final.
+4. Vérifier dans **RDS** et **EC2** qu'il ne reste rien, et dans **Billing** que les crédits ne
    baissent plus.
 
 ## En cas de problème

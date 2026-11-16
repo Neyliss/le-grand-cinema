@@ -86,11 +86,13 @@ class Command(BaseCommand):
             if Seance.objects.filter(debut__gte=timezone.now() + timedelta(days=3)).exists():
                 self.stdout.write("Programmation encore à jour : rien à recharger.")
                 self.regler_mots_de_passe_personnel()
+                self.restaurer_affiches()
                 return
             options["reinitialiser"] = True
         if Film.objects.exists() and not options["reinitialiser"]:
             self.stdout.write(self.style.WARNING("Des données existent déjà. Utilisez --reinitialiser pour tout recharger."))
             self.regler_mots_de_passe_personnel()
+            self.restaurer_affiches()
             return
         random.seed(2026)
         with transaction.atomic():
@@ -199,6 +201,16 @@ class Command(BaseCommand):
             agent.groups.add(agents)
         self.regler_mots_de_passe_personnel()
         self.creer_spectateur_demo()
+
+    def restaurer_affiches(self):
+        """Remet les affiches de la démonstration qui manquent sur le disque. Sur un hébergement dont
+        le disque est effacé à chaque redémarrage (Render), la base garde les films mais pas les images."""
+        for film in Film.objects.exclude(affiche=""):
+            stockage = film.affiche.storage
+            source = AFFICHES / Path(film.affiche.name).name
+            if not stockage.exists(film.affiche.name) and source.exists():
+                with open(source, "rb") as f:
+                    stockage.save(film.affiche.name, File(f))
 
     def regler_mots_de_passe_personnel(self):
         """Donne aux comptes du personnel le bon mot de passe (voir en haut du fichier). Refait à chaque
