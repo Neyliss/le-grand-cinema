@@ -13,6 +13,8 @@ from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
 
+from .hebergement import adresse_publique, entete_https, hotes_autorises
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Lecture du fichier .env en local (facultatif)
@@ -41,7 +43,8 @@ if not SECRET_KEY:
     else:
         raise RuntimeError("La variable SECRET_KEY doit être définie en production.")
 
-ALLOWED_HOSTS = env_liste("ALLOWED_HOSTS", "localhost,127.0.0.1")
+# Sur Render, l'adresse du site (…onrender.com) est ajoutée toute seule (grandcinema/hebergement.py)
+ALLOWED_HOSTS = hotes_autorises(env_liste("ALLOWED_HOSTS", "localhost,127.0.0.1"), os.environ)
 
 # Comptes du personnel de la démonstration (charger_demo) : mots de passe connus seulement en local.
 # En ligne, leur mot de passe vient de MOT_DE_PASSE_DEMO (console AWS), jamais du code.
@@ -55,7 +58,7 @@ CONNEXION_BLOCAGE_SECONDES = 15 * 60
 
 # Adresse publique du site (en production : le domaine CloudFront en HTTPS), utilisée dans les
 # liens des e-mails et pour renvoyer les visites directes du serveur vers cette adresse.
-SITE_URL = os.environ.get("SITE_URL") or "http://127.0.0.1:8000"
+SITE_URL = adresse_publique(os.environ)
 # Formulaires envoyés depuis l'adresse publique : acceptés (protection CSRF)
 CSRF_TRUSTED_ORIGINS = env_liste("CSRF_TRUSTED_ORIGINS") or ([SITE_URL.rstrip("/")] if SITE_URL.startswith("https://") else [])
 
@@ -252,8 +255,8 @@ SPECTACULAR_SETTINGS = {
 HTTPS_OBLIGATOIRE = env_bool("HTTPS_OBLIGATOIRE", True)
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    # CloudFront (C2) termine le HTTPS et transmet ce en-tête au serveur (C3)
-    SECURE_PROXY_SSL_HEADER = ("HTTP_CLOUDFRONT_FORWARDED_PROTO", "https")
+    # Le HTTPS est terminé devant le serveur (CloudFront sur AWS), qui l'apprend par un en-tête
+    SECURE_PROXY_SSL_HEADER = entete_https(os.environ)
     if HTTPS_OBLIGATOIRE:
         SESSION_COOKIE_SECURE = True
         CSRF_COOKIE_SECURE = True
@@ -261,7 +264,7 @@ if not DEBUG:
         SECURE_HSTS_SECONDS = 365 * 24 * 3600
         # La redirection HTTP -> HTTPS est faite par CloudFront (« Rediriger HTTP vers HTTPS ») et par
         # RedirectionVersSitePublic ci-dessous : SECURE_SSL_REDIRECT n'est donc pas utilisé.
-        # Pas de « sous-domaines » ni de « preload » : le site vit sous cloudfront.net, domaine d'AWS.
+        # Pas de « sous-domaines » ni de « preload » : le site vit sous cloudfront.net ou onrender.com.
         SILENCED_SYSTEM_CHECKS = ["security.W008", "security.W005", "security.W021"]
         # Visite directe du serveur (http://…elasticbeanstalk.com) : renvoyée vers l'adresse publique
         MIDDLEWARE.insert(1, "grandcinema.middleware.RedirectionVersSitePublic")
