@@ -45,6 +45,36 @@ Le serveur a besoin d'une autorisation pour fonctionner avec Elastic Beanstalk.
 3. Cocher les autorisations **AWSElasticBeanstalkWebTier** > *Suivant*.
 4. Nom du rôle : **aws-elasticbeanstalk-ec2-role** > *Créer le rôle*.
 
+## Étape 1 bis : la base de données PostgreSQL (Amazon RDS)
+
+La console actuelle d'Elastic Beanstalk n'a plus de bouton pour créer la base avec
+l'environnement. On la crée donc **avant**, dans la console RDS, et on donne son adresse au site
+par la propriété `DATABASE_URL` (étape 3). Le site crée ainsi ses tables dès le premier déploiement.
+
+1. Console AWS > **RDS** > *Bases de données* > **Créer une base de données**.
+
+| Réglage | Valeur |
+|---|---|
+| Méthode | **Création standard** |
+| Moteur | **PostgreSQL** (version proposée) |
+| Modèle | **Offre gratuite** |
+| Identifiant de l'instance | `gc-db` |
+| Nom d'utilisateur principal | `gcadmin` |
+| Mot de passe | **autogéré** : 12 à 16 lettres et chiffres, rien d'autre ; ne l'écrire nulle part dans le code |
+| Classe d'instance | **db.t4g.micro** (ou db.t3.micro) |
+| Stockage | **20** Go, sans mise à l'échelle automatique |
+| Ressource de calcul | **Ne pas se connecter à une ressource de calcul EC2** |
+| VPC | celui par défaut |
+| Accès public | **Non** |
+| Groupe de sécurité VPC | **Créer**, nom `gc-db-sg` |
+| Configuration supplémentaire > Nom de base de données initial | **`grandcinema`** |
+
+2. *Créer la base de données* : **10 minutes**, jusqu'au statut **Disponible**. Ouvrir `gc-db` et
+   copier son **point de terminaison** (`gc-db.….eu-west-3.rds.amazonaws.com`).
+3. Ouvrir la base au réseau privé d'AWS seulement : **EC2** > *Groupes de sécurité* > `gc-db-sg` >
+   *Règles entrantes* > *Modifier* : une seule règle, type **PostgreSQL** (port 5432), source
+   `172.31.0.0/16` (le réseau du VPC par défaut). La base n'est pas joignable depuis Internet.
+
 ## Étape 2 : créer l'application Elastic Beanstalk
 
 Rechercher **Elastic Beanstalk** > *Créer une application*.
@@ -75,10 +105,10 @@ Toujours dans l'assistant, partie **Propriétés de l'environnement** > *Ajouter
 | `SECRET_KEY` | la clé créée à l'étape 0 | signer les sessions et les liens ; le site refuse de démarrer sans elle |
 | `ALLOWED_HOSTS` | `.elasticbeanstalk.com,.cloudfront.net` | adresses par lesquelles le site accepte d'être appelé |
 | `MOT_DE_PASSE_DEMO` | le mot de passe choisi à l'étape 0 | mot de passe des comptes `admin` et `agent` ; sans lui, ces comptes sont bloqués |
+| `DATABASE_URL` | `postgres://gcadmin:MOTDEPASSE@POINT-DE-TERMINAISON:5432/grandcinema` | adresse de la base de l'étape 1 bis (son mot de passe et son point de terminaison) |
 
 Les autres réglages sont déjà dans le code (`.ebextensions/01_django.config`) : `DEBUG=False`,
-paiement simulé, dossier des affiches. Les accès à la base (`RDS_HOSTNAME`, `RDS_PASSWORD`…)
-sont donnés par AWS lui-même.
+paiement simulé, dossier des affiches.
 
 Cliquer sur **Soumettre**. AWS crée le serveur : **5 à 10 minutes**. À la fin, la
 santé de l'environnement passe au **vert (Ok)** et une adresse s'affiche, par exemple
@@ -90,54 +120,6 @@ chargement de la démonstration (`charger_demo` : 10 salles, 3 films, 7 jours de
 comptes de test), puis démarrage du site avec Gunicorn (`Procfile`). Deux tâches planifiées
 sont installées : libérer les sièges non payés chaque minute, et recharger la démonstration
 chaque nuit.
-
-## Étape 3 bis : la base de données PostgreSQL (Amazon RDS)
-
-La console actuelle d'Elastic Beanstalk n'a plus de bouton pour ajouter la base de données. Le
-service sait toujours le faire : on le lui demande par une commande, dans **CloudShell** (le
-terminal intégré à la console AWS, déjà connecté au compte : aucune clé à créer). Le code ne
-change pas : dès que la base existe, AWS donne ses accès au site (`RDS_HOSTNAME`, `RDS_PASSWORD`…).
-
-1. Attendre que la santé de l'environnement soit **verte**.
-2. En haut de la console, région **Paris (eu-west-3)**, puis l'icône **>_** (CloudShell).
-3. Coller ces lignes (remplacer `gc-prod` par le nom de l'environnement s'il est différent). La
-   deuxième demande le mot de passe de la base : 8 à 16 lettres et chiffres, rien d'autre. Il ne
-   s'affiche pas et n'est écrit nulle part : AWS le donne lui-même au site.
-
-```bash
-ENV=gc-prod
-read -s -p "Mot de passe de la base : " MDP_BDD; echo
-SOUS_RESEAUX=$(aws elasticbeanstalk describe-configuration-settings --region eu-west-3 \
-  --application-name le-grand-cinema --environment-name "$ENV" \
-  --query "ConfigurationSettings[0].OptionSettings[?Namespace=='aws:ec2:vpc'&&OptionName=='Subnets'].Value" --output text)
-cat > bdd.json <<FIN
-[
- {"Namespace":"aws:ec2:vpc","OptionName":"DBSubnets","Value":"$SOUS_RESEAUX"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"HasCoupledDatabase","Value":"true"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"DBEngine","Value":"postgres"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"DBInstanceClass","Value":"db.t4g.micro"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"DBAllocatedStorage","Value":"20"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"MultiAZDatabase","Value":"false"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"DBDeletionPolicy","Value":"Delete"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"DBUser","Value":"gcadmin"},
- {"Namespace":"aws:rds:dbinstance","OptionName":"DBPassword","Value":"$MDP_BDD"}
-]
-FIN
-aws elasticbeanstalk update-environment --region eu-west-3 --environment-name "$ENV" \
-  --option-settings file://bdd.json --query Status
-rm bdd.json; unset MDP_BDD
-```
-
-   La commande répond **"Updating"**. Elle demande une base PostgreSQL `db.t4g.micro` de 20 Go,
-   dans une seule zone (Multi-AZ est payant), dans les sous-réseaux de l'environnement, et
-   supprimée avec lui.
-4. Attendre **10 à 15 minutes** : l'onglet *Événements* montre la création de la base RDS, puis
-   « Environment update completed successfully ».
-5. **Redéployer la même version**, une fois, pour créer les tables et la démonstration dans
-   PostgreSQL : *Applications* > `le-grand-cinema` > **Versions d'application** > cocher la
-   version > *Actions* > *Déployer* > l'environnement.
-
-Avant cette étape, le site tourne sur une base provisoire : ne pas le tester.
 
 ## Étape 4 : l'adresse publique en HTTPS (CloudFront)
 
@@ -198,9 +180,10 @@ Après une nouvelle version : créer le zip (étape 0), puis Elastic Beanstalk >
 ## Étape 8 : tout arrêter après l'examen
 
 1. CloudFront : sélectionner la distribution > *Désactiver*, attendre, puis *Supprimer*.
-2. Elastic Beanstalk : `gc-prod` > *Actions* > **Terminer l'environnement** (supprime aussi le
-   serveur et la base).
-3. Vérifier dans **RDS** et **EC2** qu'il ne reste rien, et dans **Billing** que les crédits ne
+2. Elastic Beanstalk : `gc-prod` > *Actions* > **Terminer l'environnement** (supprime le
+   serveur).
+3. RDS : `gc-db` > *Actions* > **Supprimer**, sans instantané final.
+4. Vérifier dans **RDS** et **EC2** qu'il ne reste rien, et dans **Billing** que les crédits ne
    baissent plus.
 
 ## En cas de problème
