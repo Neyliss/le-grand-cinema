@@ -41,3 +41,24 @@ class AffichesApresRedemarrageTests(TestCase):
         self.charger("--si-perime")
         apres = sorted(stockage.listdir("affiches")[1])
         self.assertEqual(avant, apres)
+
+
+class ReglagesSelonHebergeurTests(TestCase):
+    def test_aws_par_defaut(self):
+        from grandcinema.hebergement import adresse_publique, entete_https, hotes_autorises
+        aws = {"SITE_URL": "https://d1abc.cloudfront.net"}
+        self.assertEqual(entete_https(aws), ("HTTP_CLOUDFRONT_FORWARDED_PROTO", "https"))
+        self.assertEqual(adresse_publique(aws), "https://d1abc.cloudfront.net")
+        self.assertEqual(hotes_autorises([".cloudfront.net"], aws), [".cloudfront.net"])
+
+    def test_render(self):
+        from grandcinema.hebergement import adresse_publique, entete_https, hotes_autorises
+        render = {"PROXY_HTTPS": "standard", "RENDER_EXTERNAL_HOSTNAME": "gc.onrender.com",
+                  "RENDER_EXTERNAL_URL": "https://gc.onrender.com"}
+        self.assertEqual(entete_https(render), ("HTTP_X_FORWARDED_PROTO", "https"))
+        self.assertEqual(adresse_publique(render), "https://gc.onrender.com")
+        self.assertEqual(hotes_autorises(["localhost"], render), ["localhost", "gc.onrender.com"])
+
+    def test_en_local_sans_reglage(self):
+        from grandcinema.hebergement import adresse_publique
+        self.assertEqual(adresse_publique({}), "http://127.0.0.1:8000")

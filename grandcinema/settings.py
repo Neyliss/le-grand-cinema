@@ -13,6 +13,8 @@ from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
 
+from .hebergement import adresse_publique, entete_https, hotes_autorises
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Lecture du fichier .env en local (facultatif)
@@ -41,10 +43,8 @@ if not SECRET_KEY:
     else:
         raise RuntimeError("La variable SECRET_KEY doit être définie en production.")
 
-ALLOWED_HOSTS = env_liste("ALLOWED_HOSTS", "localhost,127.0.0.1")
-# Sur Render, l'adresse du site (…onrender.com) est donnée par Render lui-même
-if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
-    ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
+# Sur Render, l'adresse du site (…onrender.com) est ajoutée toute seule (grandcinema/hebergement.py)
+ALLOWED_HOSTS = hotes_autorises(env_liste("ALLOWED_HOSTS", "localhost,127.0.0.1"), os.environ)
 
 # Comptes du personnel de la démonstration (charger_demo) : mots de passe connus seulement en local.
 # En ligne, leur mot de passe vient de MOT_DE_PASSE_DEMO (console AWS), jamais du code.
@@ -58,7 +58,7 @@ CONNEXION_BLOCAGE_SECONDES = 15 * 60
 
 # Adresse publique du site (en production : le domaine CloudFront en HTTPS), utilisée dans les
 # liens des e-mails et pour renvoyer les visites directes du serveur vers cette adresse.
-SITE_URL = os.environ.get("SITE_URL") or os.environ.get("RENDER_EXTERNAL_URL") or "http://127.0.0.1:8000"
+SITE_URL = adresse_publique(os.environ)
 # Formulaires envoyés depuis l'adresse publique : acceptés (protection CSRF)
 CSRF_TRUSTED_ORIGINS = env_liste("CSRF_TRUSTED_ORIGINS") or ([SITE_URL.rstrip("/")] if SITE_URL.startswith("https://") else [])
 
@@ -255,13 +255,8 @@ SPECTACULAR_SETTINGS = {
 HTTPS_OBLIGATOIRE = env_bool("HTTPS_OBLIGATOIRE", True)
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    # Le HTTPS est terminé devant le serveur, qui l'apprend par un en-tête :
-    # - AWS (par défaut) : CloudFront (C2) envoie CloudFront-Forwarded-Proto au serveur (C3) ;
-    # - Render (PROXY_HTTPS=standard) : son proxy envoie X-Forwarded-Proto.
-    if os.environ.get("PROXY_HTTPS", "cloudfront") == "standard":
-        SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    else:
-        SECURE_PROXY_SSL_HEADER = ("HTTP_CLOUDFRONT_FORWARDED_PROTO", "https")
+    # Le HTTPS est terminé devant le serveur (CloudFront sur AWS), qui l'apprend par un en-tête
+    SECURE_PROXY_SSL_HEADER = entete_https(os.environ)
     if HTTPS_OBLIGATOIRE:
         SESSION_COOKIE_SECURE = True
         CSRF_COOKIE_SECURE = True
