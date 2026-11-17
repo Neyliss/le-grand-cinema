@@ -10,7 +10,7 @@ billet QR par e-mail, vente au guichet sur le même stock de places, contrôle �
 (MVP), puis tableau du festival, compte spectateur facultatif et carte d'abonnement (V2 et V3),
 avec une **API REST documentée dans Swagger** (`/api/docs/`).
 
-**Guides** : [Conventions de branches et de commits](docs/conventions.md) · [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md) · [API et Swagger](docs/api.md) · [Qualité du code (SonarQube Cloud)](docs/guide-sonarcloud.md) · [Mise en ligne sur AWS](docs/guide-aws.md) · [Mise en ligne sans AWS (Render)](docs/guide-render.md) · [Base de données](docs/base-de-donnees/README.md) · [Traçabilité stories → tests](docs/tracabilite.md)
+**Guides** : [Conventions de branches et de commits](docs/conventions.md) · [Git et GitHub](docs/guide-github.md) · [Tests](docs/guide-tests.md) · [Docker](docs/guide-docker.md) · [API et Swagger](docs/api.md) · [Qualité du code (SonarQube Cloud)](docs/guide-sonarcloud.md) · [Mise en ligne sur AWS](docs/guide-aws.md) · [Relais HTTPS en attendant CloudFront](docs/guide-relais-https.md) · [Mise en ligne sans AWS (Render)](docs/guide-render.md) · [Base de données](docs/base-de-donnees/README.md) · [Traçabilité stories → tests](docs/tracabilite.md)
 
 **Schémas** (architecture AWS, cas d'utilisation, séquence et classes UML) : [docs/schemas/Le_Grand_Cinema_schemas.drawio](docs/schemas/Le_Grand_Cinema_schemas.drawio), [à ouvrir dans draw.io](https://viewer.diagrams.net/?nav=1&title=Le_Grand_Cinema_schemas.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2FNeyliss%2Fle-grand-cinema%2Fdevelop%2Fdocs%2Fschemas%2FLe_Grand_Cinema_schemas.drawio) sans compte.
 
@@ -187,6 +187,8 @@ python manage.py compilemessages
 Sans AWS (par exemple un compte en cours de vérification) : la même image Docker tourne sur
 Render avec une base PostgreSQL chez Neon, réglages dans [`render.yaml`](render.yaml) et guide dans
 [docs/guide-render.md](docs/guide-render.md).
+Si seul CloudFront manque (compte AWS pas encore validé pour lui), un relais HTTPS provisoire sur
+Render le remplace, le site et la base restant sur AWS : [docs/guide-relais-https.md](docs/guide-relais-https.md).
 
 Le site de démonstration tourne sur un environnement **Elastic Beanstalk « instance unique »**
 (C3) derrière **CloudFront** (C2, HTTPS), avec une base **RDS PostgreSQL** (C4). Tout ce que fait
