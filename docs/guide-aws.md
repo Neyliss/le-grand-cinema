@@ -127,6 +127,10 @@ Le serveur répond seulement en HTTP. Pour le **cadenas** (HTTPS), on place Clou
 comme prévu au bloc 1. Sans cette étape, la connexion aux comptes ne marche pas : c'est voulu,
 les mots de passe ne doivent jamais passer en clair.
 
+> Si AWS demande de vérifier le compte avant de créer une distribution CloudFront, un relais HTTPS
+> provisoire sur Render la remplace en attendant, sans rien changer au serveur ni à la base :
+> [docs/guide-relais-https.md](guide-relais-https.md).
+
 Rechercher **CloudFront** > *Créer une distribution*. Si l'assistant propose un **plan
 tarifaire**, choisir le plan **gratuit (Free)**.
 
