@@ -20,9 +20,10 @@ class PlanDeSalle {
   }
 
   demarrer(planInitial) {
-    if (planInitial) this.afficher(planInitial); else this.charger();
-    setInterval(() => { if (!document.hidden) this.charger(); }, this.intervalle);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) this.charger(); });
+    // charger() gère lui-même ses erreurs (indicateur rouge) : on ne l'attend pas ici
+    if (planInitial) this.afficher(planInitial); else void this.charger();
+    setInterval(() => { if (!document.hidden) void this.charger(); }, this.intervalle);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) void this.charger(); });
   }
 
   async charger() {

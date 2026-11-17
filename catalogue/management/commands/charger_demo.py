@@ -13,6 +13,7 @@ Mots de passe des comptes du personnel (admin, agent) :
 """
 import os
 import random
+import re
 from datetime import datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -207,7 +208,11 @@ class Command(BaseCommand):
         le disque est effacé à chaque redémarrage (Render), la base garde les films mais pas les images."""
         for film in Film.objects.exclude(affiche=""):
             stockage = film.affiche.storage
-            source = AFFICHES / Path(film.affiche.name).name
+            nom = Path(film.affiche.name)
+            source = AFFICHES / nom.name
+            if not source.exists():
+                # Django ajoute « _Ab12Cd3 » au nom quand le fichier existait déjà au chargement
+                source = AFFICHES / (re.sub(r"_[A-Za-z0-9]{7}$", "", nom.stem) + nom.suffix)
             if not stockage.exists(film.affiche.name) and source.exists():
                 with open(source, "rb") as f:
                     stockage.save(film.affiche.name, File(f))

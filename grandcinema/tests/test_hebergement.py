@@ -9,30 +9,43 @@ from django.test import TestCase, override_settings
 
 from catalogue.models import Film
 
-MEDIA_TEMPORAIRE = tempfile.mkdtemp()
 
-
-@override_settings(MEDIA_ROOT=MEDIA_TEMPORAIRE, COMPTES_DEMO_LOCAUX=True)
+@override_settings(COMPTES_DEMO_LOCAUX=True)
 class AffichesApresRedemarrageTests(TestCase):
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        shutil.rmtree(MEDIA_TEMPORAIRE, ignore_errors=True)
+    def setUp(self):
+        # Un dossier d'images neuf pour chaque test : l'ordre des tests (aléatoire) ne compte pas
+        dossier = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, dossier, True)
+        reglage = override_settings(MEDIA_ROOT=dossier)
+        reglage.enable()
+        self.addCleanup(reglage.disable)
 
     def charger(self, *options):
         sortie = StringIO()
         call_command("charger_demo", *options, stdout=sortie)
         return sortie.getvalue()
 
-    def test_les_affiches_effacees_sont_remises_au_demarrage(self):
-        self.charger()
+    def effacer_une_affiche(self):
         film = Film.objects.exclude(affiche="").first()
         film.affiche.storage.delete(film.affiche.name)        # le disque a été effacé
         self.assertFalse(film.affiche.storage.exists(film.affiche.name))
+        return film
+
+    def test_les_affiches_effacees_sont_remises_au_demarrage(self):
+        self.charger()
+        film = self.effacer_une_affiche()
         sortie = self.charger("--si-perime")                  # démarrage suivant
         self.assertIn("rien à recharger", sortie)
         self.assertTrue(film.affiche.storage.exists(film.affiche.name))
         self.assertEqual(Film.objects.count(), 3)             # les films ne sont pas recréés
+
+    def test_une_affiche_renommee_par_django_est_aussi_remise(self):
+        self.charger()
+        self.charger("--reinitialiser")                       # les fichiers existent : Django les renomme
+        film = self.effacer_une_affiche()
+        self.assertRegex(film.affiche.name, r"_[A-Za-z0-9]{7}\.png$")
+        self.charger("--si-perime")
+        self.assertTrue(film.affiche.storage.exists(film.affiche.name))
 
     def test_une_affiche_presente_n_est_pas_dupliquee(self):
         self.charger()
@@ -41,7 +54,6 @@ class AffichesApresRedemarrageTests(TestCase):
         self.charger("--si-perime")
         apres = sorted(stockage.listdir("affiches")[1])
         self.assertEqual(avant, apres)
-
 
 class ReglagesSelonHebergeurTests(TestCase):
     def test_aws_par_defaut(self):
